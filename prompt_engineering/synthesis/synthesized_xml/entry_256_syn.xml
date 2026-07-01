@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Repeat num_cycles="{num_cycles}">
+            <Sequence name="LTLNavigationCycle">
+                <LTLPreCheck current_ltl_state="{current_ltl_state}" desired_ltl_sequence="{desired_ltl_sequence}"/>
+                <MoveAction nav_goal="{nav_goal}" move_base_idle="{move_base_idle}" move_base_finished="{move_base_finished}"/>
+                <UpdateLTL action_sequence="{action_sequence}" desired_ltl_sequence="{desired_ltl_sequence}" nav_goal="{nav_goal}"/>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+</root>

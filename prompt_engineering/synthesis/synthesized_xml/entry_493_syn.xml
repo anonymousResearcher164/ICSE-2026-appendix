@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Sequence name="AutoLocalizationMission">
+            <RetryUntilSuccessful num_attempts="-1">
+                <Fallback name="AcceptInitialOrSelfLocalize">
+                    <InitialPoseReceivedCondition value="{blackboard_value}" rule="{rule}"/>
+                    <SequenceStar name="doSelfLocalization">
+                        <RetryUntilSuccessful num_attempts="-1">
+                            <globalLocalizationServiceRequest name="retry_client_request"/>
+                        </RetryUntilSuccessful>
+                        <RetryUntilSuccessful num_attempts="-1">
+                            <IsLocalizedCondition name="retry_localization" value="{blackboard_value}" rule="{rule}"/>
+                        </RetryUntilSuccessful>
+                    </SequenceStar>
+                </Fallback>
+            </RetryUntilSuccessful>
+            <PipelineSequence name="ConfirmLocalizedOrRecover">
+                <Fallback name="LocalizedOrRecover">
+                    <IsLocalizedCondition value="{blackboard_value}" rule="{rule}"/>
+                    <SequenceStar name="RecoveryMotion">
+                        <Spin spin_dist="1.57"/>
+                        <BackUp backup_dist="0.15" backup_speed="0.025"/>
+                        <Spin spin_dist="1.57"/>
+                    </SequenceStar>
+                </Fallback>
+                <IsLocalizedCondition value="{blackboard_value}" rule="{rule}"/>
+            </PipelineSequence>
+        </Sequence>
+    </BehaviorTree>
+</root>

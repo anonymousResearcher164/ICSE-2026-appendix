@@ -1,0 +1,6 @@
+You will be provided with a behavior description of a robot, and your task is to express this description as a behavior tree in XML format. The output should be compatible with BehaviorTree.CPP.
+
+Behavior Description:
+<<<BEGIN_BEHAVIOR_DESCRIPTION>>>
+The mission describes a task that runs a strict sequence to perform an action, check a condition, and then delegate to a subtree for additional processing. First, the robot will execute the following actions (Action_A, Condition_B, LotOfStuff) in order and stop the sequence if any action fails. It will execute the custom action Action_A using the provided input value. It will find a value on the blackboard and check if it matches a given rule for the custom condition Condition_B. It will execute the custom action LotOfStuff after the condition check succeeds.
+<<<END_BEHAVIOR_DESCRIPTION>>>

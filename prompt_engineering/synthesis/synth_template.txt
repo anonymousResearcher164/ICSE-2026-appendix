@@ -1,0 +1,5 @@
+You will be provided with a behavior description of a robot, and your task is to express this description as a behavior tree in XML format that is compatible with BehaviorTree.CPP.
+
+Behavior Description:
+<<<BEGIN_BEHAVIOR_DESCRIPTION>>>
+<<<END_BEHAVIOR_DESCRIPTION>>>
