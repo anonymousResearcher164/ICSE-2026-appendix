@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Repeat num_cycles="-1">
+            <Sequence name="ShelfScanAndStockPrepCycle">
+                <TrayUpdatePlanningScene/>
+                <MoveBase x="2.1" y="-2.0" yaw="0.0"/>
+                <MoveBase x="2.1" y="0.0" yaw="1.57"/>
+                <Sequence name="ScanAndRegisterLoci">
+                    <TorsoControl relative_height="0.1"/>
+                    <HeadControl pitch="0.0" yaw="90.0"/>
+                    <ScanShelves target="tomato_can" target_poses="{tomato_can_stocking_target_poses}"/>
+                    <TraySetLoci tray_name="shelf" poses="{tomato_can_stocking_target_poses}" occupied="false"/>
+                    <TrayUpdatePlanningScene/>
+                </Sequence>
+                <Pause wait_duration="5"/>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+</root>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Sequence name="MainSequence">
+            <Action_A input="{input_value}"/>
+            <Condition_B value="{blackboard_value}" rule="{rule}"/>
+            <LotOfStuff/>
+        </Sequence>
+    </BehaviorTree>
+</root>

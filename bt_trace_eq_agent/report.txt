@@ -1,0 +1,292 @@
+==============================================================================
+Entry 41: 
+  Tree A: trees/entry_41_gt.xml
+  Tree B: trees/entry_41_syn.xml
+==============================================================================
+Result: NOT FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 1024
+Leaf names considered: LTLPreCheck, LocomotionStart, LocomotionStatusCheck, MoveAction, RecoveryStand, UpdateLTL, approach_object, check_battery, close_gripper, open_gripper
+Average step accuracy: 0.0%  (worst scenario: 0.0%)
+Average order-tolerant similarity: 0.0%  (worst scenario: 0.0%)
+Equivalence tier (worst-case): ⚫ Behavioral Divergence
+  Independent behaviors with no meaningful trace correlation -- different action nodes triggered under the same conditions.
+  Typical use case: Comparing entirely distinct agent personalities or unaligned models.
+
+Showing 3 of 1024 mismatching scenario(s):
+
+Scenario: {'LTLPreCheck': 'SUCCESS', 'LocomotionStart': 'SUCCESS', 'LocomotionStatusCheck': 'SUCCESS', 'MoveAction': 'SUCCESS', 'RecoveryStand': 'SUCCESS', 'UpdateLTL': 'SUCCESS', 'approach_object': 'SUCCESS', 'check_battery': 'SUCCESS', 'close_gripper': 'SUCCESS', 'open_gripper': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 0.0%  |  Order-tolerant similarity: 0.0% (Behavioral Divergence)
+  Trace A: check_battery:SUCCESS -> open_gripper:SUCCESS -> approach_object:SUCCESS -> close_gripper:SUCCESS -> root_sequence:SUCCESS
+  Trace B: LTLPreCheck:SUCCESS -> LocomotionStatusCheck:SUCCESS -> EnsureLocomotionReady:SUCCESS -> MoveAction:SUCCESS -> ExecuteMove:SUCCESS -> LocomotionAndMove:SUCCESS -> UpdateLTL:SUCCESS -> LTLNavigationCycle:SUCCESS -> Repeat:SUCCESS
+  First divergence at step 0: A=('Leaf', 'check_battery', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'LTLPreCheck', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'LTLPreCheck': 'SUCCESS', 'LocomotionStart': 'SUCCESS', 'LocomotionStatusCheck': 'SUCCESS', 'MoveAction': 'SUCCESS', 'RecoveryStand': 'SUCCESS', 'UpdateLTL': 'SUCCESS', 'approach_object': 'SUCCESS', 'check_battery': 'SUCCESS', 'close_gripper': 'SUCCESS', 'open_gripper': 'FAILURE'}
+  Tree A final status: FAILURE
+  Tree B final status: SUCCESS
+  Step accuracy: 0.0%  |  Order-tolerant similarity: 0.0% (Behavioral Divergence)
+  Trace A: check_battery:SUCCESS -> open_gripper:FAILURE -> root_sequence:FAILURE
+  Trace B: LTLPreCheck:SUCCESS -> LocomotionStatusCheck:SUCCESS -> EnsureLocomotionReady:SUCCESS -> MoveAction:SUCCESS -> ExecuteMove:SUCCESS -> LocomotionAndMove:SUCCESS -> UpdateLTL:SUCCESS -> LTLNavigationCycle:SUCCESS -> Repeat:SUCCESS
+  First divergence at step 0: A=('Leaf', 'check_battery', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'LTLPreCheck', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'LTLPreCheck': 'SUCCESS', 'LocomotionStart': 'SUCCESS', 'LocomotionStatusCheck': 'SUCCESS', 'MoveAction': 'SUCCESS', 'RecoveryStand': 'SUCCESS', 'UpdateLTL': 'SUCCESS', 'approach_object': 'SUCCESS', 'check_battery': 'SUCCESS', 'close_gripper': 'FAILURE', 'open_gripper': 'SUCCESS'}
+  Tree A final status: FAILURE
+  Tree B final status: SUCCESS
+  Step accuracy: 0.0%  |  Order-tolerant similarity: 0.0% (Behavioral Divergence)
+  Trace A: check_battery:SUCCESS -> open_gripper:SUCCESS -> approach_object:SUCCESS -> close_gripper:FAILURE -> root_sequence:FAILURE
+  Trace B: LTLPreCheck:SUCCESS -> LocomotionStatusCheck:SUCCESS -> EnsureLocomotionReady:SUCCESS -> MoveAction:SUCCESS -> ExecuteMove:SUCCESS -> LocomotionAndMove:SUCCESS -> UpdateLTL:SUCCESS -> LTLNavigationCycle:SUCCESS -> Repeat:SUCCESS
+  First divergence at step 0: A=('Leaf', 'check_battery', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'LTLPreCheck', <Status.SUCCESS: 'SUCCESS'>)
+
+==============================================================================
+Entry 64: 
+  Tree A: trees/entry_64_gt.xml
+  Tree B: trees/entry_64_syn.xml
+==============================================================================
+Result: FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 8
+Leaf names considered: Action_A, Condition_B, LotOfStuff
+Average step accuracy: 100.0%  (worst scenario: 100.0%)
+Average order-tolerant similarity: 100.0%  (worst scenario: 100.0%)
+Equivalence tier (worst-case): 🔴 Strict Trace Equivalence
+  Identical execution traces across all tick intervals -- exact step-by-step match of active nodes, return statuses, and sequence.
+  Typical use case: Safety-critical robotics, medical systems, deterministic regression testing.
+==============================================================================
+Entry 150: 
+  Tree A: trees/entry_150_gt.xml
+  Tree B: trees/entry_150_syn.xml
+==============================================================================
+Result: FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 32
+Leaf names considered: AttackTarget, GetTarget, Move, RandomMove, TargetAdjacent
+Average step accuracy: 100.0%  (worst scenario: 100.0%)
+Average order-tolerant similarity: 100.0%  (worst scenario: 100.0%)
+Equivalence tier (worst-case): 🔴 Strict Trace Equivalence
+  Identical execution traces across all tick intervals -- exact step-by-step match of active nodes, return statuses, and sequence.
+  Typical use case: Safety-critical robotics, medical systems, deterministic regression testing.
+==============================================================================
+Entry 256: 
+  Tree A: trees/entry_256_gt.xml
+  Tree B: trees/entry_256_syn.xml
+==============================================================================
+Result: FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 8
+Leaf names considered: LTLPreCheck, MoveAction, UpdateLTL
+Average step accuracy: 100.0%  (worst scenario: 100.0%)
+Average order-tolerant similarity: 100.0%  (worst scenario: 100.0%)
+Equivalence tier (worst-case): 🔴 Strict Trace Equivalence
+  Identical execution traces across all tick intervals -- exact step-by-step match of active nodes, return statuses, and sequence.
+  Typical use case: Safety-critical robotics, medical systems, deterministic regression testing.
+==============================================================================
+Entry 317: 
+  Tree A: trees/entry_317_gt.xml
+  Tree B: trees/entry_317_syn.xml
+==============================================================================
+Result: NOT FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 1024
+Leaf names considered: BackUp, ClearGlobalCostmap-Context, ClearGlobalCostmap-Subtree, ClearLocalCostmap-Context, ClearLocalCostmap-Subtree, ComputePathToPose, FollowPath, GoalUpdated, Spin, Wait
+Average step accuracy: 83.6%  (worst scenario: 71.4%)
+Average order-tolerant similarity: 83.6%  (worst scenario: 71.4%)
+Equivalence tier (worst-case): 🔵 Partial Sub-Tree Equivalence
+  Shared common behavioral patterns or localized routines, but diverge globally -- identical isolated sub-trees wrapped inside different global priority structures.
+  Typical use case: Assessing skill reuse or modularity in evolutionary robotics.
+
+Showing 3 of 1024 mismatching scenario(s):
+
+Scenario: {'BackUp': 'SUCCESS', 'ClearGlobalCostmap-Context': 'SUCCESS', 'ClearGlobalCostmap-Subtree': 'SUCCESS', 'ClearLocalCostmap-Context': 'SUCCESS', 'ClearLocalCostmap-Subtree': 'SUCCESS', 'ComputePathToPose': 'SUCCESS', 'FollowPath': 'SUCCESS', 'GoalUpdated': 'SUCCESS', 'Spin': 'SUCCESS', 'Wait': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 71.4%  |  Order-tolerant similarity: 71.4% (Partial Sub-Tree Equivalence)
+  Trace A: ComputePathToPose:SUCCESS -> ComputePathToPose:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPath:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  Trace B: ComputePathToPose:SUCCESS -> ComputePathToPoseRecovery:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPathRecovery:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  First divergence at step 1: A=('RecoveryNode', 'ComputePathToPose', <Status.SUCCESS: 'SUCCESS'>) vs B=('RecoveryNode', 'ComputePathToPoseRecovery', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'BackUp': 'SUCCESS', 'ClearGlobalCostmap-Context': 'SUCCESS', 'ClearGlobalCostmap-Subtree': 'SUCCESS', 'ClearLocalCostmap-Context': 'SUCCESS', 'ClearLocalCostmap-Subtree': 'SUCCESS', 'ComputePathToPose': 'SUCCESS', 'FollowPath': 'SUCCESS', 'GoalUpdated': 'SUCCESS', 'Spin': 'SUCCESS', 'Wait': 'FAILURE'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 71.4%  |  Order-tolerant similarity: 71.4% (Partial Sub-Tree Equivalence)
+  Trace A: ComputePathToPose:SUCCESS -> ComputePathToPose:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPath:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  Trace B: ComputePathToPose:SUCCESS -> ComputePathToPoseRecovery:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPathRecovery:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  First divergence at step 1: A=('RecoveryNode', 'ComputePathToPose', <Status.SUCCESS: 'SUCCESS'>) vs B=('RecoveryNode', 'ComputePathToPoseRecovery', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'BackUp': 'SUCCESS', 'ClearGlobalCostmap-Context': 'SUCCESS', 'ClearGlobalCostmap-Subtree': 'SUCCESS', 'ClearLocalCostmap-Context': 'SUCCESS', 'ClearLocalCostmap-Subtree': 'SUCCESS', 'ComputePathToPose': 'SUCCESS', 'FollowPath': 'SUCCESS', 'GoalUpdated': 'SUCCESS', 'Spin': 'FAILURE', 'Wait': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 71.4%  |  Order-tolerant similarity: 71.4% (Partial Sub-Tree Equivalence)
+  Trace A: ComputePathToPose:SUCCESS -> ComputePathToPose:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPath:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  Trace B: ComputePathToPose:SUCCESS -> ComputePathToPoseRecovery:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPathRecovery:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  First divergence at step 1: A=('RecoveryNode', 'ComputePathToPose', <Status.SUCCESS: 'SUCCESS'>) vs B=('RecoveryNode', 'ComputePathToPoseRecovery', <Status.SUCCESS: 'SUCCESS'>)
+
+==============================================================================
+Entry 321: 
+  Tree A: trees/entry_321_gt.xml
+  Tree B: trees/entry_321_syn.xml
+==============================================================================
+Result: NOT FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 16
+Leaf names considered: GenerateGraspingCandidates, ObjectCloudExtraction, TableTopClustering, TableTopSegmentation
+Average step accuracy: 60.8%  (worst scenario: 50.0%)
+Average order-tolerant similarity: 60.8%  (worst scenario: 50.0%)
+Equivalence tier (worst-case): 🔵 Partial Sub-Tree Equivalence
+  Shared common behavioral patterns or localized routines, but diverge globally -- identical isolated sub-trees wrapped inside different global priority structures.
+  Typical use case: Assessing skill reuse or modularity in evolutionary robotics.
+
+Showing 3 of 16 mismatching scenario(s):
+
+Scenario: {'GenerateGraspingCandidates': 'SUCCESS', 'ObjectCloudExtraction': 'SUCCESS', 'TableTopClustering': 'SUCCESS', 'TableTopSegmentation': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 62.5%  |  Order-tolerant similarity: 62.5% (Partial Sub-Tree Equivalence)
+  Trace A: TableTopSegmentation:SUCCESS -> RetryUntilSuccesful:SUCCESS -> ObjectCloudExtraction:SUCCESS -> DesiredObjectEntryCheck:SUCCESS -> TableTopClustering:SUCCESS -> ConditionalSequence:SUCCESS -> GenerateGraspingCandidates:SUCCESS -> Sequence:SUCCESS
+  Trace B: TableTopSegmentation:SUCCESS -> RetryUntilSuccessful:SUCCESS -> ObjectCloudExtraction:SUCCESS -> ObjectExtractionCondition:SUCCESS -> TableTopClustering:SUCCESS -> ConditionalSequence:SUCCESS -> GenerateGraspingCandidates:SUCCESS -> GraspGenerationSequence:SUCCESS
+  First divergence at step 1: A=('RetryUntilSuccesful', 'RetryUntilSuccesful', <Status.SUCCESS: 'SUCCESS'>) vs B=('RetryUntilSuccessful', 'RetryUntilSuccessful', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'GenerateGraspingCandidates': 'SUCCESS', 'ObjectCloudExtraction': 'SUCCESS', 'TableTopClustering': 'SUCCESS', 'TableTopSegmentation': 'FAILURE'}
+  Tree A final status: FAILURE
+  Tree B final status: FAILURE
+  Step accuracy: 66.7%  |  Order-tolerant similarity: 66.7% (Partial Sub-Tree Equivalence)
+  Trace A: TableTopSegmentation:FAILURE -> RetryUntilSuccesful:FAILURE -> Sequence:FAILURE
+  Trace B: TableTopSegmentation:FAILURE -> RetryUntilSuccessful:FAILURE -> GraspGenerationSequence:FAILURE
+  First divergence at step 1: A=('RetryUntilSuccesful', 'RetryUntilSuccesful', <Status.FAILURE: 'FAILURE'>) vs B=('RetryUntilSuccessful', 'RetryUntilSuccessful', <Status.FAILURE: 'FAILURE'>)
+
+Scenario: {'GenerateGraspingCandidates': 'SUCCESS', 'ObjectCloudExtraction': 'SUCCESS', 'TableTopClustering': 'FAILURE', 'TableTopSegmentation': 'SUCCESS'}
+  Tree A final status: FAILURE
+  Tree B final status: FAILURE
+  Step accuracy: 57.1%  |  Order-tolerant similarity: 57.1% (Partial Sub-Tree Equivalence)
+  Trace A: TableTopSegmentation:SUCCESS -> RetryUntilSuccesful:SUCCESS -> ObjectCloudExtraction:SUCCESS -> DesiredObjectEntryCheck:SUCCESS -> TableTopClustering:FAILURE -> ConditionalSequence:FAILURE -> Sequence:FAILURE
+  Trace B: TableTopSegmentation:SUCCESS -> RetryUntilSuccessful:SUCCESS -> ObjectCloudExtraction:SUCCESS -> ObjectExtractionCondition:SUCCESS -> TableTopClustering:FAILURE -> ConditionalSequence:FAILURE -> GraspGenerationSequence:FAILURE
+  First divergence at step 1: A=('RetryUntilSuccesful', 'RetryUntilSuccesful', <Status.SUCCESS: 'SUCCESS'>) vs B=('RetryUntilSuccessful', 'RetryUntilSuccessful', <Status.SUCCESS: 'SUCCESS'>)
+
+==============================================================================
+Entry 402: 
+  Tree A: trees/entry_402_gt.xml
+  Tree B: trees/entry_402_syn.xml
+==============================================================================
+Result: NOT FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 32
+Leaf names considered: AntennaAction, HumanPoseDetect, SaveImageAction, SetBlackboard, TextToSpeechActionClient
+Average step accuracy: 92.3%  (worst scenario: 66.7%)
+Average order-tolerant similarity: 96.0%  (worst scenario: 82.8%)
+Equivalence tier (worst-case): 🟢 Logic & Intent Equivalence
+  Fundamental decision-making logic and final goal are achieved, but paths diverge -- permutations of independent sub-trees or non-deterministic selector choices.
+  Typical use case: RL agents, imitation learning evaluation, autonomous driving simulation.
+
+Showing 3 of 8 mismatching scenario(s):
+
+Scenario: {'AntennaAction': 'SUCCESS', 'HumanPoseDetect': 'SUCCESS', 'SaveImageAction': 'SUCCESS', 'SetBlackboard': 'SUCCESS', 'TextToSpeechActionClient': 'SUCCESS'}
+  Tree A final status: RUNNING
+  Tree B final status: RUNNING
+  Step accuracy: 73.7%  |  Order-tolerant similarity: 86.5% (Logic & Intent Equivalence)
+  Trace A: SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> AntennaAction:SUCCESS -> Sequence:SUCCESS -> HumanPoseDetect:SUCCESS -> AntennaAction:SUCCESS -> SaveImageAction:SUCCESS -> TextToSpeechActionClient:SUCCESS -> AntennaAction:SUCCESS -> Sequence:SUCCESS -> ForceSuccess:SUCCESS -> SetBlackboard:SUCCESS -> Delay:SUCCESS -> Sequence:SUCCESS -> Sequence:SUCCESS -> KeepRunningUntilFailure:RUNNING -> Sequence:RUNNING
+  Trace B: SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> AntennaAction:SUCCESS -> SetupExpectationsAndIndicators:SUCCESS -> HumanPoseDetect:SUCCESS -> AntennaAction:SUCCESS -> SaveImageAction:SUCCESS -> TextToSpeechActionClient:SUCCESS -> AntennaAction:SUCCESS -> DetectLogAndFeedback:SUCCESS -> ForceSuccess:SUCCESS -> SetBlackboard:SUCCESS -> Delay:SUCCESS -> SetBlackboard:SUCCESS -> KeepRunningUntilFailure:RUNNING -> DelayAndLoop:RUNNING -> DetectAndLogEvidence:RUNNING -> SocialPerceptionMission:RUNNING
+  First divergence at step 14: A=('Sequence', 'Sequence', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'SetBlackboard', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'AntennaAction': 'SUCCESS', 'HumanPoseDetect': 'SUCCESS', 'SaveImageAction': 'SUCCESS', 'SetBlackboard': 'SUCCESS', 'TextToSpeechActionClient': 'FAILURE'}
+  Tree A final status: RUNNING
+  Tree B final status: RUNNING
+  Step accuracy: 72.2%  |  Order-tolerant similarity: 85.7% (Logic & Intent Equivalence)
+  Trace A: SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> AntennaAction:SUCCESS -> Sequence:SUCCESS -> HumanPoseDetect:SUCCESS -> AntennaAction:SUCCESS -> SaveImageAction:SUCCESS -> TextToSpeechActionClient:FAILURE -> Sequence:FAILURE -> ForceSuccess:SUCCESS -> SetBlackboard:SUCCESS -> Delay:SUCCESS -> Sequence:SUCCESS -> Sequence:SUCCESS -> KeepRunningUntilFailure:RUNNING -> Sequence:RUNNING
+  Trace B: SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> AntennaAction:SUCCESS -> SetupExpectationsAndIndicators:SUCCESS -> HumanPoseDetect:SUCCESS -> AntennaAction:SUCCESS -> SaveImageAction:SUCCESS -> TextToSpeechActionClient:FAILURE -> DetectLogAndFeedback:FAILURE -> ForceSuccess:SUCCESS -> SetBlackboard:SUCCESS -> Delay:SUCCESS -> SetBlackboard:SUCCESS -> KeepRunningUntilFailure:RUNNING -> DelayAndLoop:RUNNING -> DetectAndLogEvidence:RUNNING -> SocialPerceptionMission:RUNNING
+  First divergence at step 13: A=('Sequence', 'Sequence', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'SetBlackboard', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'AntennaAction': 'SUCCESS', 'HumanPoseDetect': 'SUCCESS', 'SaveImageAction': 'FAILURE', 'SetBlackboard': 'SUCCESS', 'TextToSpeechActionClient': 'SUCCESS'}
+  Tree A final status: RUNNING
+  Tree B final status: RUNNING
+  Step accuracy: 70.6%  |  Order-tolerant similarity: 84.8% (Logic & Intent Equivalence)
+  Trace A: SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> AntennaAction:SUCCESS -> Sequence:SUCCESS -> HumanPoseDetect:SUCCESS -> AntennaAction:SUCCESS -> SaveImageAction:FAILURE -> Sequence:FAILURE -> ForceSuccess:SUCCESS -> SetBlackboard:SUCCESS -> Delay:SUCCESS -> Sequence:SUCCESS -> Sequence:SUCCESS -> KeepRunningUntilFailure:RUNNING -> Sequence:RUNNING
+  Trace B: SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> SetBlackboard:SUCCESS -> AntennaAction:SUCCESS -> SetupExpectationsAndIndicators:SUCCESS -> HumanPoseDetect:SUCCESS -> AntennaAction:SUCCESS -> SaveImageAction:FAILURE -> DetectLogAndFeedback:FAILURE -> ForceSuccess:SUCCESS -> SetBlackboard:SUCCESS -> Delay:SUCCESS -> SetBlackboard:SUCCESS -> KeepRunningUntilFailure:RUNNING -> DelayAndLoop:RUNNING -> DetectAndLogEvidence:RUNNING -> SocialPerceptionMission:RUNNING
+  First divergence at step 12: A=('Sequence', 'Sequence', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'SetBlackboard', <Status.SUCCESS: 'SUCCESS'>)
+
+==============================================================================
+Entry 493: 
+  Tree A: trees/entry_493_gt.xml
+  Tree B: trees/entry_493_syn.xml
+==============================================================================
+Result: NOT FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 512
+Leaf names considered: BackUp, InitialPoseReceivedCondition, IsLocalized, IsLocalizedCondition, Spin, globalLocalizationServiceRequest, initialPoseReceived, retry_client_request, retry_localization
+Average step accuracy: 2.3%  (worst scenario: 0.0%)
+Average order-tolerant similarity: 3.7%  (worst scenario: 0.0%)
+Equivalence tier (worst-case): ⚫ Behavioral Divergence
+  Independent behaviors with no meaningful trace correlation -- different action nodes triggered under the same conditions.
+  Typical use case: Comparing entirely distinct agent personalities or unaligned models.
+
+Showing 3 of 512 mismatching scenario(s):
+
+Scenario: {'BackUp': 'SUCCESS', 'InitialPoseReceivedCondition': 'SUCCESS', 'IsLocalized': 'SUCCESS', 'IsLocalizedCondition': 'SUCCESS', 'Spin': 'SUCCESS', 'globalLocalizationServiceRequest': 'SUCCESS', 'initialPoseReceived': 'SUCCESS', 'retry_client_request': 'SUCCESS', 'retry_localization': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 0.0%  |  Order-tolerant similarity: 0.0% (Behavioral Divergence)
+  Trace A: initialPoseReceived:SUCCESS -> root_AutoLocalization:SUCCESS
+  Trace B: InitialPoseReceivedCondition:SUCCESS -> AcceptInitialOrSelfLocalize:SUCCESS -> RetryUntilSuccessful:SUCCESS -> IsLocalizedCondition:SUCCESS -> LocalizedOrRecover:SUCCESS -> IsLocalizedCondition:SUCCESS -> ConfirmLocalizedOrRecover:SUCCESS -> AutoLocalizationMission:SUCCESS
+  First divergence at step 0: A=('Leaf', 'initialPoseReceived', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'InitialPoseReceivedCondition', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'BackUp': 'SUCCESS', 'InitialPoseReceivedCondition': 'SUCCESS', 'IsLocalized': 'SUCCESS', 'IsLocalizedCondition': 'SUCCESS', 'Spin': 'SUCCESS', 'globalLocalizationServiceRequest': 'SUCCESS', 'initialPoseReceived': 'SUCCESS', 'retry_client_request': 'SUCCESS', 'retry_localization': 'FAILURE'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 0.0%  |  Order-tolerant similarity: 0.0% (Behavioral Divergence)
+  Trace A: initialPoseReceived:SUCCESS -> root_AutoLocalization:SUCCESS
+  Trace B: InitialPoseReceivedCondition:SUCCESS -> AcceptInitialOrSelfLocalize:SUCCESS -> RetryUntilSuccessful:SUCCESS -> IsLocalizedCondition:SUCCESS -> LocalizedOrRecover:SUCCESS -> IsLocalizedCondition:SUCCESS -> ConfirmLocalizedOrRecover:SUCCESS -> AutoLocalizationMission:SUCCESS
+  First divergence at step 0: A=('Leaf', 'initialPoseReceived', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'InitialPoseReceivedCondition', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'BackUp': 'SUCCESS', 'InitialPoseReceivedCondition': 'SUCCESS', 'IsLocalized': 'SUCCESS', 'IsLocalizedCondition': 'SUCCESS', 'Spin': 'SUCCESS', 'globalLocalizationServiceRequest': 'SUCCESS', 'initialPoseReceived': 'SUCCESS', 'retry_client_request': 'FAILURE', 'retry_localization': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 0.0%  |  Order-tolerant similarity: 0.0% (Behavioral Divergence)
+  Trace A: initialPoseReceived:SUCCESS -> root_AutoLocalization:SUCCESS
+  Trace B: InitialPoseReceivedCondition:SUCCESS -> AcceptInitialOrSelfLocalize:SUCCESS -> RetryUntilSuccessful:SUCCESS -> IsLocalizedCondition:SUCCESS -> LocalizedOrRecover:SUCCESS -> IsLocalizedCondition:SUCCESS -> ConfirmLocalizedOrRecover:SUCCESS -> AutoLocalizationMission:SUCCESS
+  First divergence at step 0: A=('Leaf', 'initialPoseReceived', <Status.SUCCESS: 'SUCCESS'>) vs B=('Leaf', 'InitialPoseReceivedCondition', <Status.SUCCESS: 'SUCCESS'>)
+
+==============================================================================
+Entry 511: 
+  Tree A: trees/entry_511_gt.xml
+  Tree B: trees/entry_511_syn.xml
+==============================================================================
+Result: NOT FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 256
+Leaf names considered: ClearEntireCostmap, ClearGlobalCostmap-Context, ClearLocalCostmap-Context, ComputePathToPose, FollowPath, GoalUpdated, Spin, Wait
+Average step accuracy: 50.7%  (worst scenario: 12.5%)
+Average order-tolerant similarity: 60.6%  (worst scenario: 41.9%)
+Equivalence tier (worst-case): ⚫ Behavioral Divergence
+  Independent behaviors with no meaningful trace correlation -- different action nodes triggered under the same conditions.
+  Typical use case: Comparing entirely distinct agent personalities or unaligned models.
+
+Showing 3 of 256 mismatching scenario(s):
+
+Scenario: {'ClearEntireCostmap': 'SUCCESS', 'ClearGlobalCostmap-Context': 'SUCCESS', 'ClearLocalCostmap-Context': 'SUCCESS', 'ComputePathToPose': 'SUCCESS', 'FollowPath': 'SUCCESS', 'GoalUpdated': 'SUCCESS', 'Spin': 'SUCCESS', 'Wait': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 57.1%  |  Order-tolerant similarity: 57.1% (Partial Sub-Tree Equivalence)
+  Trace A: ComputePathToPose:SUCCESS -> ComputePathToPose:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPath:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  Trace B: ComputePathToPose:SUCCESS -> ComputePathToPoseRecovery:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPathRecovery:SUCCESS -> NavigateWithReplanning:SUCCESS -> PipelineSequenceRecovery:SUCCESS
+  First divergence at step 1: A=('RecoveryNode', 'ComputePathToPose', <Status.SUCCESS: 'SUCCESS'>) vs B=('RecoveryNode', 'ComputePathToPoseRecovery', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'ClearEntireCostmap': 'SUCCESS', 'ClearGlobalCostmap-Context': 'SUCCESS', 'ClearLocalCostmap-Context': 'SUCCESS', 'ComputePathToPose': 'SUCCESS', 'FollowPath': 'SUCCESS', 'GoalUpdated': 'SUCCESS', 'Spin': 'SUCCESS', 'Wait': 'FAILURE'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 57.1%  |  Order-tolerant similarity: 57.1% (Partial Sub-Tree Equivalence)
+  Trace A: ComputePathToPose:SUCCESS -> ComputePathToPose:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPath:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  Trace B: ComputePathToPose:SUCCESS -> ComputePathToPoseRecovery:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPathRecovery:SUCCESS -> NavigateWithReplanning:SUCCESS -> PipelineSequenceRecovery:SUCCESS
+  First divergence at step 1: A=('RecoveryNode', 'ComputePathToPose', <Status.SUCCESS: 'SUCCESS'>) vs B=('RecoveryNode', 'ComputePathToPoseRecovery', <Status.SUCCESS: 'SUCCESS'>)
+
+Scenario: {'ClearEntireCostmap': 'SUCCESS', 'ClearGlobalCostmap-Context': 'SUCCESS', 'ClearLocalCostmap-Context': 'SUCCESS', 'ComputePathToPose': 'SUCCESS', 'FollowPath': 'SUCCESS', 'GoalUpdated': 'SUCCESS', 'Spin': 'FAILURE', 'Wait': 'SUCCESS'}
+  Tree A final status: SUCCESS
+  Tree B final status: SUCCESS
+  Step accuracy: 57.1%  |  Order-tolerant similarity: 57.1% (Partial Sub-Tree Equivalence)
+  Trace A: ComputePathToPose:SUCCESS -> ComputePathToPose:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPath:SUCCESS -> NavigateWithReplanning:SUCCESS -> NavigateRecovery:SUCCESS
+  Trace B: ComputePathToPose:SUCCESS -> ComputePathToPoseRecovery:SUCCESS -> RateController:SUCCESS -> FollowPath:SUCCESS -> FollowPathRecovery:SUCCESS -> NavigateWithReplanning:SUCCESS -> PipelineSequenceRecovery:SUCCESS
+  First divergence at step 1: A=('RecoveryNode', 'ComputePathToPose', <Status.SUCCESS: 'SUCCESS'>) vs B=('RecoveryNode', 'ComputePathToPoseRecovery', <Status.SUCCESS: 'SUCCESS'>)
+
+==============================================================================
+Entry 552: 
+  Tree A: trees/entry_552_gt.xml
+  Tree B: trees/entry_552_syn.xml
+==============================================================================
+Result: FULLY EQUIVALENT
+Mode: exhaustive  |  Scenarios checked: 128
+Leaf names considered: HeadControl, MoveBase, Pause, ScanShelves, TorsoControl, TraySetLoci, TrayUpdatePlanningScene
+Average step accuracy: 100.0%  (worst scenario: 100.0%)
+Average order-tolerant similarity: 100.0%  (worst scenario: 100.0%)
+Equivalence tier (worst-case): 🔴 Strict Trace Equivalence
+  Identical execution traces across all tick intervals -- exact step-by-step match of active nodes, return statuses, and sequence.
+  Typical use case: Safety-critical robotics, medical systems, deterministic regression testing.

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Sequence name="GraspGenerationSequence">
+            <RetryUntilSuccessful num_attempts="{max_attempts}">
+                <TableTopSegmentation table_cloud="{table_cloud}" table_height="{table_height}"/>
+            </RetryUntilSuccessful>
+            <Sequence name="ConditionalSequence">
+                <ObjectExtractionCondition value="{blackboard_value}" rule="{rule}">
+                    <ObjectCloudExtraction input_cloud="{table_cloud}" object_cloud="{object_cloud}"/>
+                </ObjectExtractionCondition>
+                <TableTopClustering object_cloud="{object_cloud}" clustered_cloud="{object_cloud}"/>
+            </Sequence>
+            <GenerateGraspingCandidates object_cloud="{object_cloud}" table_height="{table_height}" transformed_cloud="{transformed_cloud}" grasp_candidates="{grasp_candidates}"/>
+        </Sequence>
+    </BehaviorTree>
+</root>

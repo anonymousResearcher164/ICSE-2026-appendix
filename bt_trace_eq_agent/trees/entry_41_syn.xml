@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+        <Repeat num_cycles="{num_cycles}">
+            <Sequence name="LTLNavigationCycle">
+                <LTLPreCheck current_ltl_state="{current_ltl_state}" desired_state_sequence="{desired_state_sequence}"/>
+                <ReactiveSequence name="LocomotionAndMove">
+                    <Fallback name="EnsureLocomotionReady">
+                        <LocomotionStatusCheck/>
+                        <Sequence name="RecoverLocomotion">
+                            <RecoveryStand/>
+                            <Delay delay_msec="{locomotion_start_delay_msec}">
+                                <LocomotionStart/>
+                            </Delay>
+                        </Sequence>
+                    </Fallback>
+                    <Fallback name="ExecuteMove">
+                        <MoveAction nav_goal="{nav_goal}" move_base_status="{move_base_status}"/>
+                    </Fallback>
+                </ReactiveSequence>
+                <UpdateLTL action_sequence="{action_sequence}" nav_goal="{nav_goal}"/>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+</root>
