@@ -1,0 +1,424 @@
+{
+  "name": "BT node dictionary",
+  "caption": "Dictionary for interpreting behavior control and modification",
+  "source": "From robotic mission descriptions to specifications: there and back again (ICSE 2026)",
+  "placeholders": {
+    "[Action]": "a child node name; if it is a standard ROS action, controller or decorator, refer to it as ROS action [name], else as custom action [name].",
+    "[Actions]": "a series of child node names, listed by name.",
+    "[Condition]": "a check that returns success, rendered as [condition ID] is true.",
+    "[!Condition]": "a check that returns failure, rendered as [condition ID] is false.",
+    "[Subtree ID]": "the ID of a referenced behavior tree, rendered as subtree [ID].",
+    "[port:name]": "the literal value of the node's name XML attribute, rendered as follows. An integer appears verbatim (up to 5 attempts). A value of -1 is rendered by its meaning rather than quoted: for an attempt, retry or cycle count as the unbounded reading (indefinitely), and for a Parallel threshold as all children. A blackboard remapping \\texttt{{key}} is rendered as a value read from [key] at runtime, never silently dropped. When the attribute is absent, the node's documented default is stated and named as a default (the default of 1 retry). Durations may be converted to the unit a reader expects, so delay_msec=\"1000\" may be rendered as 1 second."
+  },
+  "entry_count": 32,
+  "entries": [
+    {
+      "label": "Sequence",
+      "nodes": [
+        "Sequence"
+      ],
+      "description": "Execute a series of child nodes in order from left to right.",
+      "template": "Execute the following actions ([Actions]) in order and stop the sequence if any action fails.",
+      "placeholders": [
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "SequenceWithMemory, SequenceStar",
+      "nodes": [
+        "SequenceWithMemory",
+        "SequenceStar"
+      ],
+      "description": "Execute a series of child nodes in order, from left to right, remembering which ones have already succeeded.",
+      "template": "Execute the following actions ([Actions]) in sequence. If an action fails, stop the sequence; on the next execution, resume from the failed action without repeating the actions that already succeeded.",
+      "placeholders": [
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Delay",
+      "nodes": [
+        "Delay"
+      ],
+      "description": "Wait for a given duration before executing the associated child node.",
+      "template": "Wait for the specified delay, then execute [Action] and return its result.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "PipelineSequence",
+      "nodes": [
+        "PipelineSequence"
+      ],
+      "description": "Execute a series of child nodes in order from left to right and advance on running or success.",
+      "template": "Execute the following actions ([Actions]) in order and stop the sequence if any action fails. While an action is running or has succeeded, go to the next action.",
+      "placeholders": [
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "ConditionalSequence",
+      "nodes": [
+        "ConditionalSequence"
+      ],
+      "description": "Execute a series of child nodes in order from left to right and re-check a condition for each node.",
+      "template": "Execute the following actions ([Actions]) in order while checking a condition for each action. If [Condition] move to the next action. Else if [!Condition], end the sequence.",
+      "placeholders": [
+        "[!Condition]",
+        "[Actions]",
+        "[Condition]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "WhileDoElse",
+      "nodes": [
+        "WhileDoElse"
+      ],
+      "description": "Execute a node while a condition is true else execute and alternative node if that same condition fails.",
+      "template": "While [Condition], do [Action]. If [!Condition], execute the alternative.",
+      "placeholders": [
+        "[!Condition]",
+        "[Action]",
+        "[Condition]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Loop",
+      "nodes": [
+        "Loop"
+      ],
+      "description": "Repeatedly execute a child node for a specified number of iterations, until a specific status is returned or forever.",
+      "template": "Execute [Action] continuously until it fails or succeeds. Else keep executing [Action] forever.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Fallback",
+      "nodes": [
+        "Fallback"
+      ],
+      "description": "Execute child nodes sequentially from left to right, until one succeeds or all fail.",
+      "template": "Execute the following actions ([Actions]) consecutively. If any action ([Action]) fails, move to the next action until an action succeeds. If no action succeeds, the execution fails.",
+      "placeholders": [
+        "[Action]",
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "FallbackStar",
+      "nodes": [
+        "FallbackStar"
+      ],
+      "description": "Execute child nodes sequentially from left to right, until one succeeds. If all fail retry again from the beginning.",
+      "template": "Execute the following actions ([Actions]) consecutively. If any action ([Action]) fails, move to the next action until an action succeeds. If no action succeeds, start all over again until an action succeeds.",
+      "placeholders": [
+        "[Action]",
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "ForceSuccess",
+      "nodes": [
+        "ForceSuccess"
+      ],
+      "description": "Force child node to succeed regardless of the conditions.",
+      "template": "Execute [Action] and make sure it always succeeds.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "ForceFailure",
+      "nodes": [
+        "ForceFailure"
+      ],
+      "description": "Force child node to fail regardless of the conditions.",
+      "template": "Execute [Action] and make sure it always fails.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "RepeatUntilSuccess",
+      "nodes": [
+        "RepeatUntilSuccess"
+      ],
+      "description": "Repeatedly execute child node until its successful.",
+      "template": "Continuously execute [Action] until it succeeds.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Retry",
+      "nodes": [
+        "Retry"
+      ],
+      "description": "Re-execute a child node for either a fixed number of times or until its successful.",
+      "template": "Execute [Action]. If it fails, re-execute it either for a specified number of times or until it succeeds.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "ReactiveSequence",
+      "nodes": [
+        "ReactiveSequence"
+      ],
+      "description": "Execute a series of child nodes in sequence. While a node is running, re-evaluate previous child nodes.",
+      "template": "Execute the following actions ([Actions]) in sequence. If [Action] fails, stop execution. While [Action] is still running, re-evaluate previous actions.",
+      "placeholders": [
+        "[Action]",
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "ReactiveFallback",
+      "nodes": [
+        "ReactiveFallback"
+      ],
+      "description": "Execute a series of child nodes in order from left to right. While a later node is running, restart evaluation from node 0.",
+      "template": "Execute the following actions [Actions] in order. If [Action] succeeds, stop execution. Else keep executing and re-evaluating previous actions whenever an action is running.",
+      "placeholders": [
+        "[Action]",
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Repeat",
+      "nodes": [
+        "Repeat"
+      ],
+      "description": "Execute a set of child nodes multiple times.",
+      "template": "Execute [Action] for a set number of times or infinitely.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Inverter",
+      "nodes": [
+        "Inverter"
+      ],
+      "description": "Negate a the execution outcome of a child node.",
+      "template": "Execute inverted [Action]. If [Action] succeeds, reverse it to fail. Else if [Action] fails, reverse it to succeed.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "KeepRunningUntilFailure",
+      "nodes": [
+        "KeepRunningUntilFailure"
+      ],
+      "description": "Keep executing child node as long as it does not fail.",
+      "template": "Execute [Action]. If [Action] succeeds, restart it. Else if [Action] fails, stop looping and continue execution.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Switch (Switch2–Switch6)",
+      "nodes": [
+        "Switch2",
+        "Switch3",
+        "Switch4",
+        "Switch5",
+        "Switch6"
+      ],
+      "description": "Execute child node based on blackboard value.",
+      "template": "Read blackboard value and compare it against a set of cases. If a case matches the blackboard value, execute corresponding [Action]. Else if no case matches, execute default [Action].",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "Parallel, ParallelNode",
+      "nodes": [
+        "Parallel",
+        "ParallelNode"
+      ],
+      "description": "Execute multiple child nodes simultaneously, ensuring all are completed successfully.",
+      "template": "Execute the following actions ([Actions]) simultaneously. If either a success threshold is reached or all actions succeed, the execution was successful. Else if any action fails, the execution fails.",
+      "placeholders": [
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "BlackboardCheckValue (Int, Double, String)",
+      "nodes": [
+        "BlackboardCheckInt",
+        "BlackboardCheckDouble",
+        "BlackboardCheckString"
+      ],
+      "description": "Check whether a value stored on the blackboard matches the expected value.",
+      "template": "Find a value on the blackboard and check if it matches a given rule.",
+      "placeholders": [],
+      "ports": []
+    },
+    {
+      "label": "RetryUntilSuccessful, RetryUntilSuccesful",
+      "nodes": [
+        "RetryUntilSuccessful",
+        "RetryUntilSuccesful"
+      ],
+      "description": "Continuously try to re-execute a child node until it succeeds, up to a bounded number of attempts.",
+      "template": "Execute [Action]. If it fails, re-execute it up to [port:num_attempts] attempts in total. If it has still not succeeded, the execution fails. If [port:num_attempts] is -1, keep retrying indefinitely.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": [
+        "num_attempts"
+      ]
+    },
+    {
+      "label": "RecoveryNode",
+      "nodes": [
+        "RecoveryNode"
+      ],
+      "description": "Try to run the primary child node. If it fails, run the next child node to recover and try the primary child node again, for a bounded number of retries.",
+      "template": "Execute main [Action]. If it fails, execute recovery action ([Action]), then retry main [Action]. Repeat this recovery-and-retry cycle up to [port:number_of_retries] times. If main [Action] still has not succeeded after that many retries, or if recovery action ([Action]) fails, stop execution.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": [
+        "number_of_retries"
+      ]
+    },
+    {
+      "label": "Timeout",
+      "nodes": [
+        "Timeout"
+      ],
+      "description": "Execute child node, but only for a maximum duration.",
+      "template": "If [Action] fails to execute within specified time limit, interrupt the execution and stop it.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "ManualSelector",
+      "nodes": [
+        "ManualSelector"
+      ],
+      "description": "Let a human operator choose at runtime which child node to execute.",
+      "template": "Ask the operator which of the following actions ([Actions]) to execute, then execute the selected [Action] and return its result.",
+      "placeholders": [
+        "[Action]",
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "RoundRobin",
+      "nodes": [
+        "RoundRobin"
+      ],
+      "description": "Execute child nodes one at a time in rotating order, resuming from the child after the one last executed on the previous tick.",
+      "template": "Execute the next action in the rotation ([Actions]). If [Action] succeeds, stop execution and continue from the following action next time. If [Action] fails, move to the next action. If all actions fail in one full rotation, the execution fails.",
+      "placeholders": [
+        "[Action]",
+        "[Actions]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "IfThenElse",
+      "nodes": [
+        "IfThenElse"
+      ],
+      "description": "Execute a condition child and, depending on its result, execute either the second or the third child node.",
+      "template": "If [Condition], execute [Action]. Else if [!Condition], execute the alternative [Action]. If no alternative is given, the execution fails.",
+      "placeholders": [
+        "[!Condition]",
+        "[Action]",
+        "[Condition]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "RateController",
+      "nodes": [
+        "RateController"
+      ],
+      "description": "Execute a child node at most at a given frequency.",
+      "template": "Execute [Action] at a fixed rate. If the specified period has not yet elapsed, wait before executing [Action] again.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "GoalUpdater",
+      "nodes": [
+        "GoalUpdater"
+      ],
+      "description": "Update the current goal before executing a child node.",
+      "template": "Check for a new goal. If a new goal is available, replace the current goal with it, then execute [Action].",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "DistanceController",
+      "nodes": [
+        "DistanceController"
+      ],
+      "description": "Execute a child node each time the robot has travelled a given distance.",
+      "template": "Execute [Action] once the robot has moved the specified distance since the last execution. Else do not re-execute [Action].",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "SpeedController",
+      "nodes": [
+        "SpeedController"
+      ],
+      "description": "Execute a child node at a frequency that scales with the robot's speed.",
+      "template": "Execute [Action] more often when the robot moves faster and less often when it moves slower, within a minimum and maximum rate.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
+      "label": "SubTree",
+      "nodes": [
+        "SubTree"
+      ],
+      "description": "Execute another behavior tree referenced by its ID.",
+      "template": "Execute the subtree [Subtree ID] and return its result as if it were a single [Action].",
+      "placeholders": [
+        "[Action]",
+        "[Subtree ID]"
+      ],
+      "ports": []
+    }
+  ]
+}
