@@ -19,7 +19,7 @@ feedback without having to open the file.
 
 from pathlib import Path
 
-from bt_trace_equivalence import BTEquivalenceAgent
+from bt_trace_equivalence import BTEquivalenceChecker
 
 # Where the full report gets written. Pass a different path to run_case()
 # calls below if you want per-case files instead of one combined report.
@@ -58,8 +58,8 @@ def run_case(title: str, path_a: str, path_b: str, output_path: str = DEFAULT_OU
     try:
         xml_a = read_xml(path_a)
         xml_b = read_xml(path_b)
-        agent = BTEquivalenceAgent()
-        report = agent.check(xml_a, xml_b, mode="exhaustive")
+        checker = BTEquivalenceChecker()
+        report = checker.check(xml_a, xml_b, mode="exhaustive")
     except Exception as exc:  # noqa: BLE001 -- intentionally broad: keep the batch alive
         section_text = (
             "=" * 78 + "\n" +
