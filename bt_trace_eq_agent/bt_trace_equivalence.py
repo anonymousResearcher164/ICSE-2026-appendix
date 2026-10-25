@@ -256,6 +256,7 @@ def parse_bt_xml(xml_text: str) -> BTNode:
     """
     root_elem = ET.fromstring(xml_text)
 
+    subtrees: Dict[str, ET.Element] = {}
     if root_elem.tag != "root":
         # Allow passing a bare <BehaviorTree> fragment too
         bt_elem = root_elem if root_elem.tag == "BehaviorTree" else None
@@ -264,12 +265,24 @@ def parse_bt_xml(xml_text: str) -> BTNode:
         bt_elems = root_elem.findall("BehaviorTree")
         if not bt_elems:
             raise ValueError("No <BehaviorTree> element found in XML")
+        # Every named <BehaviorTree> in the file is a candidate subtree
+        # definition, including the main one (so a self-reference is caught
+        # as a cycle rather than recursing forever).
+        for b in bt_elems:
+            bt_id = b.attrib.get("ID")
+            if bt_id:
+                subtrees[bt_id] = b
         bt_elem = None
         if main_id:
-            for b in bt_elems:
-                if b.attrib.get("ID") == main_id:
-                    bt_elem = b
-                    break
+            bt_elem = subtrees.get(main_id)
+            if bt_elem is None:
+                # Falling back to the first tree here would silently compare
+                # a tree the file never asked to execute.
+                available = ", ".join(sorted(subtrees)) or "(none are named)"
+                raise ValueError(
+                    f'main_tree_to_execute="{main_id}" does not match any '
+                    f"<BehaviorTree ID=...> in this file. Available: {available}."
+                )
         if bt_elem is None:
             bt_elem = bt_elems[0]
 
@@ -281,10 +294,75 @@ def parse_bt_xml(xml_text: str) -> BTNode:
     if not real_children:
         raise ValueError("<BehaviorTree> element has no child nodes")
 
-    return _elem_to_node(real_children[0])
+    own_id = bt_elem.attrib.get("ID")
+    return _elem_to_node(real_children[0], subtrees,
+                         (own_id,) if own_id else ())
 
 
-def _elem_to_node(elem: ET.Element) -> BTNode:
+def _subtree_ref(elem: ET.Element, subtrees: Dict[str, ET.Element]) -> Optional[str]:
+    """
+    If `elem` is a childless reference to a <BehaviorTree> defined in the
+    same file, return that tree's ID; otherwise None.
+
+    Two conventions are recognized, matching BehaviorTree.CPP:
+      <SubTree ID="Helper"/>   -- explicit reference (v3 and v4)
+      <Helper/>                -- implicit reference by tag (v4)
+
+    A reference with no matching definition in this file is NOT a subtree
+    ref: it stays an opaque leaf whose outcome is sampled, which is the
+    right model for a subtree registered externally (in C++) and the
+    behavior the shipped dataset relies on.
+    """
+    if list(elem):            # has children -> an inlined tree, not a ref
+        return None
+    if elem.tag == "SubTree":
+        ref = elem.attrib.get("ID")
+        return ref if ref in subtrees else None
+    return elem.tag if elem.tag in subtrees else None
+
+
+def _elem_to_node(
+    elem: ET.Element,
+    subtrees: Optional[Dict[str, ET.Element]] = None,
+    _stack: Tuple[str, ...] = (),
+) -> BTNode:
+    subtrees = subtrees or {}
+
+    # Expand a subtree reference in place, replacing the reference node with
+    # the referenced tree's own root. Expanding (rather than treating the
+    # reference as an opaque leaf) is what makes an inlined tree and a
+    # reference to the same tree compare as equivalent -- and stops two
+    # trees that reference the same ID with *different* definitions from
+    # being reported equivalent on the strength of the shared name alone.
+    ref = _subtree_ref(elem, subtrees)
+    if ref is not None:
+        if ref in _stack:
+            raise ValueError(
+                f"Recursive subtree reference: {' -> '.join(_stack + (ref,))}. "
+                f"A tree that references itself has no finite single-tick "
+                f"expansion."
+            )
+        definition_children = list(subtrees[ref])
+        if not definition_children:
+            raise ValueError(
+                f'<BehaviorTree ID="{ref}"> is referenced but has no child nodes'
+            )
+        return _elem_to_node(definition_children[0], subtrees, _stack + (ref,))
+
+    # A recognized control/decorator tag with no children is malformed. It
+    # is caught here rather than at tick time because is_leaf() is
+    # structural and checked first: <Sequence/> would otherwise become a
+    # *leaf named "Sequence"*, entering the leaf space as a sampled
+    # pseudo-action instead of being reported. (This is also what made the
+    # "Decorator ... has no child" guard in _tick_decorator unreachable.)
+    if not list(elem) and (elem.tag in BTNode.CONTROL_TAGS
+                           or elem.tag in BTNode.DECORATOR_TAGS):
+        raise ValueError(
+            f"<{elem.tag}> has no children. A control or decorator node needs "
+            f"at least one child; as written it would be indistinguishable "
+            f"from a leaf action named {elem.tag!r}."
+        )
+
     explicit_name = elem.attrib.get("name") or elem.attrib.get("ID")
     name = explicit_name or elem.tag
     node = BTNode(
@@ -294,8 +372,42 @@ def _elem_to_node(elem: ET.Element) -> BTNode:
         has_explicit_name=bool(explicit_name),
     )
     for child in elem:
-        node.children.append(_elem_to_node(child))
+        node.children.append(_elem_to_node(child, subtrees, _stack))
     return node
+
+
+# --------------------------------------------------------------------------- #
+# Port helpers
+# --------------------------------------------------------------------------- #
+
+def _int_port(node: "BTNode", key: str, default: int) -> int:
+    """
+    Read an integer port off a node's attributes.
+
+    BehaviorTree.CPP lets any port be *remapped* to a blackboard entry with
+    the "{key}" syntax (e.g. success_count="{num_ok}"). Such a threshold is
+    only known at runtime, so it cannot be resolved while statically
+    comparing two trees -- int() would otherwise raise an opaque "invalid
+    literal for int() with base 10" that surfaces as a bare PARSE ERROR.
+    Raise something that names the port and says why instead.
+    """
+    raw = node.attrib.get(key)
+    if raw is None:
+        return default
+    raw = raw.strip()
+    if raw.startswith("{") and raw.endswith("}"):
+        raise ValueError(
+            f"<{node.tag}> port {key}=\"{raw}\" is remapped to a blackboard "
+            f"entry, so its value is only known at runtime. This checker "
+            f"compares trees statically and cannot resolve it; replace it "
+            f"with a literal to compare these trees."
+        )
+    try:
+        return int(raw)
+    except ValueError:
+        raise ValueError(
+            f"<{node.tag}> port {key}=\"{raw}\" is not an integer."
+        ) from None
 
 
 # --------------------------------------------------------------------------- #
@@ -432,7 +544,7 @@ class TraceCollectingTicker:
             # bounds this with a retry count across multiple ticks, but for
             # a single simulated tick this one-retry view is the observable
             # behavior.)
-            if len(node.children) < 2:
+            if len(node.children) != 2:
                 raise ValueError(
                     f"RecoveryNode '{node.name}' must have exactly 2 children "
                     f"(main action, recovery action); found {len(node.children)}"
@@ -447,8 +559,15 @@ class TraceCollectingTicker:
         if tag in ("Parallel", "ParallelNode"):
             results = [self.tick(c) for c in node.children]
             n = len(results)
-            success_needed = int(node.attrib.get("success_count", n))
-            failure_needed = int(node.attrib.get("failure_count", 1))
+            success_needed = _int_port(node, "success_count", n)
+            failure_needed = _int_port(node, "failure_count", 1)
+            # BehaviorTree.CPP uses -1 to mean "all children". Left as -1,
+            # the comparison `successes >= -1` is vacuously true and this
+            # node would report SUCCESS even when every child FAILED.
+            if success_needed < 0:
+                success_needed = n
+            if failure_needed < 0:
+                failure_needed = n
             successes = sum(1 for r in results if r == Status.SUCCESS)
             failures = sum(1 for r in results if r == Status.FAILURE)
             if successes >= success_needed:
@@ -714,7 +833,12 @@ def equivalence_tier(similarity: float, is_strict_equivalent: bool = False) -> E
     (the equivalence check's own pass/fail), since that's a stronger and
     more direct signal than re-deriving it from a similarity score.
     """
-    if is_strict_equivalent:
+    # A similarity of exactly 1.0 means the (normalized) traces are
+    # identical as sequences, which is the strict tier. Without this the
+    # loop below -- which skips EQUIVALENCE_SCALE[0] and whose next tier
+    # stops at 0.999999 -- matches nothing and falls through to the
+    # *bottom* tier, reporting perfect agreement as total divergence.
+    if is_strict_equivalent or similarity >= 1.0:
         return EQUIVALENCE_SCALE[0]
     for tier in EQUIVALENCE_SCALE[1:]:
         if tier.low <= similarity <= tier.high:
@@ -855,10 +979,32 @@ class BTEquivalenceChecker:
             mode = "exhaustive" if len(leaves) <= max_exhaustive_leaves else "sample"
 
         if mode == "exhaustive":
+            # The cap applies to an explicit mode="exhaustive" too, not just
+            # to "auto". 2**N scenarios each pay an O(len(A)*len(B)) LCS, so
+            # an unguarded exhaustive run on a wide tree does not fail -- it
+            # just appears to hang. Raising names the knob to turn.
+            if len(leaves) > max_exhaustive_leaves:
+                raise ValueError(
+                    f"Exhaustive mode would enumerate 2**{len(leaves)} = "
+                    f"{2 ** len(leaves):,} scenarios, over the "
+                    f"max_exhaustive_leaves={max_exhaustive_leaves} cap. "
+                    f"Raise max_exhaustive_leaves to accept the cost, or use "
+                    f"mode='sample' (or 'auto') to sample the space instead."
+                )
             scenarios = list(self._enumerate_scenarios(leaves))
         elif mode == "sample":
-            n = min(sample_budget, 2 ** min(len(leaves), 24))
-            scenarios = [self._random_scenario(leaves) for _ in range(n)]
+            space = 2 ** len(leaves) if len(leaves) <= 24 else None
+            if space is not None and space <= sample_budget:
+                # The whole space fits in the budget, so enumerate it. The
+                # previous behavior drew `space` scenarios *with replacement*,
+                # which covers only ~2/3 of the space (11 of 16 distinct
+                # assignments at 4 leaves) while `scenarios_checked` still
+                # reported the full count -- a mismatch confined to an
+                # undrawn scenario was reported as equivalence.
+                scenarios = list(self._enumerate_scenarios(leaves))
+                mode = "exhaustive (full space within sample budget)"
+            else:
+                scenarios = self._sample_distinct(leaves, sample_budget)
         else:
             raise ValueError(f"Unknown mode: {mode!r}")
 
@@ -918,6 +1064,32 @@ class BTEquivalenceChecker:
 
     def _random_scenario(self, leaves: List[str]) -> Scenario:
         return {name: self._rng.choice([Status.SUCCESS, Status.FAILURE]) for name in leaves}
+
+    def _sample_distinct(self, leaves: List[str], budget: int) -> List[Scenario]:
+        """
+        Draw up to `budget` DISTINCT scenarios.
+
+        Sampling with replacement revisits scenarios, so the number of
+        scenarios actually covered is well below the number reported --
+        which turns an unexplored scenario into a false "equivalent"
+        verdict. Returns fewer than `budget` scenarios only if the space
+        is genuinely smaller or repeated draws stop finding new ones.
+        """
+        seen = set()
+        scenarios: List[Scenario] = []
+        # Give up after a run of consecutive repeats rather than spinning
+        # forever once the budget approaches the size of the space.
+        stalls = 0
+        max_stalls = max(1_000, budget)
+        while len(scenarios) < budget and stalls < max_stalls:
+            scenario = self._random_scenario(leaves)
+            key = tuple(scenario[name] for name in leaves)
+            if key in seen:
+                stalls += 1
+                continue
+            seen.add(key)
+            scenarios.append(scenario)
+        return scenarios
 
 
 # --------------------------------------------------------------------------- #
