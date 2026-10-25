@@ -3,7 +3,7 @@
 bt_trace_equivalence.py
 ========================
 
-A small agent that checks whether two behavior trees (BehaviorTree.CPP-style
+A small checker that decides whether two behavior trees (BehaviorTree.CPP-style
 XML) are *execution-trace equivalent*.
 
 Definition used here
@@ -22,7 +22,7 @@ which is what you actually want when comparing a generated tree against
 a reference tree, or two LLM-generated trees against each other.
 
 Because leaf outcomes are not fixed in the XML (conditions/actions are
-implemented in C++ normally), this agent enumerates or samples the leaf
+implemented in C++ normally), this checker enumerates or samples the leaf
 outcome space and checks equivalence scenario-by-scenario. For trees with
 few distinct leaf names this can be exhaustive (2^N scenarios); for larger
 trees it falls back to random sampling with a configurable budget.
@@ -58,10 +58,10 @@ if no such attribute exists).
 
 Usage
 -----
-    from bt_trace_equivalence import BTEquivalenceAgent
+    from bt_trace_equivalence import BTEquivalenceChecker
 
-    agent = BTEquivalenceAgent()
-    report = agent.check(xml_tree_a, xml_tree_b, mode="exhaustive")
+    checker = BTEquivalenceChecker()
+    report = checker.check(xml_tree_a, xml_tree_b, mode="exhaustive")
     print(report.summary())
 
 Or from the command line:
@@ -780,9 +780,9 @@ class EquivalenceReport:
         return "\n".join(lines)
 
 
-class BTEquivalenceAgent:
+class BTEquivalenceChecker:
     """
-    The agent. Parses two BT XML documents, derives the joint leaf-name
+    The checker. Parses two BT XML documents, derives the joint leaf-name
     space, generates scenarios, ticks both trees per scenario, and compares
     traces.
     """
@@ -897,8 +897,8 @@ def main(argv: List[str]) -> int:
     with open(path_b, "r", encoding="utf-8") as f:
         xml_b = f.read()
 
-    agent = BTEquivalenceAgent()
-    report = agent.check(xml_a, xml_b, mode=mode)
+    checker = BTEquivalenceChecker()
+    report = checker.check(xml_a, xml_b, mode=mode)
     print(report.summary())
     return 0 if report.equivalent else 2
 
