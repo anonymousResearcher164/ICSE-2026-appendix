@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action ID="SaySomething" message="Start thinking..."/>
+            <Action ID="ThinkWhatToSay" text="{the_answer}"/>
+            <Action ID="SaySomething" message="{the_answer}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="SaySomething">
+            <input_port default="&quot;Start thinking...&quot;" name="message"/>
+        </Action>
+        <Action ID="ThinkWhatToSay">
+            <output_port default="{the_answer}" name="text"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+
