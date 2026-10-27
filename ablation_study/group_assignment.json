@@ -1,0 +1,69 @@
+{
+  "seed": 42,
+  "sample_pool": "sample_pool",
+  "pool_size": 50,
+  "mode": "copy",
+  "group_sizes": {
+    "G0": 17,
+    "G1": 17,
+    "G2": 16
+  },
+  "assignment": {
+    "G0": [
+      "entry_150.xml",
+      "entry_155.xml",
+      "entry_266.xml",
+      "entry_272.xml",
+      "entry_317.xml",
+      "entry_32.xml",
+      "entry_371.xml",
+      "entry_380.xml",
+      "entry_41.xml",
+      "entry_418.xml",
+      "entry_435.xml",
+      "entry_440.xml",
+      "entry_467.xml",
+      "entry_485.xml",
+      "entry_540.xml",
+      "entry_549.xml",
+      "entry_64.xml"
+    ],
+    "G1": [
+      "entry_108.xml",
+      "entry_376.xml",
+      "entry_402.xml",
+      "entry_411.xml",
+      "entry_432.xml",
+      "entry_457.xml",
+      "entry_475.xml",
+      "entry_493.xml",
+      "entry_50.xml",
+      "entry_515.xml",
+      "entry_529.xml",
+      "entry_566.xml",
+      "entry_58.xml",
+      "entry_584.xml",
+      "entry_6.xml",
+      "entry_73.xml",
+      "entry_89.xml"
+    ],
+    "G2": [
+      "entry_109.xml",
+      "entry_124.xml",
+      "entry_194.xml",
+      "entry_220.xml",
+      "entry_248.xml",
+      "entry_256.xml",
+      "entry_321.xml",
+      "entry_325.xml",
+      "entry_345.xml",
+      "entry_375.xml",
+      "entry_451.xml",
+      "entry_511.xml",
+      "entry_531.xml",
+      "entry_552.xml",
+      "entry_77.xml",
+      "entry_92.xml"
+    ]
+  }
+}
