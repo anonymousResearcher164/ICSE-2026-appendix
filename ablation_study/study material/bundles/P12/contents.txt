@@ -1,0 +1,14 @@
+P12 - behavior tree printouts
+
+block1_G0_no_guidance:
+  entry_256.pdf
+
+block2_G1_partial_guidance:
+  entry_89.pdf
+  entry_402.pdf
+
+block3_G2_full_guidance:
+  entry_64.pdf
+  entry_124.pdf
+
+total: 5 behavior trees
