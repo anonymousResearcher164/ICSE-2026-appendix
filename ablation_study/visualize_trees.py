@@ -37,6 +37,7 @@ ports a custom node has, and is not part of the behavior.
 
 import html
 import os
+import sys
 import re
 import pathlib
 import subprocess
@@ -264,12 +265,21 @@ def render_file(path: pathlib.Path, out_dir: pathlib.Path, tmp_dir: pathlib.Path
     return len(trees), counter[0], degraded
 
 
-def main() -> int:
-    out_dir = pathlib.Path(OUTPUT_DIR)
+def main(argv=None) -> int:
+    # Defaults render the whole pool; --source/--out let the same renderer
+    # produce per-group bundles (one call per group) without duplicating it.
+    argv = list(sys.argv[1:] if argv is None else argv)
+    source, out = SAMPLE_POOL, OUTPUT_DIR
+    if "--source" in argv:
+        source = argv[argv.index("--source") + 1]
+    if "--out" in argv:
+        out = argv[argv.index("--out") + 1]
+    globals()["SAMPLE_POOL"] = source
+    out_dir = pathlib.Path(out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    files = sorted(pathlib.Path(SAMPLE_POOL).glob("*.xml"))
+    files = sorted(pathlib.Path(source).glob("*.xml"))
     if not files:
-        raise SystemExit(f"no .xml files in {SAMPLE_POOL}/")
+        raise SystemExit(f"no .xml files in {source}/")
 
     failures = []
     total_nodes = 0
@@ -288,7 +298,7 @@ def main() -> int:
 
     os.rmdir(tmp_dir) if not os.listdir(tmp_dir) else None
     print(f"\n{len(files) - len(failures)}/{len(files)} rendered to "
-          f"{OUTPUT_DIR}/ ({total_nodes} nodes drawn)")
+          f"{out}/ ({total_nodes} nodes drawn)")
     if failures:
         print("failures:")
         for name, why in failures:
