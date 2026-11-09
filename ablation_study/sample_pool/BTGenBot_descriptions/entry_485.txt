@@ -1,0 +1,5 @@
+The behavior tree outlines a sequence of actions for a robotic arm. It begins by retrieving the joint positions for a specific pose called "UPTRAY" and then simultaneously sets the joints of the left and right arms to these positions. This is followed by similar sequences for poses labeled "EXTENDED", "GRIPPING", and "REST". Each pose's joint positions are retrieved and then set for both arms in parallel.
+
+The use of parallel nodes ensures that the arm joints are set concurrently, with a success threshold of 2 and a failure threshold of 2. This means that at least 2 of the parallel tasks must succeed for the overall sequence to continue, providing redundancy and fault tolerance.
+
+In summary, the behavior tree orchestrates the movement of a robotic arm through a predefined sequence of poses, ensuring that the arm joints are correctly positioned in parallel for each pose before proceeding to the next one.

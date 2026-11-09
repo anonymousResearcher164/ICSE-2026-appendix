@@ -1,0 +1,27 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <ReactiveFallback name="obstacle_response">
+      <Sequence name="y_threshold_branch">
+        <Condition ID="CheckYThreshold" threshold="{y_threshold}"/>
+        <Action ID="SetGoal" goal="{goal_y}"/>
+      </Sequence>
+      <Sequence name="z_threshold_branch">
+        <Condition ID="CheckZThreshold" threshold="{z_threshold}"/>
+        <Action ID="SetGoal" goal="{goal_z}"/>
+      </Sequence>
+      <Action ID="SetGoal" goal="{goal_default}"/>
+    </ReactiveFallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="CheckYThreshold">
+      <input_port name="threshold" type="double">Obstacle y-coordinate threshold</input_port>
+    </Condition>
+    <Condition ID="CheckZThreshold">
+      <input_port name="threshold" type="double">Obstacle z-coordinate threshold</input_port>
+    </Condition>
+    <Action ID="SetGoal">
+      <input_port name="goal">Goal to set</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

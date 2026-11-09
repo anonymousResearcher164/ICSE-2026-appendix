@@ -1,0 +1,9 @@
+The behavior tree represents a decision-making process for an autonomous vehicle. The vehicle is programmed to perform various driving maneuvers based on the surrounding conditions and external inputs.
+
+The main behavior tree consists of a fallback sequence, where the vehicle will attempt different reactive sequences based on specific conditions. These include pulling over, pulling out, side shifting, lane change, and avoidance maneuvers. If none of these reactive sequences are applicable, the vehicle defaults to lane following.
+
+Additionally, there are two separate behavior trees labeled "a" and "b", each containing a reactive fallback sequence for specific maneuvers - lane change and avoidance respectively. These sequences involve checking for approval and executing the corresponding action.
+
+The TreeNodesModel section provides details about the various conditions, actions, and sub-trees involved in the decision-making process, including readiness checks, requests, and output descriptions for each action.
+
+Overall, the behavior tree orchestrates the vehicle's decision-making process for safe and efficient navigation on the road.

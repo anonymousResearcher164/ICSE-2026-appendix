@@ -1,0 +1,109 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <Sequence name="main_sequence">
+      <!-- Scene setup -->
+      <Sequence name="add_collision_objects">
+        <Action ID="AddCollisionObject" object_id="ground_plane"/>
+        <Action ID="AddCollisionObject" object_id="walls"/>
+        <Action ID="AddCollisionObject" object_id="conveyor"/>
+      </Sequence>
+      <Action ID="AddBoxSurface" surface_id="box_surface"/>
+
+      <!-- Box handling -->
+      <SubTree ID="PickAndPlaceBox" side="left"
+               home_joints="{left_home_joints}" place_pose="{left_place_pose}"/>
+      <SubTree ID="PickAndPlaceBox" side="right"
+               home_joints="{right_home_joints}" place_pose="{right_place_pose}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="PickAndPlaceBox">
+    <Sequence name="pick_and_place_sequence">
+      <!-- Move to start configuration -->
+      <Action ID="SetJointState" joints="{home_joints}"/>
+
+      <!-- Perceive the box -->
+      <Action ID="SenseObjectPose" object_pose="{detected_pose}"/>
+      <Action ID="StoreDetectedInfo" pose="{detected_pose}" info="{detected_info}"/>
+      <Action ID="GetDetectedInfo" info="{detected_info}" pose="{pick_pose}"/>
+
+      <!-- Clear the box surface so the arm can reach in -->
+      <Action ID="RemoveObject" object_id="box_surface"/>
+
+      <!-- Pick -->
+      <Action ID="ConnectWaypoints" target="{pick_pose}" waypoints="{pick_waypoints}"/>
+      <Action ID="Plan" waypoints="{pick_waypoints}" trajectory="{pick_trajectory}"/>
+      <Action ID="Execute" trajectory="{pick_trajectory}"/>
+      <Action ID="ExecuteSuction" enable="true"/>
+
+      <!-- Lift and shift -->
+      <Action ID="Lift" distance="0.10"/>
+      <Action ID="Shift" side="{side}"/>
+
+      <!-- Place -->
+      <Action ID="ConnectWaypoints" target="{place_pose}" waypoints="{place_waypoints}"/>
+      <Action ID="Plan" waypoints="{place_waypoints}" trajectory="{place_trajectory}"/>
+      <Action ID="Execute" trajectory="{place_trajectory}"/>
+      <Action ID="ExecuteSuction" enable="false"/>
+
+      <!-- Restore the box surface -->
+      <Action ID="AddBoxSurface" surface_id="box_surface"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="AddCollisionObject">
+      <input_port name="object_id"/>
+    </Action>
+    <Action ID="AddBoxSurface">
+      <input_port name="surface_id"/>
+    </Action>
+    <Action ID="RemoveObject">
+      <input_port name="object_id"/>
+    </Action>
+    <Action ID="SetJointState">
+      <input_port name="joints">Target joint positions</input_port>
+    </Action>
+    <Action ID="SenseObjectPose">
+      <output_port name="object_pose"/>
+    </Action>
+    <Action ID="StoreDetectedInfo">
+      <input_port name="pose"/>
+      <output_port name="info"/>
+    </Action>
+    <Action ID="GetDetectedInfo">
+      <input_port name="info"/>
+      <output_port name="pose"/>
+    </Action>
+    <Action ID="ConnectWaypoints">
+      <input_port name="target"/>
+      <output_port name="waypoints"/>
+    </Action>
+    <Action ID="Plan">
+      <input_port name="waypoints"/>
+      <output_port name="trajectory"/>
+    </Action>
+    <Action ID="Execute">
+      <input_port name="trajectory"/>
+    </Action>
+    <Action ID="ExecuteSuction">
+      <input_port name="enable" type="bool"/>
+    </Action>
+    <Action ID="Lift">
+      <input_port name="distance" type="double"/>
+    </Action>
+    <Action ID="Shift">
+      <input_port name="side"/>
+    </Action>
+    <Action ID="TypeInPose">
+      <input_port name="pose_string">Pose typed as text</input_port>
+      <output_port name="pose">Pose written to the blackboard</output_port>
+    </Action>
+    <SubTree ID="PickAndPlaceBox">
+      <input_port name="side"/>
+      <input_port name="home_joints"/>
+      <input_port name="place_pose"/>
+    </SubTree>
+  </TreeNodesModel>
+</root>

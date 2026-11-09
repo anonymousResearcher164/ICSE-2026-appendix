@@ -1,0 +1,7 @@
+The behavior tree is designed for a robot to dynamically navigate to a specific location while continuously updating its path. The robot's movement is controlled by a pipeline sequence that includes a rate controller and a path following mechanism.
+
+First, the goal updater updates the robot's goal pose based on input and outputs an updated goal. Then, it computes a path to this updated goal using a grid-based planner. The rate controller ensures that this process occurs at a specified frequency.
+
+Once the path is computed, the robot follows this path using a path-following controller. This process continues until the robot reaches its destination or encounters a failure.
+
+Overall, the behavior tree orchestrates the dynamic navigation of the robot by constantly updating its path towards the specified goal pose.

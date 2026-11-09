@@ -1,0 +1,3 @@
+The behavior tree is designed for a system to dynamically navigate towards a goal while continuously replanning its path. The system updates the goal pose and computes a new path using a planner. It then truncates the computed path to a certain distance. This process is controlled by a rate controller that ensures the sequence runs at a specific frequency.
+
+Once the path is truncated, the system follows this path using a specified controller until it reaches the goal or encounters a failure. The behavior tree is structured in a way that allows for continuous replanning and navigation, ensuring the system can adapt to changing environments or obstacles.

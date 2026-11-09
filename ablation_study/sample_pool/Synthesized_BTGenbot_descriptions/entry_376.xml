@@ -1,0 +1,27 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="100">
+      <Sequence name="social_nav_sequence">
+        <!-- <Condition ID="StopCondition" stop="{stop}"/> -->
+        <Parallel success_count="1" failure_count="3">
+          <Action ID="Dialog"/>
+          <Action ID="SocialNavigation" goal="hri"/>
+          <Action ID="AgentInteraction" agent_id="agent_3"/>
+        </Parallel>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="StopCondition">
+      <input_port name="stop" type="bool">External stop signal</input_port>
+    </Condition>
+    <Action ID="Dialog"/>
+    <Action ID="SocialNavigation">
+      <input_port name="goal" type="std::string">Navigation goal label</input_port>
+    </Action>
+    <Action ID="AgentInteraction">
+      <input_port name="agent_id" type="std::string">Agent to interact with</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,53 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="grasp_candidates_sequence">
+      <RetryUntilSuccessful num_attempts="3">
+        <Action ID="SegmentTabletop"
+                table_height="{table_height}"
+                objects_cloud="{objects_cloud}"/>
+      </RetryUntilSuccessful>
+
+      <Fallback name="get_object_cloud">
+        <Sequence name="extract_known_object">
+          <Condition ID="IsObjectOnBlackboard" object="{desired_object}"/>
+          <Action ID="ExtractObjectCloud"
+                  object="{desired_object}"
+                  objects_cloud="{objects_cloud}"
+                  object_cloud="{object_cloud}"/>
+        </Sequence>
+        <Action ID="TabletopClustering"
+                objects_cloud="{objects_cloud}"
+                object_cloud="{object_cloud}"/>
+      </Fallback>
+
+      <Action ID="GenerateGraspCandidates"
+              object_cloud="{object_cloud}"
+              table_height="{table_height}"
+              grasp_candidates="{grasp_candidates}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="SegmentTabletop">
+      <output_port name="table_height" type="double">Estimated table height</output_port>
+      <output_port name="objects_cloud">Point cloud above the table</output_port>
+    </Action>
+    <Condition ID="IsObjectOnBlackboard">
+      <input_port name="object">Desired object identifier</input_port>
+    </Condition>
+    <Action ID="ExtractObjectCloud">
+      <input_port name="object"/>
+      <input_port name="objects_cloud"/>
+      <output_port name="object_cloud">Point cloud of the desired object</output_port>
+    </Action>
+    <Action ID="TabletopClustering">
+      <input_port name="objects_cloud"/>
+      <output_port name="object_cloud">Point cloud of the selected cluster</output_port>
+    </Action>
+    <Action ID="GenerateGraspCandidates">
+      <input_port name="object_cloud"/>
+      <input_port name="table_height" type="double"/>
+      <output_port name="grasp_candidates"/>
+    </Action>
+  </TreeNodesModel>
+</root>

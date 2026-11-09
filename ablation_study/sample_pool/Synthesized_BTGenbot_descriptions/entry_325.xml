@@ -1,0 +1,78 @@
+<root BTCPP_format="3" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <FallbackStar name="animal_root">
+
+      <!-- Daytime: go out to pasture -->
+      <SequenceStar name="day_movement">
+        <Condition ID="IsDay"/>
+        <Fallback>
+          <SequenceStar name="leave_shed">
+            <Condition ID="IsInShed"/>
+            <Action ID="LeaveShed"/>
+            <Action ID="FindRandomPastureField" target="{target}"/>
+            <Action ID="Move" target="{target}"/>
+          </SequenceStar>
+          <SequenceStar name="move_on_pasture">
+            <Condition ID="IsOnPasture"/>
+            <Action ID="Move" target="{target}"/>
+          </SequenceStar>
+        </Fallback>
+      </SequenceStar>
+
+      <!-- Night: return to shelter -->
+      <SequenceStar name="night_behavior">
+        <Condition ID="IsNight"/>
+        <Fallback>
+          <SequenceStar name="go_to_shelter">
+            <Inverter>
+              <Condition ID="IsInShed"/>
+            </Inverter>
+            <Action ID="FindShelter" target="{target}"/>
+            <Action ID="Move" target="{target}"/>
+            <Action ID="EnterShed"/>
+          </SequenceStar>
+          <SequenceStar name="keep_moving_on_pasture">
+            <Condition ID="IsOnPasture"/>
+            <Action ID="Move" target="{target}"/>
+          </SequenceStar>
+        </Fallback>
+      </SequenceStar>
+
+      <!-- Daytime, outside the shed: wander -->
+      <SequenceStar name="day_wander">
+        <Condition ID="IsDay"/>
+        <Inverter>
+          <Condition ID="IsInShed"/>
+        </Inverter>
+        <Action ID="RandomMove"/>
+      </SequenceStar>
+
+    </FallbackStar>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsDay"/>
+    <Condition ID="IsNight"/>
+    <Condition ID="IsInShed"/>
+    <Condition ID="IsOnPasture"/>
+    <Condition ID="IsHungry"/>
+    <Condition ID="IsPreyNearby"/>
+    <Action ID="LeaveShed"/>
+    <Action ID="EnterShed"/>
+    <Action ID="FindRandomPastureField">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="FindShelter">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="FindRetreat">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="Move">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="RandomMove"/>
+    <Action ID="EatPrey"/>
+    <Action ID="LayEggs"/>
+  </TreeNodesModel>
+</root>

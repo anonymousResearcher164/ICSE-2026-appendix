@@ -1,0 +1,39 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <Sequence name="arm_pose_sequence">
+      <SubTree ID="MoveArmsToPose" pose_name="UPTRAY"/>
+      <SubTree ID="MoveArmsToPose" pose_name="EXTENDED"/>
+      <SubTree ID="MoveArmsToPose" pose_name="GRIPPING"/>
+      <SubTree ID="MoveArmsToPose" pose_name="REST"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="MoveArmsToPose">
+    <Sequence name="move_arms_sequence">
+      <Action ID="GetArmJointPositions"
+              pose_name="{pose_name}"
+              left_joints="{left_joints}"
+              right_joints="{right_joints}"/>
+      <Parallel success_count="2" failure_count="2">
+        <Action ID="SetArmJoints" arm="left" joints="{left_joints}"/>
+        <Action ID="SetArmJoints" arm="right" joints="{right_joints}"/>
+      </Parallel>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GetArmJointPositions">
+      <input_port name="pose_name" type="std::string">Named pose to look up</input_port>
+      <output_port name="left_joints">Left arm joint positions</output_port>
+      <output_port name="right_joints">Right arm joint positions</output_port>
+    </Action>
+    <Action ID="SetArmJoints">
+      <input_port name="arm" type="std::string">"left" or "right"</input_port>
+      <input_port name="joints">Target joint positions</input_port>
+    </Action>
+    <SubTree ID="MoveArmsToPose">
+      <input_port name="pose_name"/>
+    </SubTree>
+  </TreeNodesModel>
+</root>

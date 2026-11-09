@@ -1,0 +1,3 @@
+The behavior tree outlines a sequence of actions for a robotic arm. It starts by retrieving the joint positions for a specific pose called "UPTRAY" and then sets the left and right arm joints to these positions. This process is repeated for poses "EXTENDED", "GRIPPING", and "REST". 
+
+In summary, the behavior tree orchestrates the movement of the robotic arm through a predefined set of poses, ensuring that both the left and right arm joints are correctly positioned for each pose in a sequential manner.

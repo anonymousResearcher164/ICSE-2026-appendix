@@ -1,0 +1,91 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="10">
+      <ReactiveSequence name="ltl_execution_loop">
+
+        <!-- Level 1: locomotion must be healthy -->
+        <Fallback name="locomotion_check">
+          <Condition ID="LocomotionStatusCheck"
+                     locomotion_status="{locomotion_status}"/>
+          <Action ID="ReplanningRequestLevel1"
+                  ltl_state_current="{ltl_state_current}"/>
+        </Fallback>
+
+        <!-- Perception (simulated) -->
+        <Action ID="FakeDetection" detection="{detection}"/>
+
+        <!-- Level 2: execute the next LTL action, replan if it fails -->
+        <Fallback name="ltl_action_fallback">
+          <Sequence name="ltl_action_sequence">
+            <Condition ID="LTLPreCheck"
+                       ltl_state_current="{ltl_state_current}"
+                       ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+            <Fallback name="action_selection">
+              <ReactiveSequence name="move_branch">
+                <Condition ID="CheckActionType" expected="move"
+                           action_sequence="{action_sequence}"/>
+                <Action ID="MoveAction" goal="{move_goal}"/>
+              </ReactiveSequence>
+              <ReactiveSequence name="stay_branch">
+                <Condition ID="CheckActionType" expected="stay"
+                           action_sequence="{action_sequence}"/>
+                <Action ID="StayAction"/>
+              </ReactiveSequence>
+              <ReactiveSequence name="guide_branch">
+                <Condition ID="CheckActionType" expected="guide"
+                           action_sequence="{action_sequence}"/>
+                <Action ID="GuideAction" goal="{move_goal}"/>
+              </ReactiveSequence>
+            </Fallback>
+            <Action ID="UpdateLTL"
+                    action_sequence="{action_sequence}"
+                    ltl_state_desired_sequence="{ltl_state_desired_sequence}"
+                    ltl_state_executed_sequence="{ltl_state_executed_sequence}"
+                    move_goal="{move_goal}"/>
+          </Sequence>
+          <Action ID="ReplanningRequestLevel2"
+                  ltl_state_current="{ltl_state_current}"
+                  ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
+        </Fallback>
+
+      </ReactiveSequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="LocomotionStatusCheck">
+      <input_port name="locomotion_status"/>
+    </Condition>
+    <Condition ID="LTLPreCheck">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_desired_sequence"/>
+    </Condition>
+    <Condition ID="CheckActionType">
+      <input_port name="expected" type="std::string">move, stay or guide</input_port>
+      <input_port name="action_sequence"/>
+    </Condition>
+    <Action ID="FakeDetection">
+      <output_port name="detection"/>
+    </Action>
+    <Action ID="MoveAction">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="StayAction"/>
+    <Action ID="GuideAction">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="UpdateLTL">
+      <inout_port name="action_sequence"/>
+      <inout_port name="ltl_state_desired_sequence"/>
+      <inout_port name="ltl_state_executed_sequence"/>
+      <output_port name="move_goal"/>
+    </Action>
+    <Action ID="ReplanningRequestLevel1">
+      <input_port name="ltl_state_current"/>
+    </Action>
+    <Action ID="ReplanningRequestLevel2">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_executed_sequence"/>
+    </Action>
+  </TreeNodesModel>
+</root>

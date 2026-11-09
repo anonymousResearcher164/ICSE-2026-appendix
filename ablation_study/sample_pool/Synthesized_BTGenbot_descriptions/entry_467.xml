@@ -1,0 +1,34 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="object_handling">
+      <Sequence name="move_sequence">
+        <Action ID="MoveObject" object_id="{object_id}" target="{target_location}" result="{move_result}"/>
+        <Action ID="Wait" duration="3"/>
+      </Sequence>
+      <Sequence name="return_sequence">
+        <Action ID="ReturnObject" object_id="{object_id}" location="{return_location}" result="{return_result}"/>
+        <Action ID="Wait" duration="3"/>
+      </Sequence>
+      <Action ID="StandbyObject" object_id="{object_id}"/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="MoveObject">
+      <input_port name="object_id">Object to move</input_port>
+      <input_port name="target">Destination</input_port>
+      <output_port name="result">Outcome of the move</output_port>
+    </Action>
+    <Action ID="ReturnObject">
+      <input_port name="object_id">Object to return</input_port>
+      <input_port name="location">Return location</input_port>
+      <output_port name="result">Outcome of the return</output_port>
+    </Action>
+    <Action ID="Wait">
+      <input_port name="duration" type="double">Wait time in seconds</input_port>
+    </Action>
+    <Action ID="StandbyObject">
+      <input_port name="object_id">Object to put in standby</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

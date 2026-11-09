@@ -1,0 +1,64 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="animal_root">
+
+      <!-- Day on pasture: head out to a pasture field -->
+      <Sequence name="day_go_to_pasture">
+        <Condition ID="IsDay"/>
+        <Condition ID="IsOnPasture"/>
+        <Action ID="LeaveShed"/>
+        <Action ID="FindRandomPastureField" target="{target}"/>
+        <Action ID="Move" target="{target}"/>
+      </Sequence>
+
+      <!-- Night on pasture, outside: go to the shed -->
+      <Sequence name="night_go_to_shed">
+        <Condition ID="IsNight"/>
+        <Condition ID="IsOnPasture"/>
+        <Inverter>
+          <Condition ID="IsInShed"/>
+        </Inverter>
+        <Action ID="FindShed" target="{target}"/>
+        <Action ID="Move" target="{target}"/>
+        <Action ID="EnterShed"/>
+      </Sequence>
+
+      <!-- Day, outside: wander -->
+      <Sequence name="day_wander">
+        <Condition ID="IsDay"/>
+        <Inverter>
+          <Condition ID="IsInShed"/>
+        </Inverter>
+        <Action ID="RandomMove"/>
+      </Sequence>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsAdult"/>
+    <Condition ID="IsCarnivore"/>
+    <Condition ID="IsDay"/>
+    <Condition ID="IsHungry"/>
+    <Condition ID="IsInShed"/>
+    <Condition ID="IsNight"/>
+    <Condition ID="IsOnPasture"/>
+    <Condition ID="IsPregnant"/>
+    <Action ID="EatPrey"/>
+    <Action ID="EnterShed"/>
+    <Action ID="FindRandomPastureField">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="FindShed">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="GiveBirth"/>
+    <Action ID="LayEggs"/>
+    <Action ID="LeaveShed"/>
+    <Action ID="Move">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="RandomMove"/>
+    <Action ID="Sleep"/>
+  </TreeNodesModel>
+</root>

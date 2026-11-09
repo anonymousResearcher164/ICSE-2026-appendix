@@ -1,0 +1,35 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="root_fallback">
+      <Sequence name="hunt_sequence">
+        <Action ID="GetTarget" target="{target}"/>
+        <Action ID="Move" target="{target}"/>
+        <Condition ID="TargetAdjacent" target="{target}"/>
+        <Action ID="AttackTarget" target="{target}"/>
+      </Sequence>
+      <Action ID="RandomMove"/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="AttackTarget">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="GetTarget">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="Move">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="RandomMove"/>
+    <Action ID="Sleep"/>
+    <Condition ID="IsDay"/>
+    <Condition ID="IsFemale"/>
+    <Condition ID="IsHungry"/>
+    <Condition ID="IsMale"/>
+    <Condition ID="IsNight"/>
+    <Condition ID="TargetAdjacent">
+      <input_port name="target"/>
+    </Condition>
+  </TreeNodesModel>
+</root>

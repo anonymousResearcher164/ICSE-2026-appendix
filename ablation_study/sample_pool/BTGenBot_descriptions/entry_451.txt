@@ -1,0 +1,7 @@
+The behavior tree orchestrates the actions of an entity, possibly a character or an AI. The entity has several possible actions and conditions that determine its behavior. 
+
+The main task is organized as a fallback sequence, where the entity first attempts to execute a sequence of actions: getting a target, moving, and then attacking the target if it's adjacent. If any of these actions fail, the entity resorts to a random movement. 
+
+The available actions include "AttackTarget", "GetTarget", "Move", "RandomMove", and "Sleep". Additionally, there are conditions such as "IsDay", "IsFemale", "IsHungry", "IsMale", "IsNight", and "TargetAdjacent" which influence the decision-making process.
+
+Overall, the behavior tree governs the decision-making and actions of the entity based on various conditions and tasks, ensuring a dynamic and adaptive behavior in different scenarios.

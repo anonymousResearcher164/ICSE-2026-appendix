@@ -1,0 +1,3 @@
+The behavior tree orchestrates a robot's repetitive task of detecting human poses and responding with speech. The robot will continuously repeat the sequence, which involves detecting a human pose (either left or right) and then speaking out the corresponding message. If the expected pose is not detected, it will fallback to speaking a default message.
+
+In summary, the behavior tree enables the robot to repeatedly detect human poses, respond with appropriate speech, and handle fallback scenarios if the expected poses are not detected. This process continues indefinitely as indicated by the high number of cycles specified in the repeat node.

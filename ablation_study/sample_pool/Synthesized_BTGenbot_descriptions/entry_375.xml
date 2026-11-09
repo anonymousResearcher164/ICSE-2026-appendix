@@ -1,0 +1,22 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="Sequence1">
+      <Condition ID="isFull"/>
+      <Action ID="goClosestR"/>
+      <Action ID="waitFrames" frames="15"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="isFull"/>
+    <Action ID="dumpRun"/>
+    <Action ID="goClosestR"/>
+    <Action ID="mineResources"/>
+    <Action ID="moveBaseToGoal">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="waitFrames">
+      <input_port name="frames" type="unsigned int">Number of frames to wait</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>
