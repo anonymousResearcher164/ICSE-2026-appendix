@@ -1,0 +1,5 @@
+The behavior tree is designed for a task-oriented system, possibly related to a game or simulation. The sequence "Sequence1" consists of three actions: checking if a condition "isFull" is met, then executing the action "goClosestR," and finally waiting for 15 frames.
+
+The available actions in the tree include "dumpRun," "goClosestR," "mineResources," "moveBaseToGoal," and "waitFrames." These actions likely correspond to specific behaviors or tasks that the system can perform.
+
+Overall, the behavior tree seems to represent a decision-making process where the system checks a condition, performs an action based on the result, and then waits for a specified duration before proceeding with further actions.

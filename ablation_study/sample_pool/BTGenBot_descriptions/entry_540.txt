@@ -1,0 +1,1 @@
+The behavior tree instructs an entity to perform two actions in sequence. First, it is commanded to say "Hello World," and then to execute the action "SayHello." The SequenceStar node ensures that the second action will be executed repeatedly until it is successful, allowing for multiple attempts if needed.

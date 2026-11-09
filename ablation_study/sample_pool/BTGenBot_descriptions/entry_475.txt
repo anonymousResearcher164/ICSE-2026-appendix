@@ -1,0 +1,5 @@
+The behavior tree orchestrates the charging process for a robot. Initially, it triggers a sub-tree "ChargeST" to manage the charging sequence. Within "ChargeST", the robot first speaks a message in Portuguese, then moves to a specific location while attempting multiple times if necessary. Subsequently, it either charges or repeats speaking a phrase five times in parallel. After a brief wait, the robot speaks another message and stops charging.
+
+Additionally, the behavior tree defines various actions and conditions that can be utilized within the tree, such as moving the robot's base, speaking messages, waiting for a specified duration, checking battery status, detecting faces, and more.
+
+Overall, the behavior tree outlines a comprehensive charging routine for the robot, incorporating speech interactions, movement, and monitoring of the charging process.

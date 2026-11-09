@@ -1,0 +1,5 @@
+The behavior tree is designed for a robot to navigate a global path with periodic replanning at 1 Hz and includes recovery actions. The robot will attempt the navigation sequence, and if it encounters failures, it will retry a specified number of times before moving on to the next step. 
+
+The "NavigateWithReplanning" sequence involves computing a path to a specific goal using a grid-based planner, following the computed path, and handling recovery actions in case of failures during navigation. If the robot encounters issues during path planning or following, it will execute recovery actions such as clearing the costmaps and waiting for a specific duration.
+
+Overall, the behavior tree ensures that the robot can continuously navigate towards its goal while handling potential failures and dynamically replanning its path to ensure successful navigation.

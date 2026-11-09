@@ -1,0 +1,41 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="pose_response_sequence">
+      <!-- Pose-related parameters -->
+      <Script code="target_pose := 'hands_up'; confidence_threshold := 0.7; image_path := '/tmp/pose.jpg'"/>
+
+      <Action ID="AntennaAction" mode="idle"/>
+
+      <KeepRunningUntilFailure>
+        <Fallback name="detect_and_respond">
+          <Sequence name="respond_to_pose">
+            <Condition ID="DetectHumanPose"
+                       target_pose="{target_pose}"
+                       confidence_threshold="{confidence_threshold}"/>
+            <Action ID="AntennaAction" mode="raise"/>
+            <Action ID="SaveImage" path="{image_path}"/>
+            <Action ID="Speak" text="Pose detected"/>
+            <Action ID="AntennaAction" mode="reset"/>
+          </Sequence>
+          <Sleep msec="500"/>
+        </Fallback>
+      </KeepRunningUntilFailure>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="AntennaAction">
+      <input_port name="mode" type="std::string">Antenna motion to perform</input_port>
+    </Action>
+    <Condition ID="DetectHumanPose">
+      <input_port name="target_pose" type="std::string"/>
+      <input_port name="confidence_threshold" type="double"/>
+    </Condition>
+    <Action ID="SaveImage">
+      <input_port name="path" type="std::string"/>
+    </Action>
+    <Action ID="Speak">
+      <input_port name="text" type="std::string"/>
+    </Action>
+  </TreeNodesModel>
+</root>

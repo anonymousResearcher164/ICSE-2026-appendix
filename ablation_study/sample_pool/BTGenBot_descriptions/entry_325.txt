@@ -1,0 +1,13 @@
+The behavior tree outlines the decision-making process for an animal in a simulated environment. The tree's structure is based on various conditions and actions that the animal can perform.
+
+The tree begins with a FallbackStar node, which contains three SequenceStar nodes. Each SequenceStar represents a set of conditions and actions to be executed based on the state of the environment and the animal itself.
+
+The first SequenceStar deals with the animal's movement during the day, either leaving the shed and finding a random pasture field or moving if it's already on the pasture.
+
+The second SequenceStar handles the animal's behavior at night, focusing on finding shelter if not in the shed and entering it, or continuing to move if already on the pasture.
+
+The third SequenceStar addresses daytime activities when not in the shed, involving random movement.
+
+The TreeNodesModel provides a list of all possible conditions and actions that the animal can evaluate and execute within the behavior tree, such as eating prey, laying eggs, and finding retreats.
+
+In

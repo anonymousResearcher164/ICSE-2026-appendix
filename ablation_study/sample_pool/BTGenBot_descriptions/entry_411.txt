@@ -1,0 +1,5 @@
+The behavior tree orchestrates a robot's performance in a competition mode, where it repeatedly executes a sequence of actions. The robot first enters a rest pose and then performs a specific trick. This cycle continues indefinitely. The "GetInRestPose" behavior involves positioning the robot's arms and head, while "DoYourTrick" encompasses filling a tray and stocking shelves.
+
+Additionally, the robot scans the table for objects and updates its environment map. It also moves to different locations such as tables and shelves, picking and placing items using its left and right arms. The process is repeated multiple times until certain conditions are met, such as trays being full or empty.
+
+Overall, the behavior tree outlines a complex set of tasks for the robot, involving arm and head control, navigation, scanning, object manipulation, and decision-making based on the state of trays and shelves.

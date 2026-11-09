@@ -1,0 +1,10 @@
+The behavior tree represents the decision-making process for an animal or creature. The tree contains multiple sequences and conditions that dictate the actions of the entity based on its environment and internal state.
+
+The main sequence involves three fallback options:
+1. If the entity is on a pasture during the day, it will leave the shed, find a random pasture field, and move there.
+2. If the entity is on a pasture at night and not in a shed, it will find a shed, move towards it, and enter the shed.
+3. If it's daytime and not in a shed, it will perform a random move.
+
+The tree also includes various conditions and actions such as determining if the entity is adult, carnivorous, hungry, pregnant, etc., and performing corresponding actions like eating prey, giving birth, laying eggs, moving, sleeping, etc.
+
+Overall, the behavior tree orchestrates the entity's behaviors based on its surroundings and internal states, ensuring it acts appropriately in different situations.

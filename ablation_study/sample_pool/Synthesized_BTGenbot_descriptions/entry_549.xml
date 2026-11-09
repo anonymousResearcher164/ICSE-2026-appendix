@@ -1,0 +1,47 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="main_sequence">
+      <Action ID="ExecuteGroupPose" group="arm" goal="home"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="ExecuteGroupPose">
+      <input_port name="group" type="std::string">Planning group</input_port>
+      <input_port name="goal" type="std::string">Named group pose</input_port>
+    </Action>
+    <Action ID="AddCollisionBox">
+      <input_port name="object_id" type="std::string"/>
+      <input_port name="pose"/>
+      <input_port name="dimensions"/>
+    </Action>
+    <Action ID="AddCollisionPlane">
+      <input_port name="object_id" type="std::string"/>
+      <input_port name="pose"/>
+    </Action>
+    <Action ID="PlanTrajectory">
+      <input_port name="target"/>
+      <output_port name="trajectory"/>
+    </Action>
+    <Action ID="ExecuteTrajectory">
+      <input_port name="trajectory"/>
+    </Action>
+    <Action ID="SetJointState">
+      <input_port name="joints"/>
+    </Action>
+    <Action ID="Shift">
+      <input_port name="axis" type="std::string"/>
+      <input_port name="distance" type="double"/>
+    </Action>
+    <Action ID="AttachObject">
+      <input_port name="object_id" type="std::string"/>
+      <input_port name="link" type="std::string"/>
+    </Action>
+    <Action ID="DetachObject">
+      <input_port name="object_id" type="std::string"/>
+    </Action>
+    <Action ID="RemoveCollision">
+      <input_port name="object_id" type="std::string"/>
+    </Action>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,8 @@
+The behavior tree represents a robot's navigation recovery process. The robot is programmed to recover from navigation failures using a series of recovery actions. If the initial navigation attempt fails, the RecoveryNode will retry the navigation up to 6 times.
+
+The recovery process includes several stages:
+1. NavigateWithReplanning: This stage involves resetting the navigation goal and checking progress. It also includes computing a new path to the goal, smoothing the path, and following the path while handling any feedback received during navigation.
+
+2. RecoveryFallback: If the navigation still fails after multiple retries, the robot will perform recovery actions such as clearing the local and global costmaps, waiting for a specified duration, and backing up a short distance.
+
+Overall, the behavior tree ensures that the robot can recover from navigation failures by attempting to replan the path, handle feedback, and execute specific recovery actions when necessary.

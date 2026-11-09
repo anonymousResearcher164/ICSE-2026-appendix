@@ -1,0 +1,15 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="seek_init_sequence">
+      <ClearEntireCostmap name="ClearGlobalCostmap"
+                          service_name="global_costmap/clear_entirely_global_costmap"/>
+      <Action ID="RobotSeekInitAction" game_file="robot_seek_1.json"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="RobotSeekInitAction">
+      <input_port name="game_file" type="std::string">Path to the game definition file</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

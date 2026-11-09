@@ -1,0 +1,29 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <Action ID="Action_A" input="42"/>
+      <Condition ID="Condition_B" result="{result_b}"/>
+      <SubTree ID="LotOfStuff" param="100" result="{subtree_result}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="LotOfStuff">
+    <Sequence name="lot_of_stuff_sequence">
+      <!-- Placeholder body: produces the described result of 200 -->
+      <Script code="result := 200"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="Action_A">
+      <input_port name="input" type="int"/>
+    </Action>
+    <Condition ID="Condition_B">
+      <output_port name="result" type="int">Expected to write 69</output_port>
+    </Condition>
+    <SubTree ID="LotOfStuff">
+      <input_port name="param" type="int"/>
+      <output_port name="result" type="int"/>
+    </SubTree>
+  </TreeNodesModel>
+</root>

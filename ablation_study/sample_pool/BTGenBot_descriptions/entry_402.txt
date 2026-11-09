@@ -1,0 +1,5 @@
+The behavior tree outlines the task for a robot to perform specific actions in response to human poses. Initially, it sets the values for various pose-related parameters and then performs an action using the Antenna. Following this, it enters a loop where it continuously detects human poses until failure.
+
+Within this loop, it first checks for a specific human pose and if successful, it executes a sequence of actions including adjusting the antenna, saving an image, providing speech output, and resetting the antenna. If unsuccessful, it waits for a brief period before reattempting the detection.
+
+In summary, the behavior tree orchestrates the robot's responses to human poses by setting up pose-related parameters, performing actions based on detected poses, and handling the flow of the detection process.

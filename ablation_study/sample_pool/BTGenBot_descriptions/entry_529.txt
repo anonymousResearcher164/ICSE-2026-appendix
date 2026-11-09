@@ -1,0 +1,5 @@
+The behavior tree is designed to navigate a robot while replanning its global path after every 1 meter of movement. It utilizes a pipeline sequence consisting of two steps: 
+1. DistanceController: This component computes a new path to the goal pose using the "GridBased" planner whenever the robot has moved 1 meter.
+2. FollowPath: The robot then follows the computed path using the specified controller.
+
+This approach ensures that the robot continuously updates its path to adapt to the environment as it moves, allowing for more efficient and dynamic navigation.

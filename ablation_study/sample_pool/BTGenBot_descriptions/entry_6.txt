@@ -1,0 +1,5 @@
+The behavior tree represents the decision-making process for a robot. The robot is programmed to perform a series of tasks based on certain conditions and actions. 
+
+Initially, it will attempt to follow a sequence of actions. If the room is known, it will check if the robot is in the room. If so, it will go to the room; otherwise, it will follow a human. If the room is not known, it will move on to another sequence of actions. Here, it will first check if a bottle is found. If found, it will try to grasp it. If the bottle is already grasped, it will proceed to compute the inverse pose and validate it. Based on the validation, it will either keep its arms ready for grasping or locate the bottle and then grasp it. If the inverse pose cannot be computed, it will set it as invalid and continue running. If none of these conditions are met, it will ask for help.
+
+In summary, the behavior tree outlines the

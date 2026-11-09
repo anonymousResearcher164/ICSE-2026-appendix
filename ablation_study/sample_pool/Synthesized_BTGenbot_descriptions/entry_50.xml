@@ -1,0 +1,19 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="vehicle_sequence">
+      <Action ID="FixRudder" depth="{depth}" angle="{angle}" speed="{speed}"/>
+      <Action ID="DelayFor" duration="{delay_duration}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="FixRudder">
+      <input_port name="depth" type="double">Target depth</input_port>
+      <input_port name="angle" type="double">Rudder angle</input_port>
+      <input_port name="speed" type="double">Vehicle speed</input_port>
+    </Action>
+    <Action ID="DelayFor">
+      <input_port name="duration" type="double">Delay duration in seconds</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

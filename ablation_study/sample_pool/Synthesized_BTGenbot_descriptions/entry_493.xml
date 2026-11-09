@@ -1,0 +1,32 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="AutoLocalization">
+      <InitialPoseReceived initial_pose_received="{initial_pose_received}"/>
+      <Sequence name="SelfLocalization">
+        <RetryUntilSuccessful num_attempts="5">
+          <Action ID="GlobalLocalizationServiceRequest" service_name="global_localization"/>
+        </RetryUntilSuccessful>
+        <RetryUntilSuccessful num_attempts="10">
+          <Fallback name="LocalizationCheck">
+            <Condition ID="IsLocalized"/>
+            <Sequence name="ExploreToLocalize">
+              <Spin spin_dist="6.28"/>
+              <BackUp backup_dist="0.30" backup_speed="0.05"/>
+              <Spin spin_dist="6.28"/>
+              <Condition ID="IsLocalized"/>
+            </Sequence>
+          </Fallback>
+        </RetryUntilSuccessful>
+      </Sequence>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GlobalLocalizationServiceRequest">
+      <input_port name="service_name" type="std::string">AMCL global localization service</input_port>
+    </Action>
+    <Condition ID="IsLocalized">
+      <input_port name="tolerance" type="double" default="0.25">Max covariance to count as localized</input_port>
+    </Condition>
+  </TreeNodesModel>
+</root>

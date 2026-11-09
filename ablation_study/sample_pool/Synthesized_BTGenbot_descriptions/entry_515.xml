@@ -1,0 +1,66 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <Parallel success_count="2" failure_count="1">
+      <Repeat num_cycles="-1">
+        <Action ID="VariantAction"/>
+      </Repeat>
+      <Fallback name="people_handling">
+        <Condition ID="RecognizePeople"/>
+        <Sequence name="find_thomas">
+          <Action ID="LocatePerson" name="THOMAS" pose="{person_pose}"/>
+          <Action ID="MoveTo" goal="{person_pose}"/>
+        </Sequence>
+      </Fallback>
+    </Parallel>
+  </BehaviorTree>
+
+  <BehaviorTree ID="Recharge">
+    <Sequence name="recharge_sequence">
+      <Fallback>
+        <Condition ID="IsBatteryOk"/>
+        <Sequence>
+          <SubTree ID="NavigateTo" goal="charging_station"/>
+          <Action ID="Charge"/>
+        </Sequence>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="NavigateTo">
+    <Sequence name="navigate_sequence">
+      <SubTree ID="Localize"/>
+      <Action ID="MoveTo" goal="{goal}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="Localize">
+    <Fallback name="localize_fallback">
+      <Condition ID="IsLocalized"/>
+      <RetryUntilSuccessful num_attempts="3">
+        <Action ID="RunLocalization"/>
+      </RetryUntilSuccessful>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="VariantAction"/>
+    <Condition ID="RecognizePeople"/>
+    <Action ID="LocatePerson">
+      <input_port name="name" type="std::string">Person to locate</input_port>
+      <output_port name="pose">Person's position</output_port>
+    </Action>
+    <Action ID="MoveTo">
+      <input_port name="goal">Target pose or named location</input_port>
+    </Action>
+    <Condition ID="IsBatteryOk"/>
+    <Action ID="Charge"/>
+    <Condition ID="IsLocalized"/>
+    <Action ID="RunLocalization"/>
+    <SubTree ID="Recharge"/>
+    <SubTree ID="NavigateTo">
+      <input_port name="goal"/>
+    </SubTree>
+    <SubTree ID="Localize"/>
+  </TreeNodesModel>
+</root>
