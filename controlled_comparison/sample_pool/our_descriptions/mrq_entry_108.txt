@@ -1,0 +1,20 @@
+The mission describes selecting and setting one of three motion goals according to the robot's end-effector
+position.
+
+First, the robot will execute the subtrees 3-goal, 2-traverse, and mg_goal1 in order. If a subtree succeeds, it
+will stop the fallback. If a subtree fails, it will continue to the next subtree. While a later subtree is
+running, it will re-evaluate the earlier subtrees. If an earlier subtree then succeeds, it will halt the running
+subtree and stop the fallback.
+
+Next, it will execute the custom action EEYThreshold with threshold read from {y_threshold} and ee_y read from
+{ee_y}, followed by the custom action SetMGGoal with mp_param_x read from {mp_3_x} and mg_trans_x stored under
+{mg_trans_x}. If either action fails, it will stop the sequence. While SetMGGoal is running, it will re-evaluate
+EEYThreshold. If EEYThreshold then fails, it will halt SetMGGoal and stop the sequence.
+
+Next, it will execute the custom action EEZThreshold with threshold read from {z_threshold} and ee_z read from
+{ee_z}, followed by the custom action SetMGGoal with mp_param_x read from {mp_2_x} and mg_trans_x stored under
+{mg_trans_x}. If either action fails, it will stop the sequence. While SetMGGoal is running, it will re-evaluate
+EEZThreshold. If EEZThreshold then fails, it will halt SetMGGoal and stop the sequence.
+
+Finally, it will execute the custom action SetMGGoal with mp_param_x read from {mp_1_x} and mg_trans_x stored
+under {mg_trans_x}.

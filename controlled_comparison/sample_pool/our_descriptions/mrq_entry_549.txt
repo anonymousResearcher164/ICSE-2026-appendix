@@ -1,0 +1,6 @@
+The mission describes a sequence that executes one arm pose action.
+
+First, the robot will execute the following action in order and stop the sequence if the action fails.
+
+Next, it will execute custom action ExecuteGroupPose with goal 0 0 0 0 0 0 1, group_name arm, is_absolute 0,
+service_name execute_group_pose, and tolerance 0.01.

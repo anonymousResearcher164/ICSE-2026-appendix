@@ -1,0 +1,39 @@
+The mission describes navigating to a goal, computing a path, following the path, replanning when needed, and
+recovering from navigation failures.
+
+First, the robot will execute the main navigation behavior. If the main behavior fails, it will execute the
+recovery behavior. It will retry the main behavior after recovery. It will allow two recovery attempts before
+stopping execution.
+
+Next, it will execute path computation and path following in order. It will advance to the next action while the
+current action is running or has succeeded. It will stop the sequence if an action fails.
+
+Then, it will execute the path-computation recovery behavior at a rate of 1 Hz. It will try ROS action
+ComputePathToPose with the goal read from {goal}. It will store the computed path under {path}. It will use
+GridBased as the planner identifier. If path computation fails, it will execute the path-computation recovery
+fallback. It will retry path computation after recovery. It will allow four recovery attempts before stopping
+execution.
+
+Next, it will execute GoalUpdated and then the global planner recovery actions if the goal has not been updated.
+It will stop the fallback when GoalUpdated succeeds. It will re-evaluate GoalUpdated while the later recovery
+action is running.
+
+Then, it will execute the global planner recovery actions with RoundRobin. It will call ROS action
+ClearEntireCostmap with service_name set to global_costmap/clear_entirely_global_costmap. It will wait for 2
+seconds as an alternative recovery action.
+
+Next, it will execute the path-following recovery behavior after path computation. It will try ROS action
+FollowPath with the path read from {path}. It will use FollowPath as the controller identifier. If path following
+fails, it will execute the path-following recovery fallback. It will retry path following after recovery. It will
+allow four recovery attempts before stopping execution.
+
+Then, it will execute GoalUpdated and then the local planner recovery actions if the goal has not been updated. It
+will stop the fallback when GoalUpdated succeeds. It will re-evaluate GoalUpdated while the later recovery action
+is running.
+
+Finally, it will execute the local planner recovery actions with RoundRobin. It will call ROS action
+ClearEntireCostmap with service_name set to local_costmap/clear_entirely_local_costmap. It will execute ROS action
+Spin with spin_dist set to 1.57.
+
+Finally, it will execute GoalUpdated and then wait for 5 seconds if the goal has not been updated. It will stop
+the fallback when GoalUpdated succeeds. It will re-evaluate GoalUpdated while the wait action is running.

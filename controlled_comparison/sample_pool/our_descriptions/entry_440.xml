@@ -1,0 +1,26 @@
+<root main_tree_to_execute="MainTree">
+	<BehaviorTree ID="MainTree">
+		<Repeat num_cycles="9999">
+			<Sequence>
+				<Sequence>
+					<Fallback>
+						<Sequence>
+							<HumanPoseDetect expected_pose_left="" expected_pose_right=""
+								pose_left_speech="{pose_left_speech}" pose_right_speech="{pose_right_speech}" />
+						</Sequence>
+						<Script code="full_left_msg := 'Left, ' + pose_left_speech" />
+						<TextToSpeechActionClient msg="full_left_msg"/>
+					</Fallback>
+					<Fallback>
+						<Sequence>
+							<HumanPoseDetect expected_pose_left="" expected_pose_right=""
+								pose_left_speech="{pose_left_speech}" pose_right_speech="{pose_right_speech}" />
+						</Sequence>
+						<Script code="full_right_msg := 'Right, ' + pose_right_speech" />
+						<TextToSpeechActionClient msg="full_right_msg" />
+					</Fallback>
+				</Sequence>
+			</Sequence>
+		</Repeat>
+	</BehaviorTree>
+</root>

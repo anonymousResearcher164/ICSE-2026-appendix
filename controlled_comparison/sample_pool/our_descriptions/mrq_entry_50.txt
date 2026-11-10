@@ -1,0 +1,7 @@
+The mission describes fixing the rudder and then waiting for one second.
+
+First, the root sequence will execute the following actions in order and stop if any action fails. The robot will
+execute custom action FixRudder with depth 1.0, rudder 2.0, and speed_knots 3.0. It will delay execution for 1000
+milliseconds before running the AlwaysSuccess action.
+
+Next, it will execute AlwaysSuccess after the delay.

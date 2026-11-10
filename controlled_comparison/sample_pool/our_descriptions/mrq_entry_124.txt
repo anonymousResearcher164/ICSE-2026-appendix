@@ -1,0 +1,51 @@
+The mission describes a robot arm adding collision objects to a planning scene and moving objects from both sides
+of a conveyor to designated placement locations.
+
+First, the root sequence will execute the collision setup, add the box surface, complete the left-side operation
+once, and complete the right-side operation once in order. The robot will stop the sequence if any action fails.
+
+Next, the first nested sequence will execute custom action Add groud to scene with group_name arm, plane_name
+ground, plane_normal 0 0 1, plane_pose 0 0 0 0 0 0 1, and service_name execute_add_plane. It will then execute
+custom action Add left wall with auto_subfix 1, box_name left_wall, box_pose 2.76 1.2 1.35 0 0 0 1, box_size 5.0
+0.001 2.7, group_name arm, is_absolute 1, and service_name execute_add_box. It will next execute custom action Add
+right wall with auto_subfix 1, box_name right_wall, box_pose 2.76 -1.2 1.35 0 0 0 1, box_size 5.0 0.001 2.7,
+group_name arm, is_absolute 1, and service_name execute_add_box. It will then execute custom action Add top wall
+with auto_subfix 1, box_name top_wall, box_pose 4 0 2.7 0 0 0 1, box_size 2 2.4 0.001, group_name arm, is_absolute
+1, and service_name execute_add_box. It will finally execute custom action Add conveyor with auto_subfix 1,
+box_name conveyor, box_pose -1.341 0 0.25 0 0 0 1, box_size 2.56 0.56 0.5, group_name arm, is_absolute 1, and
+service_name execute_add_box.
+
+Then, it will execute custom action box_surface with auto_subfix 0, box_name boxsur, box_pose 0.901 0 1.35 0 0 0
+1, box_size 0.001 2.4 2.7, group_name arm, is_absolute 1, and service_name execute_add_box. It will execute this
+action once.
+
+Next, it will execute the left sequence once. It will first execute custom action pre middle left with goal 0.0829
+-1.7568 2.5506 0.7786 -1.5734 -0.0038, group_name arm, service_name execute_group_joint_states, and tolerance
+0.01. It will then execute custom action remove boxes_surface with is_exact 1, obj_name boxsur, and service_name
+execute_remove_object. It will next execute custom action pick with constraint empty, eef_step 0.1, goal_type 0,
+goals 0.88 0.4994 0.5723 0.4979 0.5006 0.5000 0.5012, group_name arm, service_name execute_group_many_poses, and
+tolerance 0.01. It will then execute custom action lift up with axis z, goal 0.1, group_name arm, is_absolute 0,
+service_name execute_group_shift, and tolerance 0.01. It will next execute custom action pull out with axis x,
+goal -0.4, group_name arm, is_absolute 0, service_name execute_group_shift, and tolerance 0.01. It will then
+execute custom action post middle left with goal 0.7015 0.4237 1.7017 -0.0747 -0.0040 -0.0806, group_name arm,
+service_name execute_group_joint_states, and tolerance 0.01. It will next execute custom action place with goal
+0.7005 1.8997 2.0341 0.8173 0.0009 -0.0041, group_name arm, service_name execute_group_joint_states, and tolerance
+0.01. It will return to the post-middle-left position with the same joint-state goal. It will finally execute
+custom action box_surface with auto_subfix 0, box_name boxsur, box_pose 0.901 0 1.35 0 0 0 1, box_size 0.001 2.4
+2.7, group_name arm, is_absolute 1, and service_name execute_add_box.
+
+Finally, it will execute the right sequence once. It will first execute custom action pre middle right with goal
+0.0777 1.8904 -2.4741 -0.9875 1.5718 -0.0037, group_name arm, service_name execute_group_joint_states, and
+tolerance 0.01. It will then execute custom action ExecuteRemoveObject with is_exact 1, obj_name boxsur, and
+service_name execute_remove_object. It will next execute custom action pick with constraint empty, eef_step 0.1,
+goal_type 0, goals 0.88 -0.4455 0.5713 -0.5115 0.4876 -0.4901 0.5101, group_name arm, service_name
+execute_group_many_poses, and tolerance 0.01. It will then execute custom action lift up with axis z, goal 0.1,
+group_name arm, is_absolute 0, service_name execute_group_shift, and tolerance 0.01. It will next execute custom
+action pull out with axis x, goal -0.4, group_name arm, is_absolute 0, service_name execute_group_shift, and
+tolerance 0.01. It will then execute custom action post middle left with goal 0.7015 -0.4631 -1.6642 -1.0472
+0.0081 -0.0615, group_name arm, service_name execute_group_joint_states, and tolerance 0.01. It will next execute
+custom action place left with goal 0.7015 -1.8999 -2.0660 -0.7844 0.0080 -0.0615, group_name arm, service_name
+execute_group_joint_states, and tolerance 0.01. It will return to the post-middle-left position with the same
+joint-state goal. It will finally execute custom action boxes_surface with auto_subfix 0, box_name boxsur,
+box_pose 0.901 0 1.35 0 0 0 1, box_size 0.001 2.4 2.7, group_name arm, is_absolute 1, and service_name
+execute_add_box.

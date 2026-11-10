@@ -1,0 +1,22 @@
+The mission describes the robot's automatic localization.
+
+First, the robot will execute the initialPoseReceived check and the doSelfLocalization sequence consecutively. If
+either action succeeds, the fallback will succeed. If both actions fail, the fallback will restart from the
+initialPoseReceived check until one action succeeds.
+
+Next, it will execute the retry_client_request sequence and the retry_localization sequence in order. If either
+action succeeds, it will remember that action and move to the next one. If an action fails, it will restart the
+sequence from that action.
+
+Then, it will execute globalLocalizationServiceRequest repeatedly until it succeeds or five attempts have been
+made.
+
+After that, it will execute the inner fallback and the IsLocalized check in order. If either action fails, the
+sequence will stop.
+
+Next, it will check whether IsLocalized is true. If the check succeeds, the fallback will stop. If the check
+fails, it will execute the unnamed sequence.
+
+Then, it will execute Spin, BackUp, and Spin in order. If any action fails, the sequence will stop.
+
+Finally, it will retry the localization sequence until it succeeds or ten attempts have been made.

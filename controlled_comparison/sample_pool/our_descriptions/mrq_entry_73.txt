@@ -1,0 +1,11 @@
+The mission describes a robot carrying a tray from its initial location to a table.
+
+First, the robot will execute the tray-carrying sequence one time.
+
+Next, it will execute the following actions in order and stop the sequence if any action fails: custom action
+LookAtTheTray, the handle-detection retry, custom action PickTray, custom action LookUp, custom action MoveBack,
+custom action GoToTable, and custom action PlaceTray.
+
+Next, it will keep trying to execute the timeout-controlled handle detection until it succeeds.
+
+Next, it will interrupt custom action DetectHandles if it fails to execute within 300 milliseconds.

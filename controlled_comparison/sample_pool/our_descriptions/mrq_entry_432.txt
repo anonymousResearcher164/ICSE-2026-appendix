@@ -1,0 +1,16 @@
+The mission describes navigating to an updated goal while periodically replanning and following a truncated path.
+
+First, the robot will execute the rate-controlled planning subtree and then the path-following subtree in order.
+It will advance to the next subtree while the current subtree is running or has succeeded. It will stop the
+pipeline if any subtree fails.
+
+Next, it will execute the planning sequence at a rate of 1.0 Hz. It will execute the goal update and path
+truncation actions in order and stop the sequence if either action fails. It will update the goal by reading the
+value stored under {goal} and storing the updated value under {updated_goal}. It will execute ROS action
+ComputePathToPose with the updated goal, store the resulting path under {path}, and use the GridBased planner. It
+will execute custom action TruncatePath with the path read from {path} and store the truncated path under
+{truncated_path}.
+
+Finally, it will keep executing ROS action FollowPath with the truncated path read from {truncated_path} and the
+FollowPath controller. If the action succeeds, it will restart it. If the action fails, it will stop looping and
+continue execution.

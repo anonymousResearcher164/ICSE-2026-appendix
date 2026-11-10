@@ -1,0 +1,14 @@
+The mission describes continuous variant execution and person recognition with fallback movement.
+
+First, the robot will execute the repeat branch and the person-recognition branch simultaneously. Both branches
+will need to succeed for the parallel execution to succeed.
+
+Next, it will execute custom action VariantAction continuously. The action will use the value read from the
+blackboard key {variant}.
+
+Then, it will execute the person-recognition sequence in order. The sequence will stop if an action fails.
+
+Afterward, it will execute custom action peoplerecognition. It will then execute the fallback actions
+consecutively. If custom action getPersonPose succeeds, it will stop the fallback. If custom action getPersonPose
+fails, it will execute custom action moveRoboterPosition with approachRadius set to 200, x set to 3000, and y set
+to -12000.

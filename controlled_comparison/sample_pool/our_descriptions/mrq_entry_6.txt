@@ -1,0 +1,50 @@
+The mission describes navigating to a room, finding and grasping a bottle, and requesting help if the task cannot
+be completed.
+
+First, the root fallback will execute S1. If S1 does not succeed, it will execute Ask_for_help. The robot will
+stop the fallback when one of these actions succeeds.
+
+Next, S1 will execute FB2 followed by S2 in order. If either subtree fails, S1 will stop.
+
+Next, FB2 will execute S7. If S7 does not succeed, it will execute FollowHuman. The fallback will stop when one
+child succeeds, and it will fail if both children fail.
+
+Next, S7 will check Room_known. If Room_known succeeds, it will execute FB10. If Room_known fails, S7 will fail.
+
+Next, FB10 will check Robot_in_room. If Robot_in_room succeeds, it will stop successfully. If Robot_in_room fails,
+it will execute Go_to_room. The fallback will fail if both actions fail.
+
+Next, S2 will execute FB3 followed by FB4 in order. If either subtree fails, S2 will stop.
+
+Next, FB3 will check Bottle_found. If Bottle_found succeeds, it will stop successfully. If Bottle_found fails, it
+will execute Find_bottle. The fallback will fail if both actions fail.
+
+Next, FB4 will check Bottle_grasped. If Bottle_grasped succeeds, it will stop successfully. If Bottle_grasped
+fails, it will execute FB5. The fallback will fail if both children fail.
+
+Next, FB5 will execute S3. If S3 fails, it will execute FB6. The fallback will stop when one child succeeds, and
+it will fail if both children fail.
+
+Next, S3 will execute FB7 followed by S4 in order. If either subtree fails, S3 will stop.
+
+Next, FB7 will execute S6. If S6 does not succeed, it will execute Compute_inv_pose. The fallback will stop when
+one child succeeds, and it will fail if both children fail.
+
+Next, S6 will check Inv_pose_computed followed by Inv_pose_valid. If either condition fails, S6 will fail.
+
+Next, S4 will execute FB8 followed by S5 in order. If either subtree fails, S4 will stop.
+
+Next, FB8 will check Robot_at_inv_pose. If Robot_at_inv_pose succeeds, it will stop successfully. If
+Robot_at_inv_pose fails, it will execute S8. The fallback will fail if both children fail.
+
+Next, S8 will execute Keep_arms_for_grasp followed by Go_to_inv_pose in order. If either action fails, S8 will
+stop.
+
+Next, S5 will execute FB9 followed by Grasp_bottle in order. If FB9 fails, S5 will stop before executing
+Grasp_bottle.
+
+Next, FB9 will check Bottle_located. If Bottle_located succeeds, it will stop successfully. If Bottle_located
+fails, it will execute Locate_bottle. The fallback will fail if both actions fail.
+
+Finally, FB6 will execute Set_inv_pose_not_valid. If that action fails, it will execute Keep_running. The fallback
+will stop when one action succeeds, and it will fail if both actions fail.

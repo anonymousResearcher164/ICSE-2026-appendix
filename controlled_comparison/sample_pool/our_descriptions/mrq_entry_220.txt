@@ -1,0 +1,185 @@
+The mission describes the robot's autonomous driving behavior for waiting, initialization, lane keeping, lane
+changes, A-star navigation, global path following, traffic-light handling, obstacle avoidance, and recovery.
+
+First, the robot will execute the root fallback by trying its child subtrees from left to right until one
+succeeds. If a child fails, it will move to the next child. If no child succeeds, the root execution will fail.
+
+Next, it will execute the first sequence only when checkMissionWait is true. It will stop the robot through custom
+action stop. If checkMissionWait is false, this sequence will fail.
+
+Then, it will execute the initialization sequence when the first sequence does not succeed. It will check whether
+checkExistPathGlobal is true. If that condition is true, it will execute custom action init. It will then execute
+the state-selection fallback and publish data through custom action publishData. If any required action fails, the
+initialization sequence will stop.
+
+Subsequently, it will execute the state-selection fallback by trying the lane-keeping, lane-change-left,
+lane-change-right, A-star, and recovery subtrees in order until one succeeds.
+
+First, it will execute the lane-keeping sequence when checkStateLaneKeeping is true. It will generate a
+lane-keeping path through custom action genPathLaneKeeping. It will set the path through custom action setPath. It
+will then execute the lane-keeping decision fallback.
+
+Next, it will execute the lane-keeping decision fallback by first handling a detected front object. If that
+subtree fails, it will handle a global lane-change request. If both subtrees fail, it will set the state to lane
+keeping through custom action setStateLaneKeeping.
+
+Then, it will execute the front-object sequence when checkFrontObject is true. It will execute the front-object
+response fallback.
+
+First, it will try the near-corner sequence. If checkNearCorner is true, it will accelerate through custom action
+acc.
+
+Next, it will try the near-stopline sequence. If checkNearStopline is true, it will accelerate through custom
+action acc.
+
+Finally, it will try the keep-lane-profit sequence. If checkProfitKeeplane is true, it will accelerate through
+custom action acc.
+
+Next, it will execute the state-change fallback if the preceding front-object response does not succeed. It will
+first try a left lane change. If that fails, it will try a right lane change. If both lane changes fail, it will
+try A-star navigation.
+
+First, it will execute the left-lane-change sequence when checkLaneChangeableLeft is true. It will generate a left
+lane-change path through custom action genPathLaneChangeLeft. It will then execute the left-lane-change response
+fallback.
+
+Next, it will execute the collision-response sequence when checkCollision is true. It will set the state to lane
+keeping through custom action setStateLaneKeeping. It will keep the lane through custom action keepLane.
+
+Finally, it will execute the left-lane-change action sequence if the collision-response sequence does not succeed.
+It will set the state to left lane change through custom action setStateLaneChangeLeft. It will change lanes to
+the left through custom action laneChangeLeft.
+
+Next, it will execute the right-lane-change sequence when checkLaneChangeableRight is true. It will generate a
+right lane-change path through custom action genPathLaneChangeRight. It will then execute the right-lane-change
+response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will set the state to lane
+keeping through custom action setStateLaneKeeping. It will keep the lane through custom action keepLane.
+
+Finally, it will execute the right-lane-change action sequence if the collision-response sequence does not
+succeed. It will set the state to right lane change through custom action setStateLaneChangeRight. It will change
+lanes to the right through custom action laneChangeRight.
+
+Next, it will execute the A-star sequence when checkAbleAstar is true. It will then execute the local-space
+preparation sequence when checkEmptyLocal is true. It will stop through custom action stop. It will set the state
+to A-star through custom action setStateAstar. It will generate an A-star path through custom action genPathAstar.
+
+Next, it will execute the left-global-lane-change sequence when checkGlobalLaneChange and checkLeftChange are
+true. It will first check whether a lane-change path exists. If checkGenPathLaneChange is false, it will generate
+a left lane-change path through custom action genPathLaneChangeLeft. It will then execute the left-lane-change
+response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will set the state to lane
+keeping through custom action setStateLaneKeeping. It will keep the lane through custom action keepLane.
+
+Finally, it will execute the left-lane-change action sequence if the collision-response sequence does not succeed.
+It will set the state to left lane change through custom action setStateLaneChangeLeft. It will change lanes to
+the left through custom action laneChangeLeft.
+
+Next, it will execute the right-global-lane-change sequence when the left-global-lane-change sequence does not
+succeed. It will check whether a lane-change path exists. If checkGenPathLaneChange is false, it will generate a
+right lane-change path through custom action genPathLaneChangeRight. It will then execute the right-lane-change
+response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will set the state to lane
+keeping through custom action setStateLaneKeeping. It will keep the lane through custom action keepLane.
+
+Finally, it will execute the right-lane-change action sequence if the collision-response sequence does not
+succeed. It will set the state to right lane change through custom action setStateLaneChangeRight. It will change
+lanes to the right through custom action laneChangeRight.
+
+Next, it will execute the lane-change-left state sequence when checkStateLaneChangeLeft is true. It will set the
+path through custom action setPath. It will then execute the lane-change-left response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will set the state to lane
+keeping through custom action setStateLaneKeeping.
+
+Next, it will execute the lane-change-completion sequence when checkEndLaneChange is true. It will set the state
+to lane keeping through custom action setStateLaneKeeping.
+
+Finally, it will keep the left-lane-change state through custom action setStateLaneChangeLeft if neither preceding
+response succeeds.
+
+Next, it will execute the lane-change-right state sequence when checkStateLaneChangeRight is true. It will set the
+path through custom action setPath. It will then execute the lane-change-right response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will set the state to lane
+keeping through custom action setStateLaneKeeping.
+
+Next, it will execute the lane-change-completion sequence when checkEndLaneChange is true. It will set the state
+to lane keeping through custom action setStateLaneKeeping.
+
+Finally, it will keep the right-lane-change state through custom action setStateLaneChangeRight if neither
+preceding response succeeds.
+
+Next, it will execute the A-star state sequence when checkStateAstar is true. It will set the path through custom
+action setPath. It will then execute the local-navigation fallback.
+
+First, it will execute the collision-recovery sequence when checkCollision is true. It will stop through custom
+action stop. It will generate an A-star path through custom action genPathAstar.
+
+Next, it will execute the local-navigation-completion sequence when checkFinishAstar is true. It will mark the
+local path as finished through custom action setFinishLocal. It will set the state to lane keeping through custom
+action setStateLaneKeeping.
+
+Finally, it will follow the local path through custom action localPathfollow if neither preceding local-navigation
+response succeeds.
+
+Next, it will execute the recovery sequence after the other state-selection options fail. The AlwaysFailure node
+will always fail. The state-selection fallback will therefore fail when no preceding state can succeed.
+
+Next, it will execute the final root fallback sequence after the initialization sequence fails. Its AlwaysFailure
+node will always fail. It will then check whether checkExistPathGlobal is true. If that condition is true, it will
+execute custom action init. It will execute the global-path fallback and then set the path through custom action
+setPath. It will execute the driving fallback and set the path again through custom action setPath.
+
+First, it will execute the global-path fallback by trying the front-object response, the traffic-light response,
+and the default driving action in order.
+
+Next, it will execute the front-object response sequence when checkFrontObject is true. It will execute the
+global-following response when checkIsGlobalFollow is true. It will then execute the local-front-object fallback.
+
+First, it will execute the near-corner sequence when checkNearCorner is true. It will accelerate through custom
+action acc.
+
+Next, it will execute the near-stopline sequence when checkNearStopline is true. It will accelerate through custom
+action acc.
+
+Finally, it will execute the keep-lane-profit sequence when checkProfitKeeplane is true. It will accelerate
+through custom action acc.
+
+Next, it will execute the lane-change fallback if the global-following response does not succeed. It will check
+whether checkLaneChange is true. If that condition is true, it will execute the lane-change decision fallback.
+
+First, it will execute the left-lane-change sequence when checkLaneChangeableLeft is true. It will generate a left
+lane-change path through custom action genPathLaneChangeLeft if checkGenPathLaneChange is false. It will then
+execute the left-lane-change response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will keep the lane through
+custom action keepLane.
+
+Finally, it will change lanes to the left through custom action laneChangeLeft if the collision-response sequence
+does not succeed.
+
+Next, it will execute the right-lane-change sequence if the left-lane-change sequence does not succeed. It will
+generate a right lane-change path through custom action genPathLaneChangeRight if checkGenPathLaneChange is false.
+It will then execute the right-lane-change response fallback.
+
+First, it will execute the collision-response sequence when checkCollision is true. It will keep the lane through
+custom action keepLane.
+
+Finally, it will change lanes to the right through custom action laneChangeRight if the collision-response
+sequence does not succeed.
+
+Next, it will execute the traffic-light sequence when checkTrafficLight is true. It will execute the traffic-light
+response fallback.
+
+First, it will execute the passable-traffic-light sequence when checkPassAbleTrafficLight is true. It will execute
+the collision sequence. If checkCollision is true, it will stop through custom action stop. It will then drive
+through custom action drive.
+
+Finally, it will stop for the traffic light through custom action stopTrafficLight if checkPassAbleTrafficLight is
+false.
+
+Finally, it will drive through custom action drive if the front-object and traffic-light subtrees do not succeed.

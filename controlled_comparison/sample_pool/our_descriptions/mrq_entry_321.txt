@@ -1,0 +1,22 @@
+The mission describes generating grasp candidates from a tabletop scene.
+
+First, the robot will execute tabletop segmentation, conditional object processing, and grasp candidate generation
+in order. The sequence will stop if any action fails.
+
+Next, it will execute the custom action TableTopSegmentation with the original point cloud read from
+original_cloud, the scene image read from image_scene, and the table height read from table_height. The action
+will store the transformed point cloud under original_cloud_transformed, the tabletop cloud under tabletop_cloud,
+the plane cloud under plane_cloud, and the non-plane cloud under nonplane_cloud. It will retry this action for up
+to three attempts if it fails.
+
+Then, it will execute the conditional sequence while the False condition is true. The sequence will end when the
+False condition is false. It will execute the DesiredObjectEntryCheck decorator with the desired object read from
+desired_object. The decorator will execute the custom action ObjectCloudExtraction with the original point cloud
+read from original_cloud, the scene image read from image_scene, the desired object read from desired_object, and
+the tabletop cloud read from tabletop_cloud. The action will store the extracted object cloud under object_cloud.
+It will then execute the custom action TableTopClustering with the object cloud read from object_cloud and the
+tabletop cloud read from tabletop_cloud.
+
+Finally, it will execute the custom action GenerateGraspingCandidates with the object cloud read from
+object_cloud, the table height read from table_height, and the transformed original point cloud read from
+original_cloud_transformed. The action will store the grasp candidates under grasp_candidates.

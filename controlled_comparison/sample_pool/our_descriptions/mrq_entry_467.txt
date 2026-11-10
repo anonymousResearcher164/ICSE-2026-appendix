@@ -1,0 +1,17 @@
+The mission describes a fallback behavior for moving an object, returning an object, or placing the robot in
+standby.
+
+First, the robot will execute the fallback by trying the first sequence, then the second sequence, and finally the
+StandbyObject action until one option succeeds. If all options fail, the fallback will fail.
+
+Next, it will execute the first sequence in order. It will execute the custom action MoveObject, store its result
+under the key {action}, and read the values from keys {move_base_finished}, {move_base_idle}, and
+{pose_queue_size}. If MoveObject fails, the sequence will stop. If it succeeds, it will execute the custom action
+WaitObject with the result stored under the key {action} and a wait duration of 3.
+
+Next, it will execute the second sequence in order. It will execute the custom action ReturnObject, store its
+result under the key {action}, and read the values from keys {home_pose_far}, {move_base_finished}, and
+{move_base_idle}. If ReturnObject fails, the sequence will stop. If it succeeds, it will execute the custom action
+WaitObject with the result stored under the key {action} and a wait duration of 3.
+
+Finally, it will execute the custom action StandbyObject and store its result under the key {action}.

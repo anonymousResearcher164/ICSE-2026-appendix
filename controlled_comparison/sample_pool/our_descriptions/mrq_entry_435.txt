@@ -1,0 +1,18 @@
+The mission describes the animal's pasture and shed movement behavior.
+
+The robot will execute the three fallback branches in order until one branch succeeds. If all branches fail, it
+will restart the fallback from the first branch.
+
+First, the first sequence will execute its actions in order while remembering successful actions. If an action
+fails, it will restart the sequence from that action. It will proceed when IsOnPasture is true. It will then
+proceed when IsDay is true. It will then proceed when IsInShed is true. It will execute custom action LeaveShed.
+It will execute custom action FindRandomPastureField. It will execute custom action Move.
+
+Next, the second sequence will execute its actions in order while remembering successful actions. If an action
+fails, it will restart the sequence from that action. It will proceed when IsOnPasture is true. It will then
+proceed when IsNight is true. It will proceed when IsInShed is false. It will execute custom action FindShed. It
+will execute custom action Move. It will execute custom action EnterShed.
+
+Finally, the third sequence will execute its actions in order while remembering successful actions. If an action
+fails, it will restart the sequence from that action. It will proceed when IsDay is true. It will then proceed
+when IsInShed is false. It will execute custom action RandomMove.

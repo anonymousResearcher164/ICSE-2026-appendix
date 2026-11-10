@@ -1,0 +1,33 @@
+The mission describes navigating to a goal while computing a path, following that path, and performing recovery
+actions when navigation fails.
+
+First, the robot will execute the main navigation action. If navigation fails, it will execute a recovery action
+and retry navigation. It will stop after six recovery attempts fail.
+
+Next, it will execute path computation and path following in order. It will advance to path following while path
+computation is running or has succeeded. It will stop the sequence if either action fails.
+
+Then, it will execute path computation at a rate of 1.0 hertz. It will retry path computation once if it fails. It
+will use the goal stored under {goal}. It will store the computed path under {path}. It will use the GridBased
+planner.
+
+Next, it will check whether the goal has been updated. If the goal has not been updated, it will clear the global
+costmap. It will stop the recovery fallback when either action succeeds.
+
+Then, it will execute path following. It will use the path stored under {path}. It will use the FollowPath
+controller. It will retry path following once if it fails.
+
+Next, it will check whether the goal has been updated. If the goal has not been updated, it will clear the local
+costmap. It will stop the recovery fallback when either action succeeds.
+
+Then, it will execute the navigation recovery fallback after navigation fails. It will check whether the goal has
+been updated. If the goal has not been updated, it will perform recovery actions in rotation.
+
+Next, it will clear the local costmap and then clear the global costmap in order. It will stop this clearing
+sequence if either action fails.
+
+Then, it will spin by 1.57 radians.
+
+Next, it will wait for 5 seconds.
+
+Finally, it will back up by 0.15 meters at a speed of 0.025 meters per second.

@@ -1,0 +1,27 @@
+The mission describes navigation to a goal with path planning, path following, replanning, and recovery actions.
+
+First, The robot will execute the main navigation sequence. It will execute the path-planning and path-following
+actions in order. It will advance to the next action while the current action is running or has succeeded. It will
+stop the sequence if an action fails. If the main navigation sequence fails, it will execute the recovery actions.
+After recovery, it will retry the main navigation sequence. It will stop execution when six recovery attempts have
+been exhausted.
+
+Next, it will execute the path-planning recovery subtree at a rate of 1.0 Hz. It will execute the
+ComputePathToPose action with the goal read from {goal}, the path stored under {path}, and the planner ID
+GridBased. If that action fails, it will clear the global costmap. After clearing the global costmap, it will
+retry the ComputePathToPose action. It will retry this recovery sequence once after a failure.
+
+Next, it will execute the path-following recovery subtree. It will execute the FollowPath action with the path
+read from {path} and the controller ID FollowPath. If that action fails, it will clear the local costmap. After
+clearing the local costmap, it will retry the FollowPath action. It will retry this recovery sequence once after a
+failure.
+
+Finally, it will execute the recovery fallback. It will check whether the goal has been updated. If the goal has
+been updated, it will stop the recovery fallback. If the goal has not been updated, it will execute the recovery
+actions. It will re-evaluate the goal-update check while the recovery actions are running. If the goal becomes
+updated, it will halt the running recovery action and stop the recovery fallback.
+
+Next, it will execute the recovery actions in sequence. It will clear the local costmap. It will then clear the
+global costmap. It will then spin by 1.57 radians. It will then wait for 5 seconds. If an action succeeds, it will
+remember that action and move to the next action. If an action fails, it will restart the sequence from that
+action.

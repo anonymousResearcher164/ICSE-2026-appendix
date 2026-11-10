@@ -1,0 +1,44 @@
+The mission describes repeated LTL-based replanning, action execution, and state updates.
+
+First, the robot will execute the main sequence {num_cycles} times.
+
+Next, it will execute the pre-check fallback, the reactive action sequence, and the LTL update in order and stop
+the sequence if any action fails.
+
+Then, it will execute the LTLPreCheck condition using ltl_state_current, ltl_state_desired_sequence, and
+ltl_state_executed_sequence. If LTLPreCheck is true, this fallback will succeed. If LTLPreCheck is false, it will
+execute custom action ReplanningRequestLevel2 using ltl_state_current, ltl_state_executed_sequence, and
+replanning_request, and will force that action to fail.
+
+Next, it will execute the reactive sequence and re-evaluate earlier actions while a later action is running. If an
+earlier action fails during re-evaluation, it will halt the running action and stop the sequence.
+
+Then, it will execute the FakeDetectionLevel1 fallback. If custom action FakeDetectionLevel1 using
+replanning_fake_input succeeds, the fallback will succeed. If that action fails, it will execute custom action
+ReplanningRequestLevel1 using ltl_state_current, ltl_state_executed_sequence, and replanning_request, and will
+force that action to fail.
+
+Next, it will execute the ReactiveLTLStateCheck fallback. If ReactiveLTLStateCheck using ltl_state_current and
+ltl_state_desired_sequence succeeds, the fallback will succeed. If ReactiveLTLStateCheck fails, it will execute
+custom action ReplanningRequestLevel2 using ltl_state_current, ltl_state_executed_sequence, and
+replanning_request, and will force that action to fail.
+
+Then, it will execute the FakeDetectionLevel3 fallback. If custom action FakeDetectionLevel3 using
+replanning_fake_input succeeds, the fallback will succeed. If that action fails, it will execute custom action
+ReplanningRequestLevel3 using ltl_state_current, ltl_state_executed_sequence, and replanning_request, and will
+force that action to fail.
+
+Next, it will read bt_action_type and compare it with the cases move, stay, start_training, and
+terminate_training. If bt_action_type matches move, it will execute custom action MoveAction using bt_action_type,
+current_action, move_base_finished, and move_base_idle, and will store its result under goal_sent. If
+bt_action_type matches stay, it will execute custom action StayAction using bt_action_type, current_action, and
+ltl_state_current. If bt_action_type matches start_training, it will execute custom action GuideAction using
+bt_action_type, current_action, and ltl_state_current. If bt_action_type matches terminate_training, it will
+execute custom action BackNormalAction using bt_action_type, current_action, and ltl_state_current. If no case
+matches, it will execute the default action AlwaysFailure. If the switch fails, it will execute custom action
+ReplanningRequestLevel3 using ltl_state_current, ltl_state_executed_sequence, and replanning_request, and will
+force that action to fail.
+
+Finally, it will execute custom action UpdateLTL using action_sequence, action_sequence_executed, and
+ltl_state_desired_sequence. It will store the resulting action type under bt_action_type and the resulting current
+action under current_action.

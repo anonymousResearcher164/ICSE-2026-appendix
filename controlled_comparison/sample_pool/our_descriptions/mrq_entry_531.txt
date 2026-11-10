@@ -1,0 +1,64 @@
+The mission describes navigating to a goal while computing, smoothing, and following a path with recovery
+behaviors.
+
+First, the robot will execute the main navigation action and retry it after recovery actions fail, for up to six
+retries.
+
+Next, it will execute the ResetterNode subtree before attempting navigation.
+
+First, it will execute the following actions in order and stop the sequence if any action fails: ROS action
+GoalUpdated and the NavigateWithReplanning subtree.
+
+Next, it will execute the NavigateWithReplanning subtree at a rate of 0.02 hertz.
+
+First, it will execute the ComputePathToPose subtree.
+
+First, it will execute ROS action ComputePathToPose with goal read from {goal}, path stored under {path_coarse},
+and planner ID GridBased. If this action fails, it will execute the recovery action and retry the main action once.
+
+Next, it will execute ROS action GoalUpdated and the ClearGlobalCostmap-Context subtree in order. If ROS action
+GoalUpdated fails, it will move to the ClearGlobalCostmap-Context subtree. If both actions fail, the fallback
+execution will fail.
+
+Next, it will execute the SmoothPath subtree when the distance condition with value 2.0 permits it.
+
+First, it will execute ROS action SmoothPath with the path read from {path_coarse}, the output path stored under
+{path}, and smoother ID SmoothPath. If this action fails, it will execute the recovery action and retry the main
+action once.
+
+Next, it will execute ROS action GoalUpdated and the recovery sequence consecutively. If ROS action GoalUpdated
+fails, it will execute the recovery sequence. If both alternatives fail, the fallback execution will fail.
+
+Next, it will execute the following actions in order and stop the sequence if any action fails: ROS action
+ClearGlobalCostmap-Smoother-Context with service name global_costmap/clear_entirely_global_costmap and ROS action
+ComputePathToPose with goal read from {goal}, path stored under {path_coarse}, and planner ID GridBased.
+
+Next, it will execute the FollowPath subtree.
+
+First, it will execute ROS action FollowPath with the path read from {path} and controller ID FollowPath. If this
+action fails, it will execute the recovery action and retry the main action once.
+
+Next, it will execute ROS action GoalUpdated and the ClearLocalCostmap-Context subtree consecutively. If ROS
+action GoalUpdated fails, it will execute the ClearLocalCostmap-Context subtree. If both actions fail, the
+fallback execution will fail.
+
+Next, it will execute ROS action ClearLocalCostmap-Context with service name
+local_costmap/clear_entirely_global_costmap.
+
+Finally, it will execute ROS action HadFeedback_FollowPath.
+
+Next, if the main navigation action fails, it will execute the recovery fallback and retry the main navigation
+action until the six retries are exhausted.
+
+First, it will execute ROS action GoalUpdated and the RecoveryActions subtree. If ROS action GoalUpdated fails, it
+will execute the RecoveryActions subtree. If either action succeeds, the fallback execution will stop.
+
+Next, it will execute the recovery actions in round-robin order.
+
+First, it will execute the following actions in order and stop the sequence if any action fails: ROS action
+ClearLocalCostmap-Subtree with service name local_costmap/clear_entirely_local_costmap and ROS action
+ClearGlobalCostmap-Subtree with service name global_costmap/clear_entirely_global_costmap.
+
+Next, it will execute ROS action Wait with a wait duration of 5 seconds.
+
+Finally, it will execute ROS action BackUp with a backup distance of 0.15 and a backup speed of 0.025.

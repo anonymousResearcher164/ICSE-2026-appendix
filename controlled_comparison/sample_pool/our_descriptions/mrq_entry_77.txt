@@ -1,0 +1,9 @@
+The mission describes three repetitions of a speech exchange.
+
+First, the robot will execute the sequence three times.
+
+Next, it will execute four actions in order and stop the sequence if any action fails. It will execute custom
+action SpeechToTextActionClient by reading input from the said key. It will execute custom action
+TextToSpeechActionClient by reading input from the said key. It will execute custom action
+SpeechToTextActionClient by reading input from the said key. It will execute custom action
+TextToSpeechActionClient by reading input from the said key.

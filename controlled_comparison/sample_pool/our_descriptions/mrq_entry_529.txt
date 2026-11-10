@@ -1,0 +1,10 @@
+The mission describes navigating to a goal by computing a path and following it.
+
+First, it will execute the actions in order and stop the sequence if any action fails. While an action is running
+or has succeeded, it will proceed to the next action.
+
+Next, it will execute ROS action DistanceController with a distance of 1.0. While the distance condition permits
+execution, it will run ROS action ComputePathToPose with the goal read from {goal}, store the resulting path under
+{path}, and use the GridBased planner.
+
+Finally, it will execute ROS action FollowPath with the path read from {path} and the FollowPath controller.

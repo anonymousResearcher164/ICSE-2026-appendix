@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute = "MainTree">
+    <BehaviorTree ID="MainTree">
+        <Repeat num_cycles="3">
+              <Sequence>
+                 <SpeechToTextActionClient text="{said}" />
+                 <TextToSpeechActionClient msg="{said}"/>
+                 <SpeechToTextActionClient text="{said}" />
+                 <TextToSpeechActionClient msg="{said}"/>
+              </Sequence>
+        </Repeat>
+    </BehaviorTree>
+</root>

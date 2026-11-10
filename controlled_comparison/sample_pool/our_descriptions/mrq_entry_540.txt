@@ -1,0 +1,5 @@
+The mission describes a robot saying something and then saying hello.
+
+First, the robot will execute the custom action SaySomething and the custom action SayHello in sequence. If an
+action succeeds, it will remember that action and move to the next one. If an action fails, it will restart the
+sequence from that action.

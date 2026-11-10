@@ -1,0 +1,15 @@
+The mission describes repeated movement to a shelf, shelf scanning, and tray-locus updates.
+
+First, the robot will repeat the following sequence forever because the repeat count is -1.
+
+Next, it will execute the outer sequence in order and stop the sequence if any action fails. It will execute
+custom action TrayUpdatePlanningScene. It will execute ROS action MoveBase with goal 2.1;-2.0;0.0. It will execute
+ROS action MoveBase with goal 2.1;-0.0;1.57. It will execute the inner sequence. It will execute custom action
+Pause with time limit 5 seconds.
+
+Finally, it will execute the inner sequence in order and stop the sequence if any action fails. It will execute
+ROS action TorsoControl with relative height 0.1. It will execute ROS action HeadControl with pitch 0.0 and yaw
+90.0. It will execute custom action ScanShelves and store the resulting tomato can stocking target poses under
+tomato_can_stocking_target_poses. It will execute custom action TraySetLoci with tray name shelf, locus poses read
+from tomato_can_stocking_target_poses, and occupied set to false. It will execute custom action
+TrayUpdatePlanningScene.

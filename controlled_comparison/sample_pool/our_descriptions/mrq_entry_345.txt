@@ -1,0 +1,14 @@
+The mission describes setting the left and right arm joints to the UPTRAY, EXTENDED, GRIPPING, and REST poses.
+
+First, the robot will execute the following actions in order and stop the sequence if any action fails. It will
+execute custom action GetArmJointsForPose with pose UPTRAY and store the result under joints_pose. It will execute
+custom action SetArmJointsLeft with joints_pose read from joints_pose. It will execute custom action
+SetArmJointsRight with joints_pose read from joints_pose. It will execute custom action GetArmJointsForPose with
+pose EXTENDED and store the result under joints_pose. It will execute custom action SetArmJointsLeft with
+joints_pose read from joints_pose. It will execute custom action SetArmJointsRight with joints_pose read from
+joints_pose. It will execute custom action GetArmJointsForPose with pose GRIPPING and store the result under
+joints_pose. It will execute custom action SetArmJointsLeft with joints_pose read from joints_pose. It will
+execute custom action SetArmJointsRight with joints_pose read from joints_pose. It will execute custom action
+GetArmJointsForPose with pose REST and store the result under joints_pose. It will execute custom action
+SetArmJointsLeft with joints_pose read from joints_pose. It will execute custom action SetArmJointsRight with
+joints_pose read from joints_pose.

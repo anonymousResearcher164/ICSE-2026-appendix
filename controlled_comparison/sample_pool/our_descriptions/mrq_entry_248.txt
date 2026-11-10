@@ -1,0 +1,23 @@
+The mission describes navigation to a goal with path planning, path following, and recovery actions.
+
+First, the robot will execute the main navigation behavior. If the main navigation behavior fails, it will execute
+recovery actions and retry the main navigation behavior. It will allow up to 6 recovery attempts before stopping
+if recovery fails or all retries are exhausted.
+
+Next, it will execute path computation and path following in order. It will stop the navigation sequence if an
+action fails. While an action is running or has succeeded, it will proceed to the next action.
+
+Next, it will execute the path computation recovery behavior at a rate of 1 Hz. It will execute the ROS action
+ComputePathToPose with the goal read from goal, the resulting path stored under path, and the planner ID set to
+GridBased. If path computation fails, it will execute the ROS action ClearEntireCostmap with the service name
+global_costmap/clear_entirely_global_costmap and retry path computation once.
+
+Next, it will execute the path following recovery behavior. It will execute the ROS action FollowPath with the
+path read from path and the controller ID set to FollowPath. If path following fails, it will execute the ROS
+action ClearEntireCostmap with the service name local_costmap/clear_entirely_local_costmap and retry path
+following once.
+
+Finally, it will execute the recovery fallback. If GoalUpdated is true, it will stop the recovery behavior.
+Otherwise, it will execute the local costmap clearing action, the global costmap clearing action, the spin action
+with a spin distance of 1.57, and the wait action with a wait duration of 5 in sequence. If any recovery action
+fails, it will stop the recovery sequence.

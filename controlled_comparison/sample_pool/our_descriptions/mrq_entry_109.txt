@@ -1,0 +1,7 @@
+The mission describes repeatedly navigating between two target poses.
+
+First, the robot will execute the following sequence ten times.
+
+Next, it will execute the actions in order and stop the sequence if any action fails. It will execute custom
+action NavigateToAction with goal 0.5;0.5;0. It will then execute custom action NavigateToAction with goal
+-0.5;-0.5;0.

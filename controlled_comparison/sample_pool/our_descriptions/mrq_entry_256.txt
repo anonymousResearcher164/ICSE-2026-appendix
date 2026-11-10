@@ -1,0 +1,15 @@
+The mission describes the repeated execution of a pre-check, a movement action, and a state update.
+
+First, The robot will execute the sequence {num_cycles} times.
+
+Next, it will execute the following actions in order and stop the sequence if any action fails.
+
+Then, it will execute custom action LTLPreCheck with ltl_state_current read from ltl_state_current and
+ltl_state_desired_sequence read from ltl_state_desired_sequence.
+
+Next, it will execute custom action MoveAction with move_base_finished read from move_base_finished,
+move_base_idle read from move_base_idle, and nav_goal read from nav_goal. It will store the action result under
+action.
+
+Finally, it will execute custom action UpdateLTL with action_sequence and ltl_state_desired_sequence read from and
+stored under their respective keys. It will store nav_goal under nav_goal.

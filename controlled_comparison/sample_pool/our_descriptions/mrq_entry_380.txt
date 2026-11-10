@@ -1,0 +1,12 @@
+The mission describes checking whether the robot is full, moving to the closest resource, and waiting for 15
+frames.
+
+First, the root sequence will execute the following actions in order and stop if any action fails. The robot will
+check whether isFull is true, execute custom action goClosestR, and execute custom action waitFrames with
+barout="", baz="", fooin="", and frames=15.
+
+Next, it will check whether isFull is true.
+
+Then, it will execute custom action goClosestR.
+
+Finally, it will execute custom action waitFrames with barout="", baz="", fooin="", and frames=15.

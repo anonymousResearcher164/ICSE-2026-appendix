@@ -1,0 +1,94 @@
+The mission describes a competition behavior that repeatedly restores the robot to a rest pose, fills a tray with
+tomato cans from a table, and transfers the cans from the tray to a shelf.
+
+First, the root sequence will execute the FullCompetitionMode subtree in order and stop if it fails.
+
+Next, the robot will repeat the sequence of GetInRestPose and DoYourTrick indefinitely.
+
+First, the GetInRestPose sequence will obtain the arm joints for the REST pose and then coordinate the head,
+torso, left arm, and right arm actions. It will set the head pitch to 0 and yaw to 90, set the torso relative
+height to 0.05, and set both arms to the stored joints pose. The parallel action will succeed after three child
+actions succeed and will fail if three child actions fail.
+
+Next, the GetInUpTrayPose sequence will obtain the arm joints for the UPTRAY pose and will set both arms to the
+stored joints pose simultaneously. The parallel action will succeed after two child actions succeed and will fail
+if two child actions fail.
+
+Next, the ClearAllOctomaps force-success decorator will execute a sequence that clears the left octomap and then
+the right octomap. The decorator will report success regardless of the sequence result.
+
+Next, the UpdateOctomap force-success decorator will clear both octomaps, move the head to pitch 60.0 and yaw 90,
+and then move the head to pitch 60.0 and yaw 135. The decorator will report success regardless of the sequence
+result.
+
+Next, the UpdateOctomapLowerHalf force-success decorator will clear both octomaps and move the head through pitch
+and yaw combinations of -60.0 and 90, 60.0 and 90, -60.0 and 135, and 60.0 and 135. The decorator will report
+success regardless of the sequence result.
+
+Next, the DoYourTrick behavior will repeat a sequence indefinitely. It will execute FillYourTray through a
+force-success decorator and then execute FillTheShelf through another force-success decorator. Each decorator will
+report success regardless of its child result.
+
+Next, the ScanTable retry behavior will repeatedly attempt a sequence until it succeeds. It will raise the torso
+to relative height 0.95, set the head to pitch 0.0 and yaw 140.0, pause for 3 seconds, start table scanning, pause
+for another 3 seconds, clear both octomaps, obtain detected tomato-can poses, mark the table tray loci as occupied
+with those poses, and update the planning scene.
+
+Next, the ScanShelves sequence will lower the torso to relative height 0.1, set the head to pitch 90.0 and yaw
+90.0, pause for 1 second, scan the shelves for tomato-can stocking poses, mark the shelf tray loci as unoccupied
+with those poses, and update the planning scene.
+
+Next, the FillYourTray sequence will execute GoToTable and then ScanTable. It will raise the torso to relative
+height 0.95 and set the head to pitch 0.0 and yaw 135.0. It will then repeat the following process indefinitely.
+It will store table as the tray value and RIGHT as the side value. It will check whether an occupied locus exists
+in the table tray on the right side and will release that locus if found. It will store backtray as the tray value
+and check whether an empty locus exists in the back tray. The inverter will succeed when the back tray is not
+full. It will store table as the source tray and backtray as the destination tray and will execute
+RightArmFillYourTray. The force-success decorator will report success regardless of that transfer result.
+
+Next, the FillTheShelf sequence will execute GetInRestPose, GoToShelves, ScanShelves, and UpdateOctomap. It will
+raise the torso to relative height 0.95 and set the head to pitch 60.0 and yaw 110.0. It will then repeat the
+following process indefinitely. It will store backtray as the tray value and LEFT as the side value. It will check
+whether an occupied locus exists in the back tray on the left side and will release that locus if found. It will
+store shelf as the tray value and check whether an empty locus exists in the shelf tray. The inverter will succeed
+when the shelf tray is not full. It will store backtray as the source tray and shelf as the destination tray and
+will execute LeftArmFillYourTray. The force-success decorator will report success regardless of that transfer
+result.
+
+Next, the GoToTable sequence will move to 1.5;-0.1;0.0 and then move to 2.2;-0.1;0.0. It will stop if either
+movement fails.
+
+Next, the GoToShelves sequence will move to 1.0;-0.3.0;0.0 and then move to 2.0;-0.3;0.4. It will stop if either
+movement fails.
+
+Next, the MoveTomatoCans behavior will repeat four times. Each iteration will force success for a
+KeepRunningUntilFailure decorator. The decorator will execute a fallback that first attempts to execute
+LeftArmFillYourTray followed by RightArmFillYourTray. If that sequence fails, it will execute RightArmFillYourTray
+alone. The fallback will stop when one child succeeds. The decorator will restart the fallback after each success
+and will stop when it fails.
+
+Next, the LeftArmFillYourTray sequence will pick an occupied locus from the source tray with the left side and
+store its identifier. It will then try to pick an empty locus from the destination tray with the left side and
+store its identifier and pose. It will update the planning scene, use the left arm to pick and place the source
+object at the destination pose in flat-hand mode, mark the source locus as unoccupied, and mark the destination
+locus as occupied. If this transfer sequence fails, the force-failure decorator will release the destination locus
+and will report failure. If no empty destination locus can be picked, the outer force-failure decorator will
+release the source locus and will report failure. The sequence will release the destination locus after the
+destination operation and will release the source locus at the end.
+
+Next, the RightArmFillYourTray sequence will pick an occupied locus from the source tray with the right side and
+store its identifier. It will then try to pick an empty locus from the destination tray with the right side and
+store its identifier and pose. It will update the planning scene, use the right arm to pick and place the source
+object at the destination pose without flat-hand mode, mark the source locus as unoccupied, and mark the
+destination locus as occupied. If this transfer sequence fails, the force-failure decorator will release the
+destination locus and will report failure. If no empty destination locus can be picked, the outer force-failure
+decorator will release the source locus and will report failure. The sequence will release the destination locus
+after the destination operation and will release the source locus at the end.
+
+Next, the TrayIsFull inverter will check for an empty locus on the left side of the selected tray and, if
+necessary, on the right side. It will release the selected empty locus when one is found. The inverter will
+succeed when neither side provides an empty locus, indicating that the tray is full.
+
+Next, the TrayIsEmpty fallback will first try to pick an occupied locus from the selected tray using the selected
+side. If it finds one, it will release the locus and report success. If it cannot find one, the fallback will
+execute its AlwaysFailure child and report failure.

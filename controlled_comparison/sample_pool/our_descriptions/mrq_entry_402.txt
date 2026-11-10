@@ -1,0 +1,28 @@
+The mission describes initializing pose-detection settings, disabling the antenna indicators, and repeatedly
+detecting a person with a specified pose while saving an image and announcing the result.
+
+First, the robot will execute the following actions in order and stop the sequence if any action fails: the first
+sequence and the KeepRunningUntilFailure node.
+
+Next, it will execute the following actions in order and stop the sequence if any action fails: custom action
+SetBlackboard with output_key pose_name_l and value TouchingNeck, custom action SetBlackboard with output_key
+pose_name_r and value TouchingNeck, custom action SetBlackboard with output_key pose_lr_check and value any, and
+custom action AntennaAction with rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0.
+
+Finally, it will execute the following sequence repeatedly as long as it does not fail. If the sequence succeeds,
+it will restart it. If the sequence fails, it will stop looping and continue execution.
+
+First, it will execute the ForceSuccess node and the second sequence in order and stop the sequence if any action
+fails.
+
+Next, it will execute the following actions in order and make sure the execution always succeeds: custom action
+HumanPoseDetect with expected_pose_left read from pose_name_l, expected_pose_right read from pose_name_r,
+pose_lr_check read from pose_lr_check, detected_person stored under detected_person, pose_left_speech stored under
+pose_left_speech, and pose_right_speech stored under pose_right_speech; custom action AntennaAction with rate 0,
+intensity 10, left_blink_pattern 10, and right_blink_pattern 10; custom action SaveImageAction with filename
+image#.jpg and directory /home/ubuntu/saved_images; custom action TextToSpeechActionClient with msg Saved; and
+custom action AntennaAction with rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0. If any
+action fails, the ForceSuccess node will still succeed.
+
+Finally, it will execute the delayed custom action SetBlackboard with output_key dummy and value 0 after a delay
+of 1000 milliseconds. After the delay period is exhausted, it will resume execution.

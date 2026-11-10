@@ -1,0 +1,355 @@
+[Developer message]
+You are an expert systems engineer specialized in 
+converting behavioral models into mission 
+descriptions. I will provide you with a behavior 
+tree that describes a real-world robot's behavior. 
+Do keep your answer as simple text with a mix of 
+imperative and descriptive language. Format your 
+response as plain-text paragraphs. Strictly use the 
+dictionary provided, as a reference to interpret 
+behavior control of the corresponding node types. 
+Avoid redundant ending statements. Use the example 
+given to guide your sentence fluency.
+[Prompt messages]
+Your task is to generate a clear, 
+documentation-style explanation of the behavior 
+in the behavior tree that 
+satisfies the following constraints:
+1. Each statement must contain a single thought.
+2. Each statement must have a single interpretation.
+3. Each statement should be capable of 
+standing alone without missing conditions 
+or assumptions.
+4. Each statement should be intuitive such that it 
+can be understood with low cognitive effort.
+5. Statements should not contradict each other. 
+Begin your explanation with context that defines the 
+scope of the behavior in the behavior tree. 
+Formulate this as "The mission describes [followed 
+by the scope of the behavior in the behavior tree]". 
+Subsequent statements should be formulated in the 
+third-person future tense. Use "The robot" once, and 
+then refer to it as "it" subsequently. Integrate the 
+semantics of the behavior tree nodes into the 
+behavior descriptions of the robot. A value in curly
+braces, e.g. {key}, is a blackboard key, not a
+literal. State the
+behavior of a parent node before describing its
+children. Describe the root node in its own
+paragraph directly after the scope sentence. Each 
+paragraph must describe only one subtree. Begin each 
+subtree paragraph with a connecting word (e.g., 
+First, Next, Finally). Avoid redundant sentences,
+but apply a node's template every time that node
+type occurs, and only that node.
+[Chat prompt]
+Dictionary:
+<<<BEGIN_DICTIONARY>>>
+{
+  "title": "Dictionary for Interpreting Behavior Control and Modification",
+  "nodes": [
+    {
+      "node": "\\midrule Sequence",
+      "description": "Execute a series of child nodes in order from left to right.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) in order and stop the sequence if any action fails."
+    },
+    {
+      "node": "SequenceWithMemory, SequenceStar",
+      "description": "Execute a series of child nodes in order, from left to right, remembering which ones have already succeeded.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) in sequence. If any action succeeds, remember it and move to the next. If any action fails, start the sequence again from that action."
+    },
+    {
+      "node": "PipelineSequence",
+      "description": "Execute a series of child nodes in order from left to right and advance on running or success.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) in order and stop the sequence if any action fails. While an action is running or has succeeded, go to the next action."
+    },
+    {
+      "node": "ConditionalSequence",
+      "description": "Execute a series of child nodes in order from left to right and re-check a condition for each node.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) in order while checking a condition for each action. If [Condition] move to the next action. Else if [!Condition], end the sequence."
+    },
+    {
+      "node": "Switch",
+      "description": "Execute child node based on blackboard value.",
+      "behaviorTemplate": "Read blackboard value and compare it against a set of cases. If a case matches the blackboard value, execute corresponding [Action]. Else if no case matches, execute default [Action]."
+    },
+    {
+      "node": "WhileDoElse",
+      "description": "Execute a node while a condition is true else execute and alternative node if that same condition fails.",
+      "behaviorTemplate": "While [Condition], do [Action]. If [!Condition], execute the alternative."
+    },
+    {
+      "node": "Loop",
+      "description": "Repeatedly execute a child node for a specified number of iterations, until a specific status is returned or forever.",
+      "behaviorTemplate": "Execute [Action] continuously until it fails or succeeds. Else keep executing [Action] forever."
+    },
+    {
+      "node": "Parallel",
+      "description": "Execute multiple child nodes simultaneously, ensuring all are completed successfully.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) simultaneously. If [port:success_threshold, default: all actions] actions succeed, the execution was successful. Else if any action fails, the execution fails."
+    },
+    {
+      "node": "Fallback",
+      "description": "Execute child nodes sequentially from left to right, until one succeeds or all fail.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) consecutively. If any action ([Action]) fails, move to the next action until an action succeeds. If no action succeeds, the execution fails."
+    },
+    {
+      "node": "FallbackStar",
+      "description": "Execute child nodes sequentially from left to right, until one succeeds. If all fail retry again from the beginning.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) consecutively. If any action ([Action]) fails, move to the next action until an action succeeds. If no action succeeds, start all over again until an action succeeds."
+    },
+    {
+      "node": "ForceSuccess",
+      "description": "Force child node to succeed regardless of the conditions.",
+      "behaviorTemplate": "Execute [Action] and make sure it always succeeds."
+    },
+    {
+      "node": "ForceFailure",
+      "description": "Force child node to fail regardless of the conditions.",
+      "behaviorTemplate": "Execute [Action] and make sure it always fails."
+    },
+    {
+      "node": "RepeatUntilSuccess",
+      "description": "Repeatedly execute child node until its successful.",
+      "behaviorTemplate": "Continuously execute [Action] until it succeeds."
+    },
+    {
+      "node": "Retry",
+      "description": "Re-execute a child node for either a fixed number of times or until its successful.",
+      "behaviorTemplate": "Execute [Action]. If it fails, re-execute it either for a specified number of times or until it succeeds."
+    },
+    {
+      "node": "ReactiveSequence",
+      "description": "Execute a series of child nodes in sequence. While a node is running, re-evaluate previous child nodes.",
+      "behaviorTemplate": "Execute the following actions ([Actions]) in sequence. If [Action] fails, stop execution. While [Action] is still running, re-evaluate previous actions; if one of them now fails, halt the running action and stop the sequence."
+    },
+    {
+      "node": "ReactiveFallback",
+      "description": "Execute a series of child nodes in order from left to right. While a later node is running, restart evaluation from node 0.",
+      "behaviorTemplate": "Execute the following actions [Actions] in order. If [Action] succeeds, stop execution. Else keep executing and re-evaluating previous actions whenever an action is running; if one of them now succeeds, halt the running action and stop the fallback."
+    },
+    {
+      "node": "Repeat",
+      "description": "Execute a set of child nodes multiple times.",
+      "behaviorTemplate": "Execute [Action] [port:num_cycles] times."
+    },
+    {
+      "node": "BlackboardCheckValue",
+      "description": "Check whether a value stored on the blackboard matches the expected value.",
+      "behaviorTemplate": "Find a value [port:key] on the blackboard and check if it matches [port:value]."
+    },
+    {
+      "node": "Delay",
+      "description": "Wait for a given duration before running or returning a result from the associated child node.",
+      "behaviorTemplate": "Execute delayed [Action] after delay timer. After delay period is exhausted, resume execution."
+    },
+    {
+      "node": "Inverter",
+      "description": "Negate a the execution outcome of a child node.",
+      "behaviorTemplate": "Execute inverted [Action]. If [Action] succeeds, reverse it to fail. Else if [Action] fails, reverse it to succeed."
+    },
+    {
+      "node": "KeepRunningUntilFailure",
+      "description": "Keep executing child node as long as it does not fail.",
+      "behaviorTemplate": "Execute [Action]. If [Action] succeeds, restart it. Else if [Action] fails, stop looping and continue execution."
+    },
+    {
+      "node": "RetryUntilSuccessful",
+      "description": "Continuously try to re-execute a child node until it succeeds.",
+      "behaviorTemplate": "Keep trying to execute [Action] until it succeeds. If try succeeds, stop retrying and continue. If try fails, keep retrying until it succeeds."
+    },
+    {
+      "node": "RecoveryNode",
+      "description": "Try to run the primary child node. If it fails, run the next child node to recover and try to execute the primary child node again until retries are exhausted.",
+      "behaviorTemplate": "Execute main [Action]. If it fails, execute recovery action ([Action]). After recovery, retry main action ([Action]). If recovery action ([Action]) fails and retries are exhausted, stop execution."
+    },
+    {
+      "node": "Timeout",
+      "description": "Execute child node, but only for a maximum duration.",
+      "behaviorTemplate": "If [Action] fails to execute within [port:msec], interrupt the execution and stop it."
+    },
+    {
+      "node": "[Action]",
+      "description": "a child node name; if it is a standard ROS action, controller or decorator, refer to it as ROS action [name], else as custom action [name]; followed by its ports as written in the XML: a literal value, a {key} as read from key (input) or stored under key (output)."
+    },
+    {
+      "node": "[Actions]",
+      "description": "a series of child node names, listed by name; a child without a name is referred to by its node type and position (e.g., the second fallback)."
+    },
+    {
+      "node": "[Condition]",
+      "description": "a check that returns success, rendered as [condition ID] is true, naming the ports it compares."
+    },
+    {
+      "node": "[!Condition]",
+      "description": "a check that returns failure, rendered as [condition ID] is false."
+    },
+    {
+      "node": "[port:p]",
+      "description": "the value of the node's XML port p as written; -1 means no limit."
+    }
+  ]
+}
+<<<END_DICTIONARY>>>
+
+Example:
+<<<BEGIN_EXAMPLE>>>
+<?xml version="1.0"?>
+  <root main_tree_to_execute = "MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <GoPoint goal="{destination}"/>
+      <GoObject target="{object}"/>
+    </Sequence>
+  </BehaviorTree>
+</root>
+
+The behavior tree is a simple sequential task for a robot. It first instructs
+the robot to move to a specific point (GoPoint) and then to interact with
+a particular object (GoObject). The robot will execute these tasks in
+sequence, moving to the specified destination before interacting with the
+designated object.
+<<<END_EXAMPLE>>>
+
+Behavior Tree:
+<<<BEGIN_BEHAVIOR_TREE>>>
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Repeat num_cycles="{num_cycles}">
+            <Sequence>
+                <Fallback>
+                    <Condition ID="LTLPreCheck" ltl_state_current="{ltl_state_current}" ltl_state_desired_sequence="{ltl_state_desired_sequence}" ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
+                    <ForceFailure>
+                        <Action ID="ReplanningRequestLevel2" ltl_state_current="{ltl_state_current}" ltl_state_executed_sequence="{ltl_state_executed_sequence}" replanning_request="{replanning_request}"/>
+                    </ForceFailure>
+                </Fallback>
+                <ReactiveSequence>
+                    <Fallback>
+                        <Action ID="FakeDetectionLevel1" replanning_fake_input="{replanning_fake_input}"/>
+                        <ForceFailure>
+                            <Action ID="ReplanningRequestLevel1" ltl_state_current="{ltl_state_current}" ltl_state_executed_sequence="{ltl_state_executed_sequence}" replanning_request="{replanning_request}"/>
+                        </ForceFailure>
+                    </Fallback>
+                    <Fallback>
+                        <Condition ID="ReactiveLTLStateCheck" ltl_state_current="{ltl_state_current}" ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+                        <ForceFailure>
+                            <Action ID="ReplanningRequestLevel2" ltl_state_current="{ltl_state_current}" ltl_state_executed_sequence="{ltl_state_executed_sequence}" replanning_request="{replanning_request}"/>
+                        </ForceFailure>
+                    </Fallback>
+                    <Fallback>
+                        <Action ID="FakeDetectionLevel3" replanning_fake_input="{replanning_fake_input}"/>
+                        <ForceFailure>
+                            <Action ID="ReplanningRequestLevel3" ltl_state_current="{ltl_state_current}" ltl_state_executed_sequence="{ltl_state_executed_sequence}" replanning_request="{replanning_request}"/>
+                        </ForceFailure>
+                    </Fallback>
+                    <Fallback>
+                        <Switch4 case_1="move" case_2="stay" case_3="start_training" case_4="terminate_training" variable="{bt_action_type}">
+                            <Action ID="MoveAction" bt_action_type="{bt_action_type}" current_action="{current_action}" goal_sent="{goal_sent}" move_base_finished="{move_base_finished}" move_base_idle="{move_base_idle}"/>
+                            <Action ID="StayAction" bt_action_type="{bt_action_type}" current_action="{current_action}" ltl_state_current="{ltl_state_current}"/>
+                            <Action ID="GuideAction" bt_action_type="{bt_action_type}" current_action="{current_action}" ltl_state_current="{ltl_state_current}"/>
+                            <Action ID="BackNormalAction" bt_action_type="{bt_action_type}" current_action="{current_action}" ltl_state_current="{ltl_state_current}"/>
+                            <AlwaysFailure/>
+                        </Switch4>
+                        <ForceFailure>
+                            <Action ID="ReplanningRequestLevel3" ltl_state_current="{ltl_state_current}" ltl_state_executed_sequence="{ltl_state_executed_sequence}" replanning_request="{replanning_request}"/>
+                        </ForceFailure>
+                    </Fallback>
+                </ReactiveSequence>
+                <Action ID="UpdateLTL" action_sequence="{action_sequence}" action_sequence_executed="{action_sequence_executed}" bt_action_type="{bt_action_type}" current_action="{current_action}" ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="BackNormalAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <inout_port name="ltl_state_current"/>
+        </Action>
+        <Action ID="DropAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <inout_port name="ltl_state_current"/>
+        </Action>
+        <Action ID="FakeDetectionLevel1">
+            <input_port name="replanning_fake_input"/>
+        </Action>
+        <Action ID="FakeDetectionLevel2">
+            <input_port name="replanning_fake_input"/>
+        </Action>
+        <Action ID="FakeDetectionLevel3">
+            <input_port name="replanning_fake_input"/>
+        </Action>
+        <Action ID="GuideAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <inout_port name="ltl_state_current"/>
+        </Action>
+        <Condition ID="LTLPreCheck">
+            <input_port name="ltl_state_current"/>
+            <input_port name="ltl_state_desired_sequence"/>
+            <inout_port name="ltl_state_executed_sequence"/>
+        </Condition>
+        <Action ID="LocomotionStart">
+            <input_port name="locomotion_status"/>
+        </Action>
+        <Condition ID="LocomotionStatusCheck">
+            <input_port name="locomotion_status"/>
+        </Condition>
+        <Action ID="MoveAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <output_port name="goal_sent"/>
+            <input_port name="move_base_finished"/>
+            <input_port name="move_base_idle"/>
+        </Action>
+        <Action ID="PickAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <inout_port name="ltl_state_current"/>
+        </Action>
+        <Condition ID="ReactiveLTLStateCheck">
+            <input_port name="ltl_state_current"/>
+            <input_port name="ltl_state_desired_sequence"/>
+        </Condition>
+        <Action ID="RecoveryStand">
+            <input_port name="locomotion_status"/>
+        </Action>
+        <Action ID="ReplanningRequestLevel1">
+            <input_port name="ltl_state_current"/>
+            <inout_port name="ltl_state_executed_sequence"/>
+            <inout_port name="replanning_request"/>
+        </Action>
+        <Action ID="ReplanningRequestLevel2">
+            <input_port name="ltl_state_current"/>
+            <inout_port name="ltl_state_executed_sequence"/>
+            <inout_port name="replanning_request"/>
+        </Action>
+        <Action ID="ReplanningRequestLevel3">
+            <input_port name="ltl_state_current"/>
+            <inout_port name="ltl_state_executed_sequence"/>
+            <inout_port name="replanning_request"/>
+        </Action>
+        <Action ID="StayAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <inout_port name="ltl_state_current"/>
+        </Action>
+        <Action ID="SynchronizedTransitionAction">
+            <input_port name="bt_action_type"/>
+            <input_port name="current_action"/>
+            <inout_port name="ltl_state_current"/>
+        </Action>
+        <Action ID="UpdateLTL">
+            <inout_port name="action_sequence"/>
+            <inout_port name="action_sequence_executed"/>
+            <output_port name="bt_action_type"/>
+            <output_port name="current_action"/>
+            <inout_port name="ltl_state_desired_sequence"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+<<<END_BEHAVIOR_TREE>>>

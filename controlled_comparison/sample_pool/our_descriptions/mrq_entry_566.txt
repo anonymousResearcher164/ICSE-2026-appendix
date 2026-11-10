@@ -1,0 +1,30 @@
+The mission describes a repeated navigation process that checks a temporal-logic state, maintains locomotion,
+moves toward a navigation goal, and updates the desired action sequence.
+
+First, the robot will execute the complete sequence for the number of cycles stored under {num_cycles}.
+
+Next, it will execute the following actions in order and stop the sequence if any action fails: a pre-check,
+locomotion management, and an LTL update.
+
+Then, it will execute the custom action LTLPreCheck with {ltl_state_current} and {ltl_state_desired_sequence}. If
+this action fails, it will execute custom action ReplanningRequestLevel2 with {replanning_request} and force that
+action to fail.
+
+Afterward, it will execute the locomotion management actions in sequence. While the locomotion actions are
+running, it will re-evaluate the preceding actions. If a preceding action succeeds, it will stop the remaining
+locomotion action.
+
+Next, it will try the locomotion recovery process until it succeeds. It will make up to three attempts. Each
+attempt will first execute custom action LocomotionStatusCheck with {locomotion_status}. If that action fails, it
+will execute custom action RecoveryStand with {locomotion_status}. It will then wait 5000 milliseconds before
+executing custom action LocomotionStart with {locomotion_status}.
+
+Then, if the locomotion recovery process fails, it will execute custom action ReplanningRequestLevel3 with
+{replanning_request} and force that action to fail.
+
+Next, it will execute custom action MoveAction with {move_base_finished}, {move_base_idle}, and {nav_goal}. If
+this action fails, it will execute custom action ReplanningRequestLevel3 with {replanning_request} and force that
+action to fail.
+
+Finally, it will execute custom action UpdateLTL with {action_sequence}, {ltl_state_desired_sequence}, and
+{nav_goal}.

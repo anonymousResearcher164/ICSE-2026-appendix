@@ -1,0 +1,32 @@
+The mission describes a behavior tree that selects and executes a suitable driving-path planning behavior.
+
+First, the robot will evaluate the available planning behaviors from left to right. It will stop when one behavior
+succeeds. It will execute lane-following planning if all other behaviors fail.
+
+Next, it will use a reactive sequence for pull-over planning. It will re-evaluate PullOver_Request while the
+sequence is running. It will re-evaluate PullOver_Ready while PullOver_Plan is running. It will execute custom
+action PullOver_Plan and store its result under output when both conditions are true.
+
+Next, it will use a reactive sequence for pull-out planning. It will re-evaluate PullOut_Request while the
+sequence is running. It will re-evaluate PullOut_Ready while PullOut_Plan is running. It will execute custom
+action PullOut_Plan and store its result under output when both conditions are true.
+
+Next, it will use a reactive sequence for side-shift planning. It will re-evaluate SideShift_Request while the
+sequence is running. It will re-evaluate SideShift_Ready while SideShift_Plan is running. It will execute custom
+action SideShift_Plan and store its result under output when both conditions are true.
+
+Next, it will use a reactive sequence for lane-change planning. It will re-evaluate LaneChange_Request while the
+sequence is running. It will re-evaluate the lane-change approval fallback while LaneChange_Plan is running. It
+will execute custom action LaneChange_Plan and store its result under output when the request is true and the
+approval fallback succeeds.
+
+Next, the lane-change approval fallback will evaluate its conditions from left to right. It will stop when one
+condition succeeds. It will check whether LaneChange_Ready is true. It will check whether
+ForceLaneChange_ForceApproval is true if LaneChange_Ready is false.
+
+Next, it will use a reactive sequence for avoidance planning. It will re-evaluate Avoidance_Request while the
+sequence is running. It will re-evaluate Avoidance_Ready while Avoidance_Plan is running. It will execute custom
+action Avoidance_Plan and store its result under output when both conditions are true.
+
+Finally, it will execute custom action LaneFollowing_Plan and store its result under output if every preceding
+planning behavior fails.
