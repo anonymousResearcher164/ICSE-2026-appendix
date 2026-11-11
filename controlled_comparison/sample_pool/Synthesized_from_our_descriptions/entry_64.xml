@@ -1,0 +1,22 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <Action_A input="42"/>
+      <Condition_B result="69"/>
+      <LotOfStuff param="100" res="200"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="Action_A">
+      <input_port name="input"/>
+    </Action>
+    <Condition ID="Condition_B">
+      <input_port name="result"/>
+    </Condition>
+    <Action ID="LotOfStuff">
+      <input_port name="param"/>
+      <input_port name="res"/>
+    </Action>
+  </TreeNodesModel>
+</root>

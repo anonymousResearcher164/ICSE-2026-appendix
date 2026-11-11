@@ -1,0 +1,26 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <GetPickObject object_id="{object_id}"/>
+      <GetPlacingPose object="{object_id}" pose="{pose}"/>
+      <ApproachObject object_pose="{pose}"/>
+      <PlaceSimple goal="{pose}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GetPickObject">
+      <input_port name="object_id"/>
+    </Action>
+    <Action ID="GetPlacingPose">
+      <input_port name="object"/>
+      <output_port name="pose"/>
+    </Action>
+    <Action ID="ApproachObject">
+      <input_port name="object_pose"/>
+    </Action>
+    <Action ID="PlaceSimple">
+      <input_port name="goal"/>
+    </Action>
+  </TreeNodesModel>
+</root>

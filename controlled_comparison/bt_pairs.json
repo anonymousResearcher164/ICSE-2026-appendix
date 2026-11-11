@@ -1,0 +1,210 @@
+{
+  "source": "sample_pool/Ground_truth_BTs",
+  "seed": 20261111,
+  "total_nodes": 1039,
+  "ideal_pair_total": 41.56,
+  "spread_sd": 46.4698,
+  "fold_baseline_sd": 46.4698,
+  "pairs": [
+    {
+      "pair": 1,
+      "a": "entry_220",
+      "a_nodes": 186,
+      "b": "entry_32",
+      "b_nodes": 2,
+      "total": 188
+    },
+    {
+      "pair": 2,
+      "a": "entry_411",
+      "a_nodes": 163,
+      "b": "entry_549",
+      "b_nodes": 2,
+      "total": 165
+    },
+    {
+      "pair": 3,
+      "a": "entry_457",
+      "a_nodes": 139,
+      "b": "entry_155",
+      "b_nodes": 3,
+      "total": 142
+    },
+    {
+      "pair": 4,
+      "a": "entry_6",
+      "a_nodes": 38,
+      "b": "entry_540",
+      "b_nodes": 3,
+      "total": 41
+    },
+    {
+      "pair": 5,
+      "a": "entry_531",
+      "a_nodes": 32,
+      "b": "entry_109",
+      "b_nodes": 4,
+      "total": 36
+    },
+    {
+      "pair": 6,
+      "a": "entry_92",
+      "a_nodes": 32,
+      "b": "entry_89",
+      "b_nodes": 3,
+      "total": 35
+    },
+    {
+      "pair": 7,
+      "a": "entry_124",
+      "a_nodes": 30,
+      "b": "entry_194",
+      "b_nodes": 4,
+      "total": 34
+    },
+    {
+      "pair": 8,
+      "a": "entry_371",
+      "a_nodes": 29,
+      "b": "entry_272",
+      "b_nodes": 4,
+      "total": 33
+    },
+    {
+      "pair": 9,
+      "a": "entry_566",
+      "a_nodes": 22,
+      "b": "entry_375",
+      "b_nodes": 4,
+      "total": 26
+    },
+    {
+      "pair": 10,
+      "a": "entry_317",
+      "a_nodes": 22,
+      "b": "entry_380",
+      "b_nodes": 4,
+      "total": 26
+    },
+    {
+      "pair": 11,
+      "a": "entry_435",
+      "a_nodes": 21,
+      "b": "entry_50",
+      "b_nodes": 4,
+      "total": 25
+    },
+    {
+      "pair": 12,
+      "a": "entry_325",
+      "a_nodes": 21,
+      "b": "entry_529",
+      "b_nodes": 4,
+      "total": 25
+    },
+    {
+      "pair": 13,
+      "a": "entry_511",
+      "a_nodes": 20,
+      "b": "entry_64",
+      "b_nodes": 4,
+      "total": 24
+    },
+    {
+      "pair": 14,
+      "a": "entry_402",
+      "a_nodes": 18,
+      "b": "entry_256",
+      "b_nodes": 5,
+      "total": 23
+    },
+    {
+      "pair": 15,
+      "a": "entry_485",
+      "a_nodes": 17,
+      "b": "entry_266",
+      "b_nodes": 5,
+      "total": 22
+    },
+    {
+      "pair": 16,
+      "a": "entry_418",
+      "a_nodes": 16,
+      "b": "entry_376",
+      "b_nodes": 5,
+      "total": 21
+    },
+    {
+      "pair": 17,
+      "a": "entry_248",
+      "a_nodes": 16,
+      "b": "entry_41",
+      "b_nodes": 5,
+      "total": 21
+    },
+    {
+      "pair": 18,
+      "a": "entry_345",
+      "a_nodes": 13,
+      "b": "entry_108",
+      "b_nodes": 8,
+      "total": 21
+    },
+    {
+      "pair": 19,
+      "a": "entry_475",
+      "a_nodes": 15,
+      "b": "entry_58",
+      "b_nodes": 5,
+      "total": 20
+    },
+    {
+      "pair": 20,
+      "a": "entry_493",
+      "a_nodes": 14,
+      "b": "entry_77",
+      "b_nodes": 6,
+      "total": 20
+    },
+    {
+      "pair": 21,
+      "a": "entry_440",
+      "a_nodes": 13,
+      "b": "entry_584",
+      "b_nodes": 7,
+      "total": 20
+    },
+    {
+      "pair": 22,
+      "a": "entry_552",
+      "a_nodes": 12,
+      "b": "entry_150",
+      "b_nodes": 8,
+      "total": 20
+    },
+    {
+      "pair": 23,
+      "a": "entry_73",
+      "a_nodes": 11,
+      "b": "entry_321",
+      "b_nodes": 8,
+      "total": 19
+    },
+    {
+      "pair": 24,
+      "a": "entry_432",
+      "a_nodes": 8,
+      "b": "entry_515",
+      "b_nodes": 8,
+      "total": 16
+    },
+    {
+      "pair": 25,
+      "a": "entry_451",
+      "a_nodes": 8,
+      "b": "entry_467",
+      "b_nodes": 8,
+      "total": 16
+    }
+  ]
+}

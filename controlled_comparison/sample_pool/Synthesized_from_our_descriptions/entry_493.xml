@@ -1,0 +1,36 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RetryUntilSuccessful num_attempts="-1">
+      <Fallback name="auto_localization">
+
+        <initialPoseReceived/>
+
+        <SequenceWithMemory name="doSelfLocalization">
+          <RetryUntilSuccessful num_attempts="5" name="retry_client_request">
+            <globalLocalizationServiceRequest/>
+          </RetryUntilSuccessful>
+          <RetryUntilSuccessful num_attempts="10" name="retry_localization">
+            <Sequence name="localization">
+              <Fallback>
+                <IsLocalized/>
+                <Sequence>
+                  <Spin/>
+                  <BackUp/>
+                  <Spin/>
+                </Sequence>
+              </Fallback>
+              <IsLocalized/>
+            </Sequence>
+          </RetryUntilSuccessful>
+        </SequenceWithMemory>
+
+      </Fallback>
+    </RetryUntilSuccessful>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="initialPoseReceived"/>
+    <Condition ID="IsLocalized"/>
+    <Action ID="globalLocalizationServiceRequest"/>
+  </TreeNodesModel>
+</root>

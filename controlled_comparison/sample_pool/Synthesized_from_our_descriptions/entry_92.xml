@@ -1,0 +1,79 @@
+<root BTCPP_format="4" main_tree_to_execute="BehaviorPathPlanner">
+  <BehaviorTree ID="BehaviorPathPlanner">
+    <Fallback name="select_planning_behavior">
+
+      <ReactiveSequence name="pull_over">
+        <PullOver_Request/>
+        <PullOver_Ready/>
+        <PullOver_Plan output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="pull_out">
+        <PullOut_Request/>
+        <PullOut_Ready/>
+        <PullOut_Plan output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="side_shift">
+        <SideShift_Request/>
+        <SideShift_Ready/>
+        <SideShift_Plan output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="lane_change">
+        <LaneChange_Request/>
+        <Fallback name="lane_change_approval">
+          <LaneChange_Ready/>
+          <ForceLaneChange_ForceApproval/>
+        </Fallback>
+        <LaneChange_Plan output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="avoidance">
+        <Avoidance_Request/>
+        <Avoidance_Ready/>
+        <Avoidance_Plan output="{output}"/>
+      </ReactiveSequence>
+
+      <LaneFollowing_Plan output="{output}"/>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="PullOver_Request"/>
+    <Condition ID="PullOver_Ready"/>
+    <Action ID="PullOver_Plan">
+      <output_port name="output"/>
+    </Action>
+
+    <Condition ID="PullOut_Request"/>
+    <Condition ID="PullOut_Ready"/>
+    <Action ID="PullOut_Plan">
+      <output_port name="output"/>
+    </Action>
+
+    <Condition ID="SideShift_Request"/>
+    <Condition ID="SideShift_Ready"/>
+    <Action ID="SideShift_Plan">
+      <output_port name="output"/>
+    </Action>
+
+    <Condition ID="LaneChange_Request"/>
+    <Condition ID="LaneChange_Ready"/>
+    <Condition ID="ForceLaneChange_ForceApproval"/>
+    <Action ID="LaneChange_Plan">
+      <output_port name="output"/>
+    </Action>
+
+    <Condition ID="Avoidance_Request"/>
+    <Condition ID="Avoidance_Ready"/>
+    <Action ID="Avoidance_Plan">
+      <output_port name="output"/>
+    </Action>
+
+    <Action ID="LaneFollowing_Plan">
+      <output_port name="output"/>
+    </Action>
+  </TreeNodesModel>
+</root>

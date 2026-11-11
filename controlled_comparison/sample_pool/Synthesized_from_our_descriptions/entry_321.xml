@@ -1,0 +1,65 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="grasp_generation">
+
+      <RetryUntilSuccessful num_attempts="3">
+        <TableTopSegmentation original_cloud="{original_cloud}"
+                              image_scene="{image_scene}"
+                              table_height="{table_height}"
+                              original_cloud_transformed="{original_cloud_transformed}"
+                              tabletop_cloud="{tabletop_cloud}"
+                              plane_cloud="{plane_cloud}"
+                              nonplane_cloud="{nonplane_cloud}"/>
+      </RetryUntilSuccessful>
+
+      <Sequence name="object_processing" _while="false">
+        <DesiredObjectEntryCheck desired_object="{desired_object}">
+          <ObjectCloudExtraction original_cloud="{original_cloud}"
+                                 image_scene="{image_scene}"
+                                 desired_object="{desired_object}"
+                                 tabletop_cloud="{tabletop_cloud}"
+                                 object_cloud="{object_cloud}"/>
+        </DesiredObjectEntryCheck>
+        <TableTopClustering object_cloud="{object_cloud}"
+                            tabletop_cloud="{tabletop_cloud}"/>
+      </Sequence>
+
+      <GenerateGraspingCandidates object_cloud="{object_cloud}"
+                                  table_height="{table_height}"
+                                  original_cloud_transformed="{original_cloud_transformed}"
+                                  grasp_candidates="{grasp_candidates}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="TableTopSegmentation">
+      <input_port name="original_cloud"/>
+      <input_port name="image_scene"/>
+      <input_port name="table_height"/>
+      <output_port name="original_cloud_transformed"/>
+      <output_port name="tabletop_cloud"/>
+      <output_port name="plane_cloud"/>
+      <output_port name="nonplane_cloud"/>
+    </Action>
+    <Decorator ID="DesiredObjectEntryCheck">
+      <input_port name="desired_object"/>
+    </Decorator>
+    <Action ID="ObjectCloudExtraction">
+      <input_port name="original_cloud"/>
+      <input_port name="image_scene"/>
+      <input_port name="desired_object"/>
+      <input_port name="tabletop_cloud"/>
+      <output_port name="object_cloud"/>
+    </Action>
+    <Action ID="TableTopClustering">
+      <input_port name="object_cloud"/>
+      <input_port name="tabletop_cloud"/>
+    </Action>
+    <Action ID="GenerateGraspingCandidates">
+      <input_port name="object_cloud"/>
+      <input_port name="table_height"/>
+      <input_port name="original_cloud_transformed"/>
+      <output_port name="grasp_candidates"/>
+    </Action>
+  </TreeNodesModel>
+</root>

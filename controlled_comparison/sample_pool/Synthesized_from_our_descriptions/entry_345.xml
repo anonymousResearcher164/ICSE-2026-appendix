@@ -1,0 +1,34 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="arm_pose_sequence">
+      <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}"/>
+      <SetArmJointsLeft joints_pose="{joints_pose}"/>
+      <SetArmJointsRight joints_pose="{joints_pose}"/>
+
+      <GetArmJointsForPose pose="EXTENDED" joints_pose="{joints_pose}"/>
+      <SetArmJointsLeft joints_pose="{joints_pose}"/>
+      <SetArmJointsRight joints_pose="{joints_pose}"/>
+
+      <GetArmJointsForPose pose="GRIPPING" joints_pose="{joints_pose}"/>
+      <SetArmJointsLeft joints_pose="{joints_pose}"/>
+      <SetArmJointsRight joints_pose="{joints_pose}"/>
+
+      <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}"/>
+      <SetArmJointsLeft joints_pose="{joints_pose}"/>
+      <SetArmJointsRight joints_pose="{joints_pose}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GetArmJointsForPose">
+      <input_port name="pose"/>
+      <output_port name="joints_pose"/>
+    </Action>
+    <Action ID="SetArmJointsLeft">
+      <input_port name="joints_pose"/>
+    </Action>
+    <Action ID="SetArmJointsRight">
+      <input_port name="joints_pose"/>
+    </Action>
+  </TreeNodesModel>
+</root>

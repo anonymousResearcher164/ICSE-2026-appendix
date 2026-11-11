@@ -1,0 +1,15 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="init_sequence">
+      <Nav2ClearGlobalCostMap/>
+      <RobotSeekInitAction game_file="robot_seek_1.json"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="Nav2ClearGlobalCostMap"/>
+    <Action ID="RobotSeekInitAction">
+      <input_port name="game_file"/>
+    </Action>
+  </TreeNodesModel>
+</root>

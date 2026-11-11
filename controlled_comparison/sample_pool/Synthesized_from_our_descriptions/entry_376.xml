@@ -1,0 +1,20 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <Repeat num_cycles="100">
+        <Parallel success_count="1" failure_count="1">
+          <Dialog/>
+          <SocialNav2Action goal="hri" agent_id="agent_3"/>
+        </Parallel>
+      </Repeat>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="Dialog"/>
+    <Action ID="SocialNav2Action">
+      <input_port name="goal"/>
+      <input_port name="agent_id"/>
+    </Action>
+  </TreeNodesModel>
+</root>

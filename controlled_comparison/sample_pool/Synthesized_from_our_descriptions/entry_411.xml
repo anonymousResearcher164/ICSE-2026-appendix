@@ -1,0 +1,339 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <!-- ===================== Top level ===================== -->
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <SubTree ID="FullCompetitionMode" _autoremap="true"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="FullCompetitionMode">
+    <Repeat num_cycles="-1">
+      <Sequence>
+        <SubTree ID="GetInRestPose" _autoremap="true"/>
+        <SubTree ID="DoYourTrick" _autoremap="true"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <BehaviorTree ID="DoYourTrick">
+    <Repeat num_cycles="-1">
+      <Sequence>
+        <ForceSuccess>
+          <SubTree ID="FillYourTray" _autoremap="true"/>
+        </ForceSuccess>
+        <ForceSuccess>
+          <SubTree ID="FillTheShelf" _autoremap="true"/>
+        </ForceSuccess>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <!-- ===================== Poses ===================== -->
+  <BehaviorTree ID="GetInRestPose">
+    <Sequence>
+      <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}"/>
+      <Parallel success_count="3" failure_count="3">
+        <SetHead pitch="0" yaw="90"/>
+        <SetTorso relative_height="0.05"/>
+        <SetArmJointsLeft joints_pose="{joints_pose}"/>
+        <SetArmJointsRight joints_pose="{joints_pose}"/>
+      </Parallel>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="GetInUpTrayPose">
+    <Sequence>
+      <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}"/>
+      <Parallel success_count="2" failure_count="2">
+        <SetArmJointsLeft joints_pose="{joints_pose}"/>
+        <SetArmJointsRight joints_pose="{joints_pose}"/>
+      </Parallel>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- ===================== Octomaps ===================== -->
+  <BehaviorTree ID="ClearAllOctomaps">
+    <ForceSuccess>
+      <Sequence>
+        <ClearOctomap side="LEFT"/>
+        <ClearOctomap side="RIGHT"/>
+      </Sequence>
+    </ForceSuccess>
+  </BehaviorTree>
+
+  <BehaviorTree ID="UpdateOctomap">
+    <ForceSuccess>
+      <Sequence>
+        <SubTree ID="ClearAllOctomaps"/>
+        <SetHead pitch="60.0" yaw="90"/>
+        <SetHead pitch="60.0" yaw="135"/>
+      </Sequence>
+    </ForceSuccess>
+  </BehaviorTree>
+
+  <BehaviorTree ID="UpdateOctomapLowerHalf">
+    <ForceSuccess>
+      <Sequence>
+        <SubTree ID="ClearAllOctomaps"/>
+        <SetHead pitch="-60.0" yaw="90"/>
+        <SetHead pitch="60.0"  yaw="90"/>
+        <SetHead pitch="-60.0" yaw="135"/>
+        <SetHead pitch="60.0"  yaw="135"/>
+      </Sequence>
+    </ForceSuccess>
+  </BehaviorTree>
+
+  <!-- ===================== Scanning ===================== -->
+  <BehaviorTree ID="ScanTable">
+    <RetryUntilSuccessful num_attempts="-1">
+      <Sequence>
+        <SetTorso relative_height="0.95"/>
+        <SetHead pitch="0.0" yaw="140.0"/>
+        <Sleep msec="3000"/>
+        <StartTableScan/>
+        <Sleep msec="3000"/>
+        <SubTree ID="ClearAllOctomaps"/>
+        <GetTomatoCanPoses poses="{tomato_can_poses}"/>
+        <SetTrayLociOccupancy tray="table" poses="{tomato_can_poses}" occupied="true"/>
+        <UpdatePlanningScene/>
+      </Sequence>
+    </RetryUntilSuccessful>
+  </BehaviorTree>
+
+  <BehaviorTree ID="ScanShelves">
+    <Sequence>
+      <SetTorso relative_height="0.1"/>
+      <SetHead pitch="90.0" yaw="90.0"/>
+      <Sleep msec="1000"/>
+      <ScanShelvesForStockingPoses poses="{stocking_poses}"/>
+      <SetTrayLociOccupancy tray="shelf" poses="{stocking_poses}" occupied="false"/>
+      <UpdatePlanningScene/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- ===================== Main tasks ===================== -->
+  <BehaviorTree ID="FillYourTray">
+    <Sequence>
+      <SubTree ID="GoToTable"/>
+      <SubTree ID="ScanTable" _autoremap="true"/>
+      <SetTorso relative_height="0.95"/>
+      <SetHead pitch="0.0" yaw="135.0"/>
+      <Repeat num_cycles="-1">
+        <Sequence>
+          <SetBlackboard output_key="tray" value="table"/>
+          <SetBlackboard output_key="side" value="RIGHT"/>
+          <SubTree ID="TrayIsEmpty" _autoremap="true"/>
+          <SetBlackboard output_key="tray" value="backtray"/>
+          <Inverter>
+            <SubTree ID="TrayIsFull" _autoremap="true"/>
+          </Inverter>
+          <SetBlackboard output_key="source_tray" value="table"/>
+          <SetBlackboard output_key="destination_tray" value="backtray"/>
+          <ForceSuccess>
+            <SubTree ID="RightArmFillYourTray" _autoremap="true"/>
+          </ForceSuccess>
+        </Sequence>
+      </Repeat>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="FillTheShelf">
+    <Sequence>
+      <SubTree ID="GetInRestPose" _autoremap="true"/>
+      <SubTree ID="GoToShelves"/>
+      <SubTree ID="ScanShelves" _autoremap="true"/>
+      <SubTree ID="UpdateOctomap"/>
+      <SetTorso relative_height="0.95"/>
+      <SetHead pitch="60.0" yaw="110.0"/>
+      <Repeat num_cycles="-1">
+        <Sequence>
+          <SetBlackboard output_key="tray" value="backtray"/>
+          <SetBlackboard output_key="side" value="LEFT"/>
+          <SubTree ID="TrayIsEmpty" _autoremap="true"/>
+          <SetBlackboard output_key="tray" value="shelf"/>
+          <Inverter>
+            <SubTree ID="TrayIsFull" _autoremap="true"/>
+          </Inverter>
+          <SetBlackboard output_key="source_tray" value="backtray"/>
+          <SetBlackboard output_key="destination_tray" value="shelf"/>
+          <ForceSuccess>
+            <SubTree ID="LeftArmFillYourTray" _autoremap="true"/>
+          </ForceSuccess>
+        </Sequence>
+      </Repeat>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="MoveTomatoCans">
+    <Repeat num_cycles="4">
+      <ForceSuccess>
+        <KeepRunningUntilFailure>
+          <Fallback>
+            <Sequence>
+              <SubTree ID="LeftArmFillYourTray" _autoremap="true"/>
+              <SubTree ID="RightArmFillYourTray" _autoremap="true"/>
+            </Sequence>
+            <SubTree ID="RightArmFillYourTray" _autoremap="true"/>
+          </Fallback>
+        </KeepRunningUntilFailure>
+      </ForceSuccess>
+    </Repeat>
+  </BehaviorTree>
+
+  <!-- ===================== Navigation ===================== -->
+  <BehaviorTree ID="GoToTable">
+    <Sequence>
+      <MoveBase goal="1.5;-0.1;0.0"/>
+      <MoveBase goal="2.2;-0.1;0.0"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="GoToShelves">
+    <Sequence>
+      <MoveBase goal="1.0;-0.3.0;0.0"/>
+      <MoveBase goal="2.0;-0.3;0.4"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- ===================== Arm transfers ===================== -->
+  <BehaviorTree ID="LeftArmFillYourTray">
+    <Sequence>
+      <PickTrayLocus tray="{source_tray}" side="LEFT" occupied="true"
+                     locus_id="{source_locus_id}"/>
+      <Fallback>
+        <Sequence>
+          <PickTrayLocus tray="{destination_tray}" side="LEFT" occupied="false"
+                         locus_id="{destination_locus_id}"
+                         locus_pose="{destination_pose}"/>
+          <Fallback>
+            <Sequence>
+              <UpdatePlanningScene/>
+              <ArmPickAndPlace arm="LEFT" object="{source_locus_id}"
+                               place_pose="{destination_pose}" flat_hand="true"/>
+              <SetTrayLocusOccupancy tray="{source_tray}"
+                                     locus_id="{source_locus_id}" occupied="false"/>
+              <SetTrayLocusOccupancy tray="{destination_tray}"
+                                     locus_id="{destination_locus_id}" occupied="true"/>
+            </Sequence>
+            <ForceFailure>
+              <ReleaseTrayLocus tray="{destination_tray}" locus_id="{destination_locus_id}"/>
+            </ForceFailure>
+          </Fallback>
+          <ReleaseTrayLocus tray="{destination_tray}" locus_id="{destination_locus_id}"/>
+        </Sequence>
+        <ForceFailure>
+          <ReleaseTrayLocus tray="{source_tray}" locus_id="{source_locus_id}"/>
+        </ForceFailure>
+      </Fallback>
+      <ReleaseTrayLocus tray="{source_tray}" locus_id="{source_locus_id}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="RightArmFillYourTray">
+    <Sequence>
+      <PickTrayLocus tray="{source_tray}" side="RIGHT" occupied="true"
+                     locus_id="{source_locus_id}"/>
+      <Fallback>
+        <Sequence>
+          <PickTrayLocus tray="{destination_tray}" side="RIGHT" occupied="false"
+                         locus_id="{destination_locus_id}"
+                         locus_pose="{destination_pose}"/>
+          <Fallback>
+            <Sequence>
+              <UpdatePlanningScene/>
+              <ArmPickAndPlace arm="RIGHT" object="{source_locus_id}"
+                               place_pose="{destination_pose}" flat_hand="false"/>
+              <SetTrayLocusOccupancy tray="{source_tray}"
+                                     locus_id="{source_locus_id}" occupied="false"/>
+              <SetTrayLocusOccupancy tray="{destination_tray}"
+                                     locus_id="{destination_locus_id}" occupied="true"/>
+            </Sequence>
+            <ForceFailure>
+              <ReleaseTrayLocus tray="{destination_tray}" locus_id="{destination_locus_id}"/>
+            </ForceFailure>
+          </Fallback>
+          <ReleaseTrayLocus tray="{destination_tray}" locus_id="{destination_locus_id}"/>
+        </Sequence>
+        <ForceFailure>
+          <ReleaseTrayLocus tray="{source_tray}" locus_id="{source_locus_id}"/>
+        </ForceFailure>
+      </Fallback>
+      <ReleaseTrayLocus tray="{source_tray}" locus_id="{source_locus_id}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- ===================== Tray checks ===================== -->
+  <BehaviorTree ID="TrayIsFull">
+    <Inverter>
+      <Fallback>
+        <Sequence>
+          <PickTrayLocus tray="{tray}" side="LEFT" occupied="false" locus_id="{check_locus_id}"/>
+          <ReleaseTrayLocus tray="{tray}" locus_id="{check_locus_id}"/>
+        </Sequence>
+        <Sequence>
+          <PickTrayLocus tray="{tray}" side="RIGHT" occupied="false" locus_id="{check_locus_id}"/>
+          <ReleaseTrayLocus tray="{tray}" locus_id="{check_locus_id}"/>
+        </Sequence>
+      </Fallback>
+    </Inverter>
+  </BehaviorTree>
+
+  <BehaviorTree ID="TrayIsEmpty">
+    <Fallback>
+      <Sequence>
+        <PickTrayLocus tray="{tray}" side="{side}" occupied="true" locus_id="{check_locus_id}"/>
+        <ReleaseTrayLocus tray="{tray}" locus_id="{check_locus_id}"/>
+      </Sequence>
+      <AlwaysFailure/>
+    </Fallback>
+  </BehaviorTree>
+
+  <!-- ===================== Node models ===================== -->
+  <TreeNodesModel>
+    <Action ID="GetArmJointsForPose">
+      <input_port name="pose"/>
+      <output_port name="joints_pose"/>
+    </Action>
+    <Action ID="SetArmJointsLeft"><input_port name="joints_pose"/></Action>
+    <Action ID="SetArmJointsRight"><input_port name="joints_pose"/></Action>
+    <Action ID="SetHead">
+      <input_port name="pitch"/>
+      <input_port name="yaw"/>
+    </Action>
+    <Action ID="SetTorso"><input_port name="relative_height"/></Action>
+    <Action ID="MoveBase"><input_port name="goal"/></Action>
+    <Action ID="ClearOctomap"><input_port name="side"/></Action>
+    <Action ID="StartTableScan"/>
+    <Action ID="GetTomatoCanPoses"><output_port name="poses"/></Action>
+    <Action ID="ScanShelvesForStockingPoses"><output_port name="poses"/></Action>
+    <Action ID="SetTrayLociOccupancy">
+      <input_port name="tray"/>
+      <input_port name="poses"/>
+      <input_port name="occupied"/>
+    </Action>
+    <Action ID="UpdatePlanningScene"/>
+    <Action ID="PickTrayLocus">
+      <input_port name="tray"/>
+      <input_port name="side"/>
+      <input_port name="occupied"/>
+      <output_port name="locus_id"/>
+      <output_port name="locus_pose"/>
+    </Action>
+    <Action ID="ReleaseTrayLocus">
+      <input_port name="tray"/>
+      <input_port name="locus_id"/>
+    </Action>
+    <Action ID="SetTrayLocusOccupancy">
+      <input_port name="tray"/>
+      <input_port name="locus_id"/>
+      <input_port name="occupied"/>
+    </Action>
+    <Action ID="ArmPickAndPlace">
+      <input_port name="arm"/>
+      <input_port name="object"/>
+      <input_port name="place_pose"/>
+      <input_port name="flat_hand"/>
+    </Action>
+  </TreeNodesModel>
+</root>

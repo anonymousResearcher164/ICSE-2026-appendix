@@ -1,0 +1,43 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="9999">
+      <Sequence name="outer_sequence">
+        <Sequence name="inner_sequence">
+
+          <Fallback name="left_side">
+            <Sequence name="left_detect">
+              <HumanPoseDetect expected_pose_left="" expected_pose_right=""
+                               pose_left_speech="{pose_left_speech}"
+                               pose_right_speech="{pose_right_speech}"/>
+            </Sequence>
+            <Script code="full_left_msg := 'Left, ' + pose_left_speech"/>
+            <TextToSpeechActionClient msg="{full_left_msg}"/>
+          </Fallback>
+
+          <Fallback name="right_side">
+            <Sequence name="right_detect">
+              <HumanPoseDetect expected_pose_left="" expected_pose_right=""
+                               pose_left_speech="{pose_left_speech}"
+                               pose_right_speech="{pose_right_speech}"/>
+            </Sequence>
+            <Script code="full_right_msg := 'Right, ' + pose_right_speech"/>
+            <TextToSpeechActionClient msg="{full_right_msg}"/>
+          </Fallback>
+
+        </Sequence>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="HumanPoseDetect">
+      <input_port name="expected_pose_left"/>
+      <input_port name="expected_pose_right"/>
+      <output_port name="pose_left_speech"/>
+      <output_port name="pose_right_speech"/>
+    </Action>
+    <Action ID="TextToSpeechActionClient">
+      <input_port name="msg"/>
+    </Action>
+  </TreeNodesModel>
+</root>

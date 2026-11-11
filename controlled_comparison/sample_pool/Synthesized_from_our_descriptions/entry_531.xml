@@ -1,0 +1,74 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RecoveryNode number_of_retries="6" name="NavigateRecovery">
+
+      <!-- Main navigation -->
+      <ResetterNode>
+        <Sequence name="navigate">
+          <GoalUpdated/>
+          <RateController hz="0.02">
+            <PipelineSequence name="NavigateWithReplanning">
+
+              <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+                <ComputePathToPose goal="{goal}" path="{path_coarse}" planner_id="GridBased"/>
+                <Fallback>
+                  <GoalUpdated/>
+                  <ClearEntireCostmap name="ClearGlobalCostmap-Context"
+                                      service_name="global_costmap/clear_entirely_global_costmap"/>
+                </Fallback>
+              </RecoveryNode>
+
+              <DistanceController distance="2.0">
+                <RecoveryNode number_of_retries="1" name="SmoothPath">
+                  <SmoothPath unsmoothed_path="{path_coarse}" smoothed_path="{path}"
+                              smoother_id="SmoothPath"/>
+                  <Fallback>
+                    <GoalUpdated/>
+                    <Sequence>
+                      <ClearEntireCostmap name="ClearGlobalCostmap-Smoother-Context"
+                                          service_name="global_costmap/clear_entirely_global_costmap"/>
+                      <ComputePathToPose goal="{goal}" path="{path_coarse}" planner_id="GridBased"/>
+                    </Sequence>
+                  </Fallback>
+                </RecoveryNode>
+              </DistanceController>
+
+              <RecoveryNode number_of_retries="1" name="FollowPath">
+                <FollowPath path="{path}" controller_id="FollowPath"/>
+                <Fallback>
+                  <GoalUpdated/>
+                  <ClearEntireCostmap name="ClearLocalCostmap-Context"
+                                      service_name="local_costmap/clear_entirely_global_costmap"/>
+                </Fallback>
+              </RecoveryNode>
+
+              <HadFeedback_FollowPath/>
+
+            </PipelineSequence>
+          </RateController>
+        </Sequence>
+      </ResetterNode>
+
+      <!-- Recovery -->
+      <Fallback name="RecoveryFallback">
+        <GoalUpdated/>
+        <RoundRobin name="RecoveryActions">
+          <Sequence name="ClearingActions">
+            <ClearEntireCostmap name="ClearLocalCostmap-Subtree"
+                                service_name="local_costmap/clear_entirely_local_costmap"/>
+            <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
+                                service_name="global_costmap/clear_entirely_global_costmap"/>
+          </Sequence>
+          <Wait wait_duration="5"/>
+          <BackUp backup_dist="0.15" backup_speed="0.025"/>
+        </RoundRobin>
+      </Fallback>
+
+    </RecoveryNode>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Decorator ID="ResetterNode"/>
+    <Action ID="HadFeedback_FollowPath"/>
+  </TreeNodesModel>
+</root>

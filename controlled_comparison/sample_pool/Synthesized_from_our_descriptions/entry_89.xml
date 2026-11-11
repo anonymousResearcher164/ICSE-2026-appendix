@@ -1,0 +1,20 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="NavigateWithPlanning">
+      <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+      <FollowPath path="{path}" controller_id="FollowPath"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="ComputePathToPose">
+      <input_port name="goal"/>
+      <output_port name="path"/>
+      <input_port name="planner_id"/>
+    </Action>
+    <Action ID="FollowPath">
+      <input_port name="path"/>
+      <input_port name="controller_id"/>
+    </Action>
+  </TreeNodesModel>
+</root>

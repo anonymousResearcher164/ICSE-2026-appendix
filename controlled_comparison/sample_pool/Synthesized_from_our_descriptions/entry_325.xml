@@ -1,0 +1,51 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RetryUntilSuccessful num_attempts="-1">
+      <Fallback name="select_behavior">
+
+        <SequenceWithMemory name="go_to_pasture">
+          <IsOnPasture/>
+          <IsDay/>
+          <IsInShed/>
+          <LeaveShed/>
+          <FindRandomPastureField/>
+          <MoveToField/>
+        </SequenceWithMemory>
+
+        <SequenceWithMemory name="go_to_shed">
+          <IsOnPasture/>
+          <IsNight/>
+          <Inverter>
+            <IsInShed/>
+          </Inverter>
+          <FindShed/>
+          <MoveToShed/>
+          <EnterShed/>
+        </SequenceWithMemory>
+
+        <SequenceWithMemory name="graze">
+          <IsDay/>
+          <Inverter>
+            <IsInShed/>
+          </Inverter>
+          <RandomMove/>
+        </SequenceWithMemory>
+
+      </Fallback>
+    </RetryUntilSuccessful>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsOnPasture"/>
+    <Condition ID="IsDay"/>
+    <Condition ID="IsNight"/>
+    <Condition ID="IsInShed"/>
+    <Action ID="LeaveShed"/>
+    <Action ID="FindRandomPastureField"/>
+    <Action ID="MoveToField"/>
+    <Action ID="FindShed"/>
+    <Action ID="MoveToShed"/>
+    <Action ID="EnterShed"/>
+    <Action ID="RandomMove"/>
+  </TreeNodesModel>
+</root>

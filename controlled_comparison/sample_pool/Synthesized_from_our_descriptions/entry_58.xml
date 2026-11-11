@@ -1,0 +1,17 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <Sequence name="first_nested_sequence">
+        <Sequence name="second_nested_sequence">
+          <go1/>
+        </Sequence>
+      </Sequence>
+      <go2/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="go1"/>
+    <Action ID="go2"/>
+  </TreeNodesModel>
+</root>
