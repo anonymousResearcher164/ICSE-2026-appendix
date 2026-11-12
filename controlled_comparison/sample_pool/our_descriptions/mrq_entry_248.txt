@@ -1,23 +1,39 @@
-The mission describes navigation to a goal with path planning, path following, and recovery actions.
+The mission describes navigating a robot to a specified goal while recovering from navigation failures.
 
-First, the robot will execute the main navigation behavior. If the main navigation behavior fails, it will execute
-recovery actions and retry the main navigation behavior. It will allow up to 6 recovery attempts before stopping
-if recovery fails or all retries are exhausted.
+First, the robot will execute the main action PipelineSequence NavigateWithReplanning. If it fails, it will
+execute the recovery action ReactiveFallback RecoveryFallback. After recovery, it will retry the main action. If
+recovery fails and six retries are exhausted, it will stop execution.
 
-Next, it will execute path computation and path following in order. It will stop the navigation sequence if an
-action fails. While an action is running or has succeeded, it will proceed to the next action.
+Next, it will execute the actions RateController and RecoveryNode FollowPath in order. It will stop the sequence
+if any action fails. While an action is running or has succeeded, it will proceed to the next action.
 
-Next, it will execute the path computation recovery behavior at a rate of 1 Hz. It will execute the ROS action
-ComputePathToPose with the goal read from goal, the resulting path stored under path, and the planner ID set to
-GridBased. If path computation fails, it will execute the ROS action ClearEntireCostmap with the service name
-global_costmap/clear_entirely_global_costmap and retry path computation once.
+Then, it will execute RateController around RecoveryNode ComputePathToPose.
 
-Next, it will execute the path following recovery behavior. It will execute the ROS action FollowPath with the
-path read from path and the controller ID set to FollowPath. If path following fails, it will execute the ROS
-action ClearEntireCostmap with the service name local_costmap/clear_entirely_local_costmap and retry path
-following once.
+Next, it will execute the main action ComputePathToPose with the goal read from {goal}, store the resulting path
+under {path}, and use the planner identifier GridBased. If it fails, it will execute ClearEntireCostmap
+ClearGlobalCostmap-Context with the service name global_costmap/clear_entirely_global_costmap. After recovery, it
+will retry the main action. If recovery fails and one retry is exhausted, it will stop execution.
 
-Finally, it will execute the recovery fallback. If GoalUpdated is true, it will stop the recovery behavior.
-Otherwise, it will execute the local costmap clearing action, the global costmap clearing action, the spin action
-with a spin distance of 1.57, and the wait action with a wait duration of 5 in sequence. If any recovery action
-fails, it will stop the recovery sequence.
+Then, it will execute the main action FollowPath with the path read from {path} and use the controller identifier
+FollowPath. If it fails, it will execute ClearEntireCostmap ClearLocalCostmap-Context with the service name
+local_costmap/clear_entirely_local_costmap. After recovery, it will retry the main action. If recovery fails and
+one retry is exhausted, it will stop execution.
+
+Finally, it will execute the recovery action ReactiveFallback RecoveryFallback. It will execute GoalUpdated and
+SequenceStar RecoveryActions in order. If GoalUpdated succeeds, it will stop execution. Otherwise, it will
+continue with SequenceStar RecoveryActions and re-evaluate GoalUpdated whenever a later action is running. If
+GoalUpdated then succeeds, it will halt the running action and stop the fallback.
+
+Next, it will execute ClearEntireCostmap ClearLocalCostmap-Subtree, ClearEntireCostmap ClearGlobalCostmap-Subtree,
+Spin, and Wait in sequence. If any action succeeds, it will remember it and move to the next action. If any action
+fails, it will start the sequence again from the failed action.
+
+Then, it will execute ClearEntireCostmap ClearLocalCostmap-Subtree with the service name
+local_costmap/clear_entirely_local_costmap.
+
+Next, it will execute ClearEntireCostmap ClearGlobalCostmap-Subtree with the service name
+global_costmap/clear_entirely_global_costmap.
+
+Then, it will execute Spin with a spin distance of 1.57.
+
+Finally, it will execute Wait with a wait duration of 5.

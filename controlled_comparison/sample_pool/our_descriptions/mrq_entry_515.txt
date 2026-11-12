@@ -1,14 +1,19 @@
-The mission describes continuous variant execution and person recognition with fallback movement.
+The mission describes continuous handling of a variant while recognizing a person and obtaining the person's
+position or moving to a specified position.
 
-First, the robot will execute the repeat branch and the person-recognition branch simultaneously. Both branches
-will need to succeed for the parallel execution to succeed.
+First, the parallel node will execute the repeat node and the sequence node simultaneously. It will succeed only
+when all actions succeed, and it will fail if any action fails.
 
-Next, it will execute custom action VariantAction continuously. The action will use the value read from the
-blackboard key {variant}.
+Next, the repeat node will execute custom action VariantAction continuously. The action will store its value under
+{variant}.
 
-Then, it will execute the person-recognition sequence in order. The sequence will stop if an action fails.
+Then, the sequence node will execute custom action peoplerecognition followed by the fallback node in order. It
+will stop if any action fails.
 
-Afterward, it will execute custom action peoplerecognition. It will then execute the fallback actions
-consecutively. If custom action getPersonPose succeeds, it will stop the fallback. If custom action getPersonPose
-fails, it will execute custom action moveRoboterPosition with approachRadius set to 200, x set to 3000, and y set
-to -12000.
+Finally, the fallback node will execute custom action getPersonPose. If that action fails, it will execute custom
+action moveRoboterPosition. If no action succeeds, the fallback will fail.
+
+Parameters: custom action getPersonPose will use personname=THOMAS, store its x output under {x_}, store its y
+output under {y_}, and store its z output under {z_}.
+
+Custom action moveRoboterPosition will use approachRadius=200, x=3000, and y=-12000.

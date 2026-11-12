@@ -1,5 +1,8 @@
-The mission describes computing a path to a goal and following that path.
+The mission describes computing a path to a goal pose and following that path.
 
-First, the robot will execute the following actions in order and stop the sequence if any action fails. It will
-execute ROS action ComputePathToPose with goal read from goal, path stored under path, and planner_id set to
-GridBased. It will then execute ROS action FollowPath with path read from path and controller_id set to FollowPath.
+First, the robot will execute ROS action ComputePathToPose followed by ROS action FollowPath in order and stop the
+sequence if either action fails.
+
+Parameters: It will provide the goal read from {goal} to ROS action ComputePathToPose, store the resulting path
+under {path}, and use GridBased as planner_id. It will provide the path read from {path} to ROS action FollowPath
+and use FollowPath as controller_id.

@@ -1,14 +1,32 @@
-The mission describes setting the left and right arm joints to the UPTRAY, EXTENDED, GRIPPING, and REST poses.
+The mission describes a sequence that obtains joint configurations for four arm poses and applies each
+configuration to both arms.
 
-First, the robot will execute the following actions in order and stop the sequence if any action fails. It will
-execute custom action GetArmJointsForPose with pose UPTRAY and store the result under joints_pose. It will execute
-custom action SetArmJointsLeft with joints_pose read from joints_pose. It will execute custom action
-SetArmJointsRight with joints_pose read from joints_pose. It will execute custom action GetArmJointsForPose with
-pose EXTENDED and store the result under joints_pose. It will execute custom action SetArmJointsLeft with
-joints_pose read from joints_pose. It will execute custom action SetArmJointsRight with joints_pose read from
-joints_pose. It will execute custom action GetArmJointsForPose with pose GRIPPING and store the result under
-joints_pose. It will execute custom action SetArmJointsLeft with joints_pose read from joints_pose. It will
-execute custom action SetArmJointsRight with joints_pose read from joints_pose. It will execute custom action
-GetArmJointsForPose with pose REST and store the result under joints_pose. It will execute custom action
-SetArmJointsLeft with joints_pose read from joints_pose. It will execute custom action SetArmJointsRight with
-joints_pose read from joints_pose.
+The sequence will execute the following actions in order and stop the sequence if any action fails.
+
+First, the robot will execute custom action GetArmJointsForPose with pose set to UPTRAY and store the resulting
+joint configuration under joints_pose.
+
+Next, it will execute custom action SetArmJointsLeft using the joint configuration read from joints_pose.
+
+Next, it will execute custom action SetArmJointsRight using the joint configuration read from joints_pose.
+
+Next, it will execute custom action GetArmJointsForPose with pose set to EXTENDED and store the resulting joint
+configuration under joints_pose.
+
+Next, it will execute custom action SetArmJointsLeft using the joint configuration read from joints_pose.
+
+Next, it will execute custom action SetArmJointsRight using the joint configuration read from joints_pose.
+
+Next, it will execute custom action GetArmJointsForPose with pose set to GRIPPING and store the resulting joint
+configuration under joints_pose.
+
+Next, it will execute custom action SetArmJointsLeft using the joint configuration read from joints_pose.
+
+Next, it will execute custom action SetArmJointsRight using the joint configuration read from joints_pose.
+
+Next, it will execute custom action GetArmJointsForPose with pose set to REST and store the resulting joint
+configuration under joints_pose.
+
+Next, it will execute custom action SetArmJointsLeft using the joint configuration read from joints_pose.
+
+Finally, it will execute custom action SetArmJointsRight using the joint configuration read from joints_pose.

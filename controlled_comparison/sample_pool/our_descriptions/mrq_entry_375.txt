@@ -1,6 +1,9 @@
-The mission describes a behavior that checks whether the robot is full, moves it to the closest resource, and
-waits for 15 frames.
+The mission describes checking whether the robot is full, moving to the closest resource, and waiting for 15
+frames.
 
-First, the robot will execute the following actions in order and stop the sequence if any action fails. It will
-check whether isFull is true. It will execute custom action goClosestR. It will execute custom action waitFrames
-with barout set to an empty value, baz set to an empty value, fooin set to an empty value, and frames set to 15.
+First, the robot will execute the condition isFull, the custom action goClosestR, and the custom action waitFrames
+in order. It will stop the sequence if any action fails.
+
+Parameters: The custom action waitFrames will use an empty value for barout. The custom action waitFrames will use
+an empty value for baz. The custom action waitFrames will use an empty value for fooin. The custom action
+waitFrames will use 15 for frames.

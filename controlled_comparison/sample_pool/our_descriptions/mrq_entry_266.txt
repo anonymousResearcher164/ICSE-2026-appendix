@@ -1,13 +1,7 @@
-The mission describes obtaining an object pose, determining a placing pose, approaching the object, and placing it.
+The mission describes placing an object at a pose determined from the object.
 
-First, the root Sequence will execute custom action GetPickObject, custom action GetPlacingPose, custom action
-ApproachObject, and custom action PlaceSimple in order. It will stop the sequence if any action fails.
-
-Next, the robot will execute custom action GetPickObject with object_id read from key object_id.
-
-Then, it will execute custom action GetPlacingPose with object read from key object_id and store its output under
-key pose.
-
-Next, it will execute custom action ApproachObject with object_pose read from key pose.
-
-Finally, it will execute custom action PlaceSimple with goal read from key pose.
+First, the sequence place will execute its actions in order and stop if any action fails. The robot will execute
+custom action GetPickObject to obtain the object identified by the value read from the object_id key. It will
+execute custom action GetPlacingPose with the object identified by the value read from the object_id key. It will
+store the resulting placing pose under the pose key. It will execute custom action ApproachObject using the pose
+read from the pose key. It will execute custom action PlaceSimple using the pose read from the pose key.

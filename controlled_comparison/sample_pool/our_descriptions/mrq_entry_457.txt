@@ -1,139 +1,105 @@
-The mission describes a vehicle mission that manages waiting, path initialization, lane keeping, lane changes,
-traffic lights, unprotected turns, path execution, data publication, and mission-state publication.
+The mission describes autonomous road navigation with lane keeping, lane changes, traffic-light handling,
+unprotected-turn handling, path generation, and mission-state publication.
 
-First, the robot will execute the Core_seq fallback. If the mission-wait condition succeeds, it will execute the
-stop action. If that sequence fails, it will execute the main mission sequence. If neither sequence succeeds, the
-fallback will fail.
+The root fallback Core_seq will consecutively execute the first sequence and the second sequence until one
+sequence succeeds. If the first sequence succeeds, execution will stop. If the first sequence fails, the second
+sequence will execute.
 
-Next, the main mission sequence will execute the initialization, path-setting, data-publication, and mission-state
-actions in order. The sequence will stop if any action fails.
+First, the first sequence will check whether checkMissionWait is true and will execute stop if the condition
+succeeds. If checkMissionWait is false, this sequence will fail.
 
-Then, the initialization sequence will check whether a global path exists. If no global path exists, it will
-execute the nested fallback. That fallback will try to confirm lane-keeping mode, confirm that a lane-change
-failure is absent, and call the global-path action. If that sequence fails, the AlwaysSuccess node will succeed.
-The initialization sequence will then execute the init action. It will next execute the path-generation sequence.
+Next, the second sequence will execute init and the gen path sequence before it will set the path, publish data,
+and process the mission state.
 
-Next, the path-generation sequence will execute the StateSelect fallback, the traffic-check fallback, and the
-unprotected-turn fallback in order. The sequence will stop if any fallback fails.
+First, the init sequence will check whether checkExistPathGlobal is true. It will then execute the nested fallback
+and init. The sequence will stop if an action fails.
 
-Then, the StateSelect fallback will try the LaneKeeping sequence. If that sequence fails, it will try the
-LaneChangeLeft sequence. If that sequence fails, it will try the LaneChangeRigth sequence. If that sequence fails,
-it will execute the Recovery sequence.
+Next, the nested fallback will first execute a sequence that checks whether checkStateLaneKeeping is true, checks
+whether checkFailLaneChange is true, and executes callPathGlobal. If that sequence fails, the fallback will
+execute AlwaysSuccess.
 
-Next, the LaneKeeping sequence will check whether lane-keeping mode is active. If the condition succeeds, it will
-generate a lane-keeping path. It will then execute the nested LaneKeeping sequence. It will stop if any action or
-condition fails.
+Next, the gen path sequence will execute the StateSelect fallback, the traffic check fallback, and the
+unprotectedTurn fallback in order. It will stop if a child fails.
 
-Then, the nested LaneKeeping sequence will execute the lane-selection fallback and the mandatory-lane-change
-fallback in order. The sequence will stop if either fallback fails.
+First, the StateSelect fallback will evaluate LaneKeeping, LaneChangeLeft, LaneChangeRigth, and Recovery in order.
+If one child succeeds, it will stop evaluating the remaining children. If all children fail, the fallback will
+fail.
 
-Next, the lane-selection fallback will try the global-lane-change sequence. If that sequence fails, it will try
-the collision-check sequence. If that sequence fails, it will execute the setStateLaneKeeping action.
+Next, the LaneKeeping sequence will check whether checkStateLaneKeeping is true and will execute
+genPathLaneKeeping, the nested LaneKeeping sequence, and the must-lane-change fallback in order.
 
-Then, the global-lane-change sequence will check whether a global lane change is required. If the condition
-succeeds, it will execute the left-change fallback and the right-change sequence in order. The sequence will stop
-if any child fails.
+First, the nested LaneKeeping sequence will execute the lane-change evaluation fallback and the must-lane-change
+fallback in order.
 
-Next, the left-change fallback will try the left-change sequence. If that sequence fails, it will execute the
-setStateLaneKeeping action.
+Next, the lane-change evaluation fallback will first evaluate the global lane-change sequence. If that sequence
+fails, it will evaluate the check Collision sequence. If that sequence also fails, it will execute
+setStateLaneKeeping.
 
-Then, the left-change sequence will check whether a left lane change is requested. If the condition succeeds, it
-will execute the left-lane-change preparation sequence. The sequence will stop if any child fails.
+First, the global lane-change sequence will check whether checkGlobalLaneChange is true. It will then evaluate the
+left-change sequence, the right-change sequence, and setStateLaneKeeping.
 
-Next, the left-lane-change preparation sequence will check whether the left lane is changeable. It will then
-generate a left lane-change path. It will next execute the left-lane safety fallback. The sequence will stop if
-any child fails.
+Next, the left-change sequence will check whether checkLeftChange is true. It will then evaluate the left
+lane-change sequence and setStateLaneKeeping.
 
-Then, the left-lane safety fallback will try the left-lane safety sequence. If that sequence fails, it will
-execute the setStateLaneChangeLeft action.
+Next, the left lane-change sequence will check whether checkLaneChangeableLeft is true and will execute
+genPathLaneChangeLeft. It will then evaluate whether the left lane remains blocked or safe.
 
-Next, the left-lane safety sequence will execute the fallback that checks for a static object in the left lane or
-a collision behind the left side. It will then execute the setStateLaneKeeping action. The sequence will stop if
-any child fails.
+Next, the left-lane safety fallback will first evaluate a sequence that checks whether checkObjectStaticLeftLane
+is true or checkCollisionBehindLeft is true and then executes setStateLaneKeeping. If that sequence fails, it will
+execute setStateLaneChangeLeft.
 
-Then, the right-change sequence will check whether the right lane is changeable. It will then generate a right
-lane-change path. It will next execute the right-lane safety fallback. The sequence will stop if any child fails.
+Next, the right lane-change sequence will check whether checkLaneChangeableRight is true and will execute
+genPathLaneChangeRight. It will then evaluate whether the right lane remains blocked or safe.
 
-Next, the right-lane safety fallback will try the right-lane safety sequence. If that sequence fails, it will
-execute the setStateLaneChangeRight action.
+Next, the right-lane safety fallback will first evaluate a sequence that checks whether checkObjectStaticRightLane
+is true or checkCollisionBehindRight is true and then executes setStateLaneKeeping. If that sequence fails, it
+will execute setStateLaneChangeRight.
 
-Then, the right-lane safety sequence will execute the fallback that checks for a static object in the right lane
-or a collision behind the right side. It will then execute the setStateLaneKeeping action. The sequence will stop
-if any child fails.
+Next, the check Collision sequence will check whether checkFrontObject is true. It will then evaluate the
+lane_keeping fallback and the lane_change fallback.
 
-Next, the collision-check sequence will check whether an object is in front. If the condition succeeds, it will
-execute the front-object fallback. The sequence will stop if any child fails.
+First, the lane_keeping fallback will evaluate the inverted checkIrregularFront condition and will then evaluate
+checkNearCorner, checkObjectNearGoal, and checkMeNearGoal. If one condition succeeds, the fallback will stop.
 
-Then, the front-object fallback will try the lane-keeping sequence. If that sequence fails, it will try the
-lane-change fallback. If that fallback fails, it will execute the setStateLaneKeeping action.
+Next, the lane-keeping response sequence will execute setStateLaneKeeping after the preceding fallback succeeds.
 
-Next, the front-object lane-keeping sequence will execute the inverted irregular-front condition. The inverted
-condition will succeed when the irregular-front condition fails. It will then execute the fallback that checks
-whether the vehicle is near a corner, whether an object is near the goal, or whether the vehicle is near the goal.
-It will finally execute the setStateLaneKeeping action. The sequence will stop if any child fails.
+Next, the lane_change fallback will evaluate the left lane-change sequence and the right lane-change sequence in
+order. If both alternatives fail, it will execute setStateLaneKeeping.
 
-Then, the lane-change fallback will try the left lane-change decision sequence. If that sequence fails, it will
-try the right lane-change decision sequence. If that sequence fails, the fallback will fail.
+First, the left lane-change sequence will check whether checkProfitLaneChangeLeft is true. It will then evaluate
+the left-lane safety sequence and the left lane-change execution sequence before it will execute
+setStateLaneKeeping.
 
-Next, the left lane-change decision sequence will check whether a left lane change is profitable. If the condition
-succeeds, it will execute the left lane-change option fallback. It will stop if any child fails.
+Next, the right lane-change sequence will check whether checkProfitLaneChangeRight is true. It will then evaluate
+the right-lane safety sequence and the right lane-change execution sequence before it will execute
+setStateLaneKeeping.
 
-Then, the left lane-change option fallback will try the left-blockage sequence. If that sequence fails, it will
-try the left-lane-change execution sequence. If that sequence fails, it will execute the setStateLaneKeeping
-action.
+Next, the must-lane-change fallback will check whether checkMustLaneChange is true. If the condition is false, it
+will execute AlwaysSuccess.
 
-Next, the left-blockage sequence will execute the fallback that checks for a static object in the left lane or an
-irregularity on the left side. It will then execute the setStateLaneKeeping action. The sequence will stop if any
-child fails.
+Next, the LaneChangeLeft sequence will check whether checkStateLaneChangeLeft is true. It will then evaluate the
+lane-change completion fallback.
 
-Then, the left-lane-change execution sequence will check whether the left lane is changeable. It will then
-generate a left lane-change path. It will next execute the left-lane safety fallback. The sequence will stop if
-any child fails.
+Next, the lane-change completion fallback will first evaluate a sequence that checks whether checkEndLaneChange is
+true, executes setStateLaneKeeping, and executes callPathGlobal. If that sequence fails, it will execute
+speedProfileLaneChange.
 
-Next, the right lane-change decision sequence will check whether a right lane change is profitable. If the
-condition succeeds, it will execute the right lane-change option fallback. It will stop if any child fails.
+Next, the LaneChangeRigth sequence will check whether checkStateLaneChangeRight is true. It will then evaluate the
+lane-change completion fallback.
 
-Then, the right lane-change option fallback will try the right-blockage sequence. If that sequence fails, it will
-try the right-lane-change execution sequence. If that sequence fails, it will execute the setStateLaneKeeping
-action.
+Next, the lane-change completion fallback will first evaluate a sequence that checks whether checkEndLaneChange is
+true, executes setStateLaneKeeping, and executes callPathGlobal. If that sequence fails, it will execute
+speedProfileLaneChange.
 
-Next, the right-blockage sequence will execute the fallback that checks for a static object in the right lane or
-an irregularity on the right side. It will then execute the setStateLaneKeeping action. The sequence will stop if
-any child fails.
+Next, the Recovery sequence will execute setStateLaneKeeping.
 
-Then, the right-lane-change execution sequence will check whether the right lane is changeable. It will then
-generate a right lane-change path. It will next execute the right-lane safety fallback. The sequence will stop if
-any child fails.
+Next, the traffic check fallback will check whether checkPassAbleTrafficLight is true. If the condition is false,
+it will execute stopTrafficLight.
 
-Next, the mandatory-lane-change fallback will check whether a lane change is mandatory. If the condition succeeds,
-the fallback will succeed. If the condition fails, the AlwaysSuccess node will succeed.
+Next, the unprotectedTurn fallback will first evaluate a sequence that checks whether checkUnprotected is true,
+checks whether checkImpassalbeUnprotected is true, and executes stop. If that sequence fails, it will execute
+AlwaysSuccess.
 
-Then, the LaneChangeLeft sequence will check whether left-lane-change mode is active. If the condition succeeds,
-it will execute the lane-change completion fallback. The sequence will stop if either child fails.
-
-Next, the left lane-change completion fallback will try the sequence that checks whether the lane change has
-ended, sets lane-keeping mode, and calls the global-path action. If that sequence fails, it will execute the
-speedProfileLaneChange action.
-
-Then, the LaneChangeRigth sequence will check whether right-lane-change mode is active. If the condition succeeds,
-it will execute the right lane-change completion fallback. The sequence will stop if either child fails.
-
-Next, the right lane-change completion fallback will try the sequence that checks whether the lane change has
-ended, sets lane-keeping mode, and calls the global-path action. If that sequence fails, it will execute the
-speedProfileLaneChange action.
-
-Then, the Recovery sequence will execute the setStateLaneKeeping action.
-
-Next, the traffic-check fallback will check whether traffic can be passed at the traffic light. If the condition
-fails, it will execute the stopTrafficLight action.
-
-Then, the unprotected-turn fallback will try the sequence that checks whether an unprotected turn exists, checks
-whether it is impassable, and executes the stop action. If that sequence fails, the AlwaysSuccess node will
-succeed.
-
-Next, it will execute the setPath action after the path-generation sequence succeeds. It will then execute the
-publishData action. The sequence will stop if either action fails.
-
-Then, the mission-state fallback will try the sequence that checks whether the goal has been reached, sets the
-mission state to arrived, and publishes the mission state. If that sequence fails, it will execute the
-setStateMissionGoing action. If neither sequence succeeds, the fallback will fail.
+Next, the mission-state fallback will first evaluate a sequence that checks whether checkArriveGoal is true,
+executes setStateMissionArrive, and executes publishStateMission. If that sequence fails, it will execute a
+sequence that runs setStateMissionGoing.

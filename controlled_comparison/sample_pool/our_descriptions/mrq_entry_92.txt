@@ -1,32 +1,40 @@
-The mission describes a behavior tree that selects and executes a suitable driving-path planning behavior.
+The mission describes the robot's behavior for selecting and planning a requested driving maneuver or following
+its lane.
 
-First, the robot will evaluate the available planning behaviors from left to right. It will stop when one behavior
-succeeds. It will execute lane-following planning if all other behaviors fail.
+First, the Fallback will execute the first ReactiveSequence, the second ReactiveSequence, the third
+ReactiveSequence, the fourth ReactiveSequence, the fifth ReactiveSequence, and the custom action
+LaneFollowing_Plan consecutively. If a child fails, it will move to the next child until one succeeds. If no child
+succeeds, the execution will fail.
 
-Next, it will use a reactive sequence for pull-over planning. It will re-evaluate PullOver_Request while the
-sequence is running. It will re-evaluate PullOver_Ready while PullOver_Plan is running. It will execute custom
-action PullOver_Plan and store its result under output when both conditions are true.
+Next, the first ReactiveSequence will execute the PullOver_Request condition, the PullOver_Ready condition, and
+the custom action PullOver_Plan in sequence. If a condition or action fails, it will stop the sequence. While an
+action is running, it will re-evaluate the preceding conditions, halt the running action if a preceding condition
+fails, and stop the sequence. The custom action PullOver_Plan will store its result under output.
 
-Next, it will use a reactive sequence for pull-out planning. It will re-evaluate PullOut_Request while the
-sequence is running. It will re-evaluate PullOut_Ready while PullOut_Plan is running. It will execute custom
-action PullOut_Plan and store its result under output when both conditions are true.
+Then, the second ReactiveSequence will execute the PullOut_Request condition, the PullOut_Ready condition, and the
+custom action PullOut_Plan in sequence. If a condition or action fails, it will stop the sequence. While an action
+is running, it will re-evaluate the preceding conditions, halt the running action if a preceding condition fails,
+and stop the sequence. The custom action PullOut_Plan will store its result under output.
 
-Next, it will use a reactive sequence for side-shift planning. It will re-evaluate SideShift_Request while the
-sequence is running. It will re-evaluate SideShift_Ready while SideShift_Plan is running. It will execute custom
-action SideShift_Plan and store its result under output when both conditions are true.
+Next, the third ReactiveSequence will execute the SideShift_Request condition, the SideShift_Ready condition, and
+the custom action SideShift_Plan in sequence. If a condition or action fails, it will stop the sequence. While an
+action is running, it will re-evaluate the preceding conditions, halt the running action if a preceding condition
+fails, and stop the sequence. The custom action SideShift_Plan will store its result under output.
 
-Next, it will use a reactive sequence for lane-change planning. It will re-evaluate LaneChange_Request while the
-sequence is running. It will re-evaluate the lane-change approval fallback while LaneChange_Plan is running. It
-will execute custom action LaneChange_Plan and store its result under output when the request is true and the
-approval fallback succeeds.
+Then, the fourth ReactiveSequence will execute the LaneChange_Request condition, the nested Fallback, and the
+custom action LaneChange_Plan in sequence. If a condition or action fails, it will stop the sequence. While an
+action is running, it will re-evaluate the preceding conditions, halt the running action if a preceding condition
+fails, and stop the sequence. The custom action LaneChange_Plan will store its result under output.
 
-Next, the lane-change approval fallback will evaluate its conditions from left to right. It will stop when one
-condition succeeds. It will check whether LaneChange_Ready is true. It will check whether
-ForceLaneChange_ForceApproval is true if LaneChange_Ready is false.
+Next, the nested Fallback will execute the LaneChange_Ready condition and the ForceLaneChange_ForceApproval
+condition consecutively. If the LaneChange_Ready condition fails, it will execute the
+ForceLaneChange_ForceApproval condition. If either condition succeeds, the nested fallback will succeed. If both
+conditions fail, the nested fallback will fail.
 
-Next, it will use a reactive sequence for avoidance planning. It will re-evaluate Avoidance_Request while the
-sequence is running. It will re-evaluate Avoidance_Ready while Avoidance_Plan is running. It will execute custom
-action Avoidance_Plan and store its result under output when both conditions are true.
+Then, the fifth ReactiveSequence will execute the Avoidance_Request condition, the Avoidance_Ready condition, and
+the custom action Avoidance_Plan in sequence. If a condition or action fails, it will stop the sequence. While an
+action is running, it will re-evaluate the preceding conditions, halt the running action if a preceding condition
+fails, and stop the sequence. The custom action Avoidance_Plan will store its result under output.
 
-Finally, it will execute custom action LaneFollowing_Plan and store its result under output if every preceding
-planning behavior fails.
+Finally, the custom action LaneFollowing_Plan will execute as the final fallback option and will store its result
+under output.

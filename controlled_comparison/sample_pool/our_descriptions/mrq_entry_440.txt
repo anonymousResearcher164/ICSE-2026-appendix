@@ -1,29 +1,19 @@
-The mission describes a robot repeatedly detecting human poses on the left and right sides and generating
-corresponding speech messages.
+The mission describes a robot repeatedly detecting human poses on the left and right and producing corresponding
+speech messages.
 
-First, the robot will execute the sequence 9999 times.
+First, the robot will execute the contained sequence 9999 times.
 
-Next, it will execute the following actions in order and stop the sequence if any action fails: the inner sequence.
+Next, it will execute the left-pose subtree followed by the right-pose subtree in order. The sequence will stop if
+either subtree fails.
 
-Then, it will execute the following actions in order and stop the sequence if any action fails: the left-side
-fallback and the right-side fallback.
+Then, it will execute the left-pose fallback. It will first execute the HumanPoseDetect action with empty expected
+left and right poses and store the detected speech values in the pose_left_speech and pose_right_speech blackboard
+keys. If this action fails, it will execute the Script action with the code full_left_msg := 'Left, ' +
+pose_left_speech. If the Script action also fails, it will execute the TextToSpeechActionClient action with the
+message full_left_msg.
 
-First, it will execute the left-side fallback consecutively. If the left-side sequence fails, it will move to the
-custom action Script with code “full_left_msg := 'Left, ' + pose_left_speech”. If that action succeeds, it
-will stop the fallback. If it fails, it will move to the custom action TextToSpeechActionClient with msg
-“full_left_msg”. If no action succeeds, the fallback execution will fail.
-
-Next, it will execute the left-side sequence in order and stop the sequence if any action fails. It will execute
-the custom action HumanPoseDetect with expected_pose_left set to an empty value, expected_pose_right set to an
-empty value, pose_left_speech stored under the key pose_left_speech, and pose_right_speech stored under the key
-pose_right_speech.
-
-Next, it will execute the right-side fallback consecutively. If the right-side sequence fails, it will move to the
-custom action Script with code “full_right_msg := 'Right, ' + pose_right_speech”. If that action succeeds, it
-will stop the fallback. If it fails, it will move to the custom action TextToSpeechActionClient with msg
-“full_right_msg”. If no action succeeds, the fallback execution will fail.
-
-Finally, it will execute the right-side sequence in order and stop the sequence if any action fails. It will
-execute the custom action HumanPoseDetect with expected_pose_left set to an empty value, expected_pose_right set
-to an empty value, pose_left_speech stored under the key pose_left_speech, and pose_right_speech stored under the
-key pose_right_speech.
+Next, it will execute the right-pose fallback. It will first execute the HumanPoseDetect action with empty
+expected left and right poses and store the detected speech values in the pose_left_speech and pose_right_speech
+blackboard keys. If this action fails, it will execute the Script action with the code full_right_msg := 'Right, '
++ pose_right_speech. If the Script action also fails, it will execute the TextToSpeechActionClient action with the
+message full_right_msg.

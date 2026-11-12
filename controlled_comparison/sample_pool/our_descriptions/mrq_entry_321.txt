@@ -1,22 +1,28 @@
 The mission describes generating grasp candidates from a tabletop scene.
 
-First, the robot will execute tabletop segmentation, conditional object processing, and grasp candidate generation
-in order. The sequence will stop if any action fails.
+First, the root sequence will execute the following actions in order and stop if any action fails. The robot will
+first perform tabletop segmentation, then conditionally extract and cluster the desired object, and finally
+generate grasping candidates.
 
-Next, it will execute the custom action TableTopSegmentation with the original point cloud read from
-original_cloud, the scene image read from image_scene, and the table height read from table_height. The action
-will store the transformed point cloud under original_cloud_transformed, the tabletop cloud under tabletop_cloud,
-the plane cloud under plane_cloud, and the non-plane cloud under nonplane_cloud. It will retry this action for up
-to three attempts if it fails.
+Next, it will retry tabletop segmentation until it succeeds or three attempts have been made.
 
-Then, it will execute the conditional sequence while the False condition is true. The sequence will end when the
-False condition is false. It will execute the DesiredObjectEntryCheck decorator with the desired object read from
-desired_object. The decorator will execute the custom action ObjectCloudExtraction with the original point cloud
-read from original_cloud, the scene image read from image_scene, the desired object read from desired_object, and
-the tabletop cloud read from tabletop_cloud. The action will store the extracted object cloud under object_cloud.
-It will then execute the custom action TableTopClustering with the object cloud read from object_cloud and the
-tabletop cloud read from tabletop_cloud.
+Then, the conditional sequence will execute object cloud extraction and tabletop clustering in order while
+checking whether the False condition is true. If the False condition is false, it will end the sequence.
 
-Finally, it will execute the custom action GenerateGraspingCandidates with the object cloud read from
-object_cloud, the table height read from table_height, and the transformed original point cloud read from
-original_cloud_transformed. The action will store the grasp candidates under grasp_candidates.
+Next, the BlackboardEntryCheck decorator will check whether the desired object entry is available before executing
+object cloud extraction.
+
+Finally, it will generate grasping candidates.
+
+Parameters: TableTopSegmentation will read original_cloud from the original_cloud key. TableTopSegmentation will
+read image_scene from the image_scene key. TableTopSegmentation will read table_height from the table_height key.
+TableTopSegmentation will store the transformed cloud under the original_cloud_transformed key.
+TableTopSegmentation will store the tabletop cloud under the tabletop_cloud key. TableTopSegmentation will store
+the plane cloud under the plane_cloud key. TableTopSegmentation will store the nonplane cloud under the
+nonplane_cloud key. ObjectCloudExtraction will read original_cloud from the original_cloud key.
+ObjectCloudExtraction will read image_scene from the image_scene key. ObjectCloudExtraction will store the object
+cloud under the object_cloud key. ObjectCloudExtraction will read tabletop_cloud from the tabletop_cloud key.
+ObjectCloudExtraction will read desired_object from the desired_object key. GenerateGraspingCandidates will read
+object_cloud from the object_cloud key. GenerateGraspingCandidates will read table_height from the table_height
+key. GenerateGraspingCandidates will store grasp candidates under the grasp_candidates key.
+GenerateGraspingCandidates will read original_cloud_transformed from the original_cloud_transformed key.

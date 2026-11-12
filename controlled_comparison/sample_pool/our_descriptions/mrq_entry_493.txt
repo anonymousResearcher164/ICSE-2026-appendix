@@ -1,22 +1,24 @@
-The mission describes the robot's automatic localization.
+The mission describes automatic localization of the robot.
 
-First, the robot will execute the initialPoseReceived check and the doSelfLocalization sequence consecutively. If
-either action succeeds, the fallback will succeed. If both actions fail, the fallback will restart from the
-initialPoseReceived check until one action succeeds.
+First, the robot will execute initialPoseReceived and doSelfLocalization consecutively until one action succeeds.
+If both actions fail, it will start again with initialPoseReceived.
 
-Next, it will execute the retry_client_request sequence and the retry_localization sequence in order. If either
-action succeeds, it will remember that action and move to the next one. If an action fails, it will restart the
-sequence from that action.
+Next, it will execute custom action initialPoseReceived.
 
-Then, it will execute globalLocalizationServiceRequest repeatedly until it succeeds or five attempts have been
-made.
+Finally, it will execute sequence doSelfLocalization. If retry_client_request succeeds, it will remember that
+success and continue with retry_localization. If an action fails, it will restart the sequence from that failed
+action.
 
-After that, it will execute the inner fallback and the IsLocalized check in order. If either action fails, the
-sequence will stop.
+First, it will continuously execute custom action globalLocalizationServiceRequest until it succeeds, for up to
+five attempts.
 
-Next, it will check whether IsLocalized is true. If the check succeeds, the fallback will stop. If the check
-fails, it will execute the unnamed sequence.
+Next, it will continuously execute the localization sequence until it succeeds, for up to ten attempts.
 
-Then, it will execute Spin, BackUp, and Spin in order. If any action fails, the sequence will stop.
+First, it will execute the fallback containing IsLocalized and the localization recovery sequence. If IsLocalized
+succeeds, it will stop the fallback. If IsLocalized fails, it will execute the localization recovery sequence. If
+all fallback actions fail, the fallback will fail.
 
-Finally, it will retry the localization sequence until it succeeds or ten attempts have been made.
+Next, it will execute Spin, BackUp, and Spin in order while remembering successful actions. If an action fails, it
+will restart the sequence from that failed action.
+
+Finally, it will execute custom action IsLocalized.

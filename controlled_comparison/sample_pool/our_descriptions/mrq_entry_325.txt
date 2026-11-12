@@ -1,18 +1,18 @@
-The mission describes the behavior for moving between a shed and pasture according to the time of day.
+The mission describes conditional movement between a shed and pasture according to time and location.
 
-First, the robot will execute three alternative sequences consecutively. If a sequence fails, it will move to the
-next sequence. If all sequences fail, it will start again from the first sequence until one succeeds.
+First, the robot will execute the first SequenceStar, the second SequenceStar, and the third SequenceStar
+consecutively. If any sequence fails, it will move to the next sequence until one succeeds. If all sequences fail,
+it will start again from the first sequence until one succeeds.
 
-Next, it will execute the first sequence in order. It will check that IsOnPasture is true. It will check that
-IsDay is true. It will check that IsInShed is true. It will leave the shed. It will find a random pasture field.
-It will move to that field. If any action succeeds, it will remember that action and move to the next action. If
-any action fails, it will restart the sequence from that action.
+Next, it will execute IsOnPasture, IsDay, IsInShed, LeaveShed, FindRandomPastureField, and Move in sequence. After
+a node succeeds, it will remember that node and move to the next node. If a node fails, it will restart the
+sequence from that failed node.
 
-Then, it will execute the second sequence in order. It will check that IsOnPasture is true. It will check that
-IsNight is true. It will check that IsInShed is false. It will find the shed. It will move to the shed. It will
-enter the shed. If any action succeeds, it will remember that action and move to the next action. If any action
-fails, it will restart the sequence from that action.
+Next, it will execute IsOnPasture, IsNight, inverted IsInShed, FindShed, Move, and EnterShed in sequence. After a
+node succeeds, it will remember that node and move to the next node. If a node fails, it will restart the sequence
+from that failed node. The inverted IsInShed condition will fail when IsInShed is true and will succeed when
+IsInShed is false.
 
-Finally, it will execute the third sequence in order. It will check that IsDay is true. It will check that
-IsInShed is false. It will perform a random move. If any action succeeds, it will remember that action and move to
-the next action. If any action fails, it will restart the sequence from that action.
+Finally, it will execute IsDay, inverted IsInShed, and RandomMove in sequence. After a node succeeds, it will
+remember that node and move to the next node. If a node fails, it will restart the sequence from that failed node.
+The inverted IsInShed condition will fail when IsInShed is true and will succeed when IsInShed is false.

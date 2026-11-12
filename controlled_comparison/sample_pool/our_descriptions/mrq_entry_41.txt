@@ -1,5 +1,4 @@
-The mission describes checking the battery, opening the gripper, approaching an object, and closing the gripper in
-sequence.
+The mission describes checking the battery, opening the gripper, approaching an object, and closing the gripper.
 
-First, the robot will execute these actions in order and stop the sequence if any action fails. It will check the
-battery. It will open the gripper. It will approach the object. It will close the gripper.
+First, the root sequence will execute the following actions in order and stop if any action fails. The robot will
+check the battery. It will open the gripper. It will approach the object. It will close the gripper.

@@ -1,35 +1,33 @@
-The mission describes a sequence that prepares the robot's arms in four poses.
+The mission describes a behavior tree that moves both arms through the UPTRAY, EXTENDED, GRIPPING, and REST poses.
 
-First, the robot will execute the following actions in order: obtain the arm joints for the UPTRAY pose, set both
-arms to those joints simultaneously, obtain the arm joints for the EXTENDED pose, set both arms to those joints
-simultaneously, obtain the arm joints for the GRIPPING pose, set both arms to those joints simultaneously, obtain
-the arm joints for the REST pose, and set both arms to those joints simultaneously. The sequence will stop if any
-action fails.
+First, the robot will execute the following actions in order: GetArmJointsForPose, the first Parallel node,
+GetArmJointsForPose, the second Parallel node, GetArmJointsForPose, the third Parallel node, GetArmJointsForPose,
+and the fourth Parallel node. The sequence will stop if any action fails.
 
-Next, it will execute custom action GetArmJointsForPose with pose UPTRAY. The action will store the resulting
-joints under joints_pose.
+Next, it will execute custom action GetArmJointsForPose with pose UPTRAY and store the resulting joints under
+{joints_pose}.
 
-Next, it will execute custom actions SetArmJointsLeft and SetArmJointsRight simultaneously with joints_pose read
-from the blackboard. The parallel execution will succeed when two actions succeed. The parallel execution will
-fail when an action fails.
+Next, it will execute the first Parallel node simultaneously. Both actions must succeed for the parallel execution
+to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
+SetArmJointsRight will apply the joints read from {joints_pose}.
 
-Next, it will execute custom action GetArmJointsForPose with pose EXTENDED. The action will store the resulting
-joints under joints_pose.
+Next, it will execute custom action GetArmJointsForPose with pose EXTENDED and store the resulting joints under
+{joints_pose}.
 
-Next, it will execute custom actions SetArmJointsLeft and SetArmJointsRight simultaneously with joints_pose read
-from the blackboard. The parallel execution will succeed when two actions succeed. The parallel execution will
-fail when an action fails.
+Next, it will execute the second Parallel node simultaneously. Both actions must succeed for the parallel
+execution to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
+SetArmJointsRight will apply the joints read from {joints_pose}.
 
-Next, it will execute custom action GetArmJointsForPose with pose GRIPPING. The action will store the resulting
-joints under joints_pose.
+Next, it will execute custom action GetArmJointsForPose with pose GRIPPING and store the resulting joints under
+{joints_pose}.
 
-Next, it will execute custom actions SetArmJointsLeft and SetArmJointsRight simultaneously with joints_pose read
-from the blackboard. The parallel execution will succeed when two actions succeed. The parallel execution will
-fail when an action fails.
+Next, it will execute the third Parallel node simultaneously. Both actions must succeed for the parallel execution
+to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
+SetArmJointsRight will apply the joints read from {joints_pose}.
 
-Next, it will execute custom action GetArmJointsForPose with pose REST. The action will store the resulting joints
-under joints_pose.
+Finally, it will execute custom action GetArmJointsForPose with pose REST and store the resulting joints under
+{joints_pose}.
 
-Finally, it will execute custom actions SetArmJointsLeft and SetArmJointsRight simultaneously with joints_pose
-read from the blackboard. The parallel execution will succeed when two actions succeed. The parallel execution
-will fail when an action fails.
+Finally, it will execute the fourth Parallel node simultaneously. Both actions must succeed for the parallel
+execution to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
+SetArmJointsRight will apply the joints read from {joints_pose}.

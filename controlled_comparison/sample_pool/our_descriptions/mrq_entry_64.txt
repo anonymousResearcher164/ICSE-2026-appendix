@@ -1,10 +1,11 @@
-The mission describes a sequential behavior that executes Action_A, Condition_B, and LotOfStuff.
+The mission describes a sequential behavior that executes Action_A, evaluates Condition_B, and executes the
+LotOfStuff subtree.
 
-First, the robot will execute Action_A, check Condition_B, and execute LotOfStuff in order. The sequence will stop
-if any action fails.
+First, the root sequence will execute Action_A, Condition_B, and LotOfStuff in order. The sequence will stop if
+any action fails.
 
-Next, it will execute custom action Action_A with input 42.
+Next, the robot will execute the custom action Action_A with input 42.
 
-Then, it will check whether Condition_B is true for result 69.
+Then, it will execute Condition_B with result 69.
 
-Finally, it will execute LotOfStuff with param 100 and res 200.
+Finally, it will execute the LotOfStuff subtree with param 100 and res 200.

@@ -1,4 +1,5 @@
-The mission describes a sequential search behavior for the robot.
+The mission describes a sequential search behavior.
 
-First, the robot will execute the root sequence in order and stop the sequence if any action fails. It will
-execute custom action Search.
+First, the robot will execute the Search action named search in order and stop the sequence if the action fails.
+
+Next, it will execute the custom action Search.

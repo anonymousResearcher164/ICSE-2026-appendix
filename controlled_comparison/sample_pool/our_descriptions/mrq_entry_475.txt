@@ -1,39 +1,34 @@
-The mission describes the robot's charging behavior from announcing hunger through leaving the charging station.
+The mission describes charging at a charging station and leaving the station after charging.
 
 First, the robot will execute the ChargeST subtree.
 
-Next, it will execute the following actions in sequence: custom action Speak with action_name /gcloud_tts,
-language pt_PT, utterance Tenho fome, and voice pt-PT-Wavenet-D; custom action WaitForXSeconds with result SUCCESS
-and seconds 2; the fallback; custom action WaitForXSeconds with result SUCCESS and seconds 10; custom action Speak
-with action_name /gcloud_tts, language pt_PT, utterance Estou cheio, vou sair da estação, and voice
-pt-PT-Wavenet-D; and custom action Charge with action STOP_CHARGE and action_name charging_action. If any action
-succeeds, it will remember that action and move to the next. If any action fails, it will start the sequence again
-from that action.
+Next, it will execute the actions in the ChargeST SequenceStar in order. If an action succeeds, it will remember
+that action and move to the next action. If an action fails, it will restart the sequence from the failed action.
+It will first execute Speak, then Wait2Seconds, then the Fallback, then WaitForXSeconds, then Speak, and finally
+Charge with action STOP_CHARGE and action_name charging_action.
 
-Then, it will execute custom action Speak with action_name /gcloud_tts, language pt_PT, utterance Tenho fome, and
-voice pt-PT-Wavenet-D.
+Next, it will execute the single child of the Fallback consecutively. If the child fails, the Fallback will fail
+because no alternative child remains.
 
-Afterward, it will execute custom action WaitForXSeconds with result SUCCESS and seconds 2.
+Next, it will execute the actions in the inner SequenceStar in order. If an action succeeds, it will remember that
+action and move to the next action. If an action fails, it will restart the sequence from the failed action. It
+will first execute RetryUntilSuccesful and then the Parallel.
 
-Thereafter, it will execute the following actions consecutively: the inner sequence with memory. If the inner
-sequence fails, it will move to the next fallback action. If no fallback action succeeds, the execution will fail.
+Next, it will execute ROS action MoveBase through RetryUntilSuccesful. If the action fails, it will re-execute it
+up to three attempts or until it succeeds.
 
-Next, it will execute the following actions in sequence: the retry action for moving to the first point and the
-parallel charging actions. If any action succeeds, it will remember that action and move to the next. If any
-action fails, it will start the sequence again from that action.
+Next, it will execute ROS action Charge and the Repeat simultaneously through the Parallel. If both actions
+succeed, the Parallel will succeed. If either action fails, the Parallel will fail.
 
-Then, it will keep trying to execute ROS action MoveBase with action_name move_base, frame_id map, and goal_pose
--1.7971;-5.5118;0.0;0;0;0.72703;0.68659 until it succeeds, with three attempts.
+Next, it will execute Speak through the Repeat five times.
 
-Afterward, it will execute custom action Charge with action CHARGE and action_name charging_action simultaneously
-with the repeated speech action. The execution will succeed when both actions succeed. If any action fails, the
-parallel execution will fail.
+Next, it will wait for two seconds through Wait2Seconds.
 
-Next, it will execute custom action Speak with action_name /gcloud_tts, language pt_PT, utterance bip bip, and
-voice pt-PT-Wavenet-D five times.
+Next, it will execute Speak to announce that it is full and will leave the station.
 
-Then, it will execute custom action WaitForXSeconds with result SUCCESS and seconds 10.
+Next, it will execute Charge with action STOP_CHARGE and action_name charging_action.
 
-Finally, it will execute custom action Speak with action_name /gcloud_tts, language pt_PT, utterance Estou cheio,
-vou sair da estação, and voice pt-PT-Wavenet-D, followed by custom action Charge with action STOP_CHARGE and
-action_name charging_action.
+Parameters: The first Speak action will use action_name /gcloud_tts, language pt_PT, utterance Tenho fome, and
+voice pt-PT-Wavenet-D. The MoveBase action will use action_name move_base, frame_id map, and goal_pose
+-1.7971;-5.5118;0.0;0;0;0.72703;0.68659. The repeated Speak action will use action_name /gcloud_tts, language
+pt_PT, utterance bip bip, and voice pt-PT-Wavenet-D.

@@ -1,20 +1,21 @@
-The mission describes selecting and setting one of three motion goals according to the robot's end-effector
-position.
+The mission describes selecting and setting a motion goal based on the robot's end-effector position.
 
-First, the robot will execute the subtrees 3-goal, 2-traverse, and mg_goal1 in order. If a subtree succeeds, it
-will stop the fallback. If a subtree fails, it will continue to the next subtree. While a later subtree is
-running, it will re-evaluate the earlier subtrees. If an earlier subtree then succeeds, it will halt the running
-subtree and stop the fallback.
+First, the ReactiveFallback root_sequence will execute the 3-goal reactive sequence, the 2-traverse reactive
+sequence, and the SetMGGoal mg_goal1 action in order. If a child succeeds, it will stop execution. If a child
+fails, it will move to the next child. While a later child is running, it will re-evaluate the preceding children
+and stop the running child if a preceding child succeeds.
 
-Next, it will execute the custom action EEYThreshold with threshold read from {y_threshold} and ee_y read from
-{ee_y}, followed by the custom action SetMGGoal with mp_param_x read from {mp_3_x} and mg_trans_x stored under
-{mg_trans_x}. If either action fails, it will stop the sequence. While SetMGGoal is running, it will re-evaluate
-EEYThreshold. If EEYThreshold then fails, it will halt SetMGGoal and stop the sequence.
+Next, the ReactiveSequence 3-goal will execute the EEYThreshold ee_y_threshold condition and the SetMGGoal
+mg_goal3 action in sequence. If the condition fails, it will stop the sequence. While the goal action is running,
+it will re-evaluate the condition and halt the goal action if the condition fails. The condition will succeed when
+the ee_y_threshold check comparing threshold {y_threshold} with ee_y {ee_y} is true. It will then set the motion
+goal using mp_param_x {mp_3_x} and store the result under mg_trans_x {mg_trans_x}.
 
-Next, it will execute the custom action EEZThreshold with threshold read from {z_threshold} and ee_z read from
-{ee_z}, followed by the custom action SetMGGoal with mp_param_x read from {mp_2_x} and mg_trans_x stored under
-{mg_trans_x}. If either action fails, it will stop the sequence. While SetMGGoal is running, it will re-evaluate
-EEZThreshold. If EEZThreshold then fails, it will halt SetMGGoal and stop the sequence.
+Then, the ReactiveSequence 2-traverse will execute the EEZThreshold ee_z_threshold condition and the SetMGGoal
+mg_goal2 action in sequence. If the condition fails, it will stop the sequence. While the goal action is running,
+it will re-evaluate the condition and halt the goal action if the condition fails. The condition will succeed when
+the ee_z_threshold check comparing threshold {z_threshold} with ee_z {ee_z} is true. It will then set the motion
+goal using mp_param_x {mp_2_x} and store the result under mg_trans_x {mg_trans_x}.
 
-Finally, it will execute the custom action SetMGGoal with mp_param_x read from {mp_1_x} and mg_trans_x stored
-under {mg_trans_x}.
+Finally, it will execute the SetMGGoal mg_goal1 action using mp_param_x {mp_1_x} and store the result under
+mg_trans_x {mg_trans_x}.

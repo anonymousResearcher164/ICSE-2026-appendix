@@ -1,28 +1,34 @@
-The mission describes initializing pose-detection settings, disabling the antenna indicators, and repeatedly
-detecting a person with a specified pose while saving an image and announcing the result.
+The mission describes initialization, repeated human-pose detection, image saving, speech, antenna signaling, and
+delayed blackboard updates.
 
-First, the robot will execute the following actions in order and stop the sequence if any action fails: the first
-sequence and the KeepRunningUntilFailure node.
+First, the robot will execute the first Sequence and the KeepRunningUntilFailure in order. It will stop the root
+sequence if either child fails.
 
-Next, it will execute the following actions in order and stop the sequence if any action fails: custom action
-SetBlackboard with output_key pose_name_l and value TouchingNeck, custom action SetBlackboard with output_key
-pose_name_r and value TouchingNeck, custom action SetBlackboard with output_key pose_lr_check and value any, and
-custom action AntennaAction with rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0.
+Next, it will execute the SetBlackboard actions in order. It will store TouchingNeck under pose_name_l, store
+TouchingNeck under pose_name_r, store any under pose_lr_check, and execute the first AntennaAction. It will stop
+this sequence if any action fails.
 
-Finally, it will execute the following sequence repeatedly as long as it does not fail. If the sequence succeeds,
-it will restart it. If the sequence fails, it will stop looping and continue execution.
+Next, it will execute the KeepRunningUntilFailure child. If its child succeeds, it will restart that child. If its
+child fails, it will stop looping and continue the root sequence.
 
-First, it will execute the ForceSuccess node and the second sequence in order and stop the sequence if any action
-fails.
+Next, it will execute the Sequence inside KeepRunningUntilFailure in order. It will execute ForceSuccess followed
+by the second Sequence. It will stop this sequence if either child fails.
 
-Next, it will execute the following actions in order and make sure the execution always succeeds: custom action
-HumanPoseDetect with expected_pose_left read from pose_name_l, expected_pose_right read from pose_name_r,
-pose_lr_check read from pose_lr_check, detected_person stored under detected_person, pose_left_speech stored under
-pose_left_speech, and pose_right_speech stored under pose_right_speech; custom action AntennaAction with rate 0,
-intensity 10, left_blink_pattern 10, and right_blink_pattern 10; custom action SaveImageAction with filename
-image#.jpg and directory /home/ubuntu/saved_images; custom action TextToSpeechActionClient with msg Saved; and
-custom action AntennaAction with rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0. If any
-action fails, the ForceSuccess node will still succeed.
+Next, it will execute the ForceSuccess child and make sure it always succeeds.
 
-Finally, it will execute the delayed custom action SetBlackboard with output_key dummy and value 0 after a delay
-of 1000 milliseconds. After the delay period is exhausted, it will resume execution.
+Next, it will execute the Sequence inside ForceSuccess in order. It will detect the specified human pose, execute
+the third AntennaAction, save an image, announce Saved, and execute the fourth AntennaAction. It will stop this
+sequence if any action fails.
+
+Next, it will execute the second Sequence. It will execute the delayed SetBlackboard action after the delay timer.
+The delay will last 1000 milliseconds before it stores 0 under dummy.
+
+Parameters: The first AntennaAction will use rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0.
+
+The HumanPoseDetect action will read expected_pose_left from pose_name_l, read expected_pose_right from
+pose_name_r, read pose_lr_check from pose_lr_check, store its detected person under detected_person, store its
+left-pose speech under pose_left_speech, and store its right-pose speech under pose_right_speech.
+
+The second AntennaAction will use rate 0, intensity 10, left_blink_pattern 10, and right_blink_pattern 10.
+
+The third AntennaAction will use rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0.

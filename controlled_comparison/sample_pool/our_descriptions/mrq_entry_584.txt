@@ -1,13 +1,20 @@
-The mission describes navigating toward a dynamically updated goal pose.
+The mission describes navigating to a dynamic pose while continuously replanning the path and following it.
 
-First, the robot will execute the following actions in order and advance to the next action while an action is
-running or has succeeded. It will stop the sequence if any action fails.
+First, the PipelineSequence named NavigateWithReplanning will execute the RateController and the
+KeepRunningUntilFailure in order. It will advance to the next child while the current child is running or has
+succeeded. It will stop if a child fails.
 
-Next, it will execute the first child at a rate of 2.0 Hz. It will execute the actions in the child sequence in
-order and stop the sequence if any action fails. It will use the custom action GoalUpdater with the goal read from
-{goal} and store the updated goal under {updated_goal}. It will then execute the ROS action ComputePathToPose with
-the goal read from {updated_goal}, store the resulting path under {path}, and use the planner ID GridBased.
+Next, the RateController will execute its child sequence at a rate of 2.0 Hz.
 
-Finally, it will execute the custom action KeepRunningUntilFailure with the ROS action FollowPath using the path
-read from {path} and the controller ID FollowPath. If the action succeeds, it will restart it. If the action
-fails, it will stop looping and continue execution.
+Then, the Sequence will execute the GoalUpdater in order and stop if the GoalUpdater fails.
+
+Next, the GoalUpdater will update the navigation goal from {goal} and store the updated goal under {updated_goal}.
+It will execute the ComputePathToPose using the updated goal.
+
+Then, the ComputePathToPose will calculate a path and store it under {path}.
+
+Finally, the KeepRunningUntilFailure will execute the FollowPath. If the FollowPath succeeds, it will restart it.
+If the FollowPath fails, it will stop looping and continue execution.
+
+Parameters: The ComputePathToPose will use the planner identifier GridBased. The FollowPath will use {path} as its
+path input. The FollowPath will use the controller identifier FollowPath.

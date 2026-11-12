@@ -1,10 +1,12 @@
-The mission describes navigating to a goal by computing a path and following it.
+The mission describes navigation to a goal with replanning and path following.
 
-First, it will execute the actions in order and stop the sequence if any action fails. While an action is running
-or has succeeded, it will proceed to the next action.
+First, the pipeline sequence NavigateWithReplanning will execute the ROS action DistanceController and then the
+ROS action FollowPath in order. It will stop if an action fails. While an action is running or has succeeded, it
+will proceed to the next action.
 
-Next, it will execute ROS action DistanceController with a distance of 1.0. While the distance condition permits
-execution, it will run ROS action ComputePathToPose with the goal read from {goal}, store the resulting path under
-{path}, and use the GridBased planner.
+Next, the ROS action DistanceController will use a distance of 1.0 and execute the ROS action ComputePathToPose.
 
-Finally, it will execute ROS action FollowPath with the path read from {path} and the FollowPath controller.
+Finally, the ROS action FollowPath will follow the path read from the path key using the FollowPath controller.
+
+Parameters: The ROS action ComputePathToPose will use the goal read from the goal key, store the computed path
+under the path key, and use the GridBased planner.

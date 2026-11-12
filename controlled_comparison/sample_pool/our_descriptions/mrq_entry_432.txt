@@ -1,16 +1,22 @@
-The mission describes navigating to an updated goal while periodically replanning and following a truncated path.
+The mission describes a pipeline that repeatedly plans and follows a path to a goal while updating the goal and
+truncating the planned path.
 
-First, the robot will execute the rate-controlled planning subtree and then the path-following subtree in order.
-It will advance to the next subtree while the current subtree is running or has succeeded. It will stop the
-pipeline if any subtree fails.
+First, the PipelineSequence NavigateWithReplanning will execute the RateController and the KeepRunningUntilFailure
+in order. While the RateController is running or has succeeded, it will proceed to the KeepRunningUntilFailure. It
+will stop the pipeline if either action fails.
 
-Next, it will execute the planning sequence at a rate of 1.0 Hz. It will execute the goal update and path
-truncation actions in order and stop the sequence if either action fails. It will update the goal by reading the
-value stored under {goal} and storing the updated value under {updated_goal}. It will execute ROS action
-ComputePathToPose with the updated goal, store the resulting path under {path}, and use the GridBased planner. It
-will execute custom action TruncatePath with the path read from {path} and store the truncated path under
-{truncated_path}.
+Next, the ROS action RateController will execute its child at a rate of 1.0 Hz.
 
-Finally, it will keep executing ROS action FollowPath with the truncated path read from {truncated_path} and the
-FollowPath controller. If the action succeeds, it will restart it. If the action fails, it will stop looping and
-continue execution.
+Then, the Sequence will execute the GoalUpdater and the TruncatePath in order. It will stop if either action fails.
+
+Next, the GoalUpdater will execute the ComputePathToPose action using the updated goal.
+
+Finally, the ComputePathToPose action will calculate a path, and the TruncatePath action will shorten that path to
+a distance of 1.0.
+
+Next, the KeepRunningUntilFailure will execute the FollowPath action. If the FollowPath action succeeds, it will
+restart the action. If the FollowPath action fails, it will stop looping and continue execution.
+
+Parameters: The ComputePathToPose action will read the goal from {updated_goal}, store the resulting path under
+{path}, and use GridBased as the planner identifier. The TruncatePath action will use 1.0 as the distance, read
+the input path from {path}, and store the truncated path under {truncated_path}.

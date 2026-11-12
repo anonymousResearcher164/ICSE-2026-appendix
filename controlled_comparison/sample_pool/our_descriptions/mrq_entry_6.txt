@@ -1,50 +1,56 @@
-The mission describes navigating to a room, finding and grasping a bottle, and requesting help if the task cannot
-be completed.
+The mission describes the robot entering a known room, following a human when necessary, finding and grasping a
+bottle, and requesting help when the primary task fails.
 
-First, the root fallback will execute S1. If S1 does not succeed, it will execute Ask_for_help. The robot will
-stop the fallback when one of these actions succeeds.
+First, the root node will execute fallback FB1. The robot will try sequence S1. If sequence S1 fails, it will
+execute custom action Ask_for_help.
 
-Next, S1 will execute FB2 followed by S2 in order. If either subtree fails, S1 will stop.
+Next, sequence S1 will execute fallback FB2 and sequence S2 in order. It will stop the sequence if either subtree
+fails.
 
-Next, FB2 will execute S7. If S7 does not succeed, it will execute FollowHuman. The fallback will stop when one
-child succeeds, and it will fail if both children fail.
+Then, fallback FB2 will execute sequence S7. If sequence S7 fails, it will execute custom action FollowHuman. If
+either subtree succeeds, fallback FB2 will succeed.
 
-Next, S7 will check Room_known. If Room_known succeeds, it will execute FB10. If Room_known fails, S7 will fail.
+Afterward, sequence S7 will check whether Room_known is true. If this check succeeds, it will execute fallback
+FB10. If the check fails, sequence S7 will stop.
 
-Next, FB10 will check Robot_in_room. If Robot_in_room succeeds, it will stop successfully. If Robot_in_room fails,
-it will execute Go_to_room. The fallback will fail if both actions fail.
+Next, fallback FB10 will check whether Robot_in_room is true. If this check fails, it will execute custom action
+Go_to_room. If either operation succeeds, fallback FB10 will succeed.
 
-Next, S2 will execute FB3 followed by FB4 in order. If either subtree fails, S2 will stop.
+Then, sequence S2 will execute fallback FB3 and fallback FB4 in order. It will stop the sequence if either subtree
+fails.
 
-Next, FB3 will check Bottle_found. If Bottle_found succeeds, it will stop successfully. If Bottle_found fails, it
-will execute Find_bottle. The fallback will fail if both actions fail.
+Next, fallback FB3 will check whether Bottle_found is true. If this check fails, it will execute custom action
+Find_bottle. If either operation succeeds, fallback FB3 will succeed.
 
-Next, FB4 will check Bottle_grasped. If Bottle_grasped succeeds, it will stop successfully. If Bottle_grasped
-fails, it will execute FB5. The fallback will fail if both children fail.
+Afterward, fallback FB4 will check whether Bottle_grasped is true. If this check fails, it will execute fallback
+FB5. If either operation succeeds, fallback FB4 will succeed.
 
-Next, FB5 will execute S3. If S3 fails, it will execute FB6. The fallback will stop when one child succeeds, and
-it will fail if both children fail.
+Then, fallback FB5 will execute sequence S3. If sequence S3 fails, it will execute fallback FB6. If either subtree
+succeeds, fallback FB5 will succeed.
 
-Next, S3 will execute FB7 followed by S4 in order. If either subtree fails, S3 will stop.
+Next, sequence S3 will execute fallback FB7 and sequence S4 in order. It will stop the sequence if either subtree
+fails.
 
-Next, FB7 will execute S6. If S6 does not succeed, it will execute Compute_inv_pose. The fallback will stop when
-one child succeeds, and it will fail if both children fail.
+Then, fallback FB7 will execute sequence S6. If sequence S6 fails, it will execute custom action Compute_inv_pose.
+If either subtree succeeds, fallback FB7 will succeed.
 
-Next, S6 will check Inv_pose_computed followed by Inv_pose_valid. If either condition fails, S6 will fail.
+Afterward, sequence S6 will check whether Inv_pose_computed is true and whether Inv_pose_valid is true in order.
+It will stop the sequence if either check fails.
 
-Next, S4 will execute FB8 followed by S5 in order. If either subtree fails, S4 will stop.
+Next, sequence S4 will execute fallback FB8 and sequence S5 in order. It will stop the sequence if either subtree
+fails.
 
-Next, FB8 will check Robot_at_inv_pose. If Robot_at_inv_pose succeeds, it will stop successfully. If
-Robot_at_inv_pose fails, it will execute S8. The fallback will fail if both children fail.
+Then, fallback FB8 will check whether Robot_at_inv_pose is true. If this check fails, it will execute sequence S8.
+If either subtree succeeds, fallback FB8 will succeed.
 
-Next, S8 will execute Keep_arms_for_grasp followed by Go_to_inv_pose in order. If either action fails, S8 will
-stop.
+Next, sequence S8 will execute custom action Keep_arms_for_grasp and custom action Go_to_inv_pose in order. It
+will stop the sequence if either action fails.
 
-Next, S5 will execute FB9 followed by Grasp_bottle in order. If FB9 fails, S5 will stop before executing
-Grasp_bottle.
+Afterward, sequence S5 will execute fallback FB9 and custom action Grasp_bottle in order. It will stop the
+sequence if either subtree fails.
 
-Next, FB9 will check Bottle_located. If Bottle_located succeeds, it will stop successfully. If Bottle_located
-fails, it will execute Locate_bottle. The fallback will fail if both actions fail.
+Then, fallback FB9 will check whether Bottle_located is true. If this check fails, it will execute custom action
+Locate_bottle. If either operation succeeds, fallback FB9 will succeed.
 
-Finally, FB6 will execute Set_inv_pose_not_valid. If that action fails, it will execute Keep_running. The fallback
-will stop when one action succeeds, and it will fail if both actions fail.
+Finally, fallback FB6 will execute custom action Set_inv_pose_not_valid. If this action fails, it will execute
+custom action Keep_running. If either action succeeds, fallback FB6 will succeed.

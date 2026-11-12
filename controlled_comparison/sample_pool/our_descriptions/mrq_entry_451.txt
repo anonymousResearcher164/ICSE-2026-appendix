@@ -1,13 +1,12 @@
-The mission describes a robot that will acquire a target, move toward it, and attack it when adjacent, with random
-movement as a fallback.
+The mission describes selecting and approaching a target, attacking it when the target is adjacent, or moving
+randomly.
 
-First, the robot will execute the main sequence and use random movement if the main sequence fails. If the main
-sequence succeeds, it will not execute random movement. If both actions fail, the fallback will fail.
+The robot will execute the fallback. If the first action fails, it will execute custom action RandomMove. If no
+action succeeds, the fallback will fail.
 
-Next, it will execute GetTarget, Move, and the nested sequence in order while remembering successful actions. If
-an action fails, it will restart the sequence from that action.
+Next, it will execute custom actions GetTarget, Move, and the sequence in order. If an action succeeds, it will
+remember that action and move to the next one. If an action fails, it will restart the sequence from the failed
+action.
 
-Then, it will check whether TargetAdjacent is true and will execute AttackTarget if the condition succeeds. If the
-condition fails, the sequence will stop.
-
-Finally, it will execute RandomMove when the main sequence fails.
+Finally, it will execute the sequence by checking whether TargetAdjacent is true and then executing custom action
+AttackTarget.

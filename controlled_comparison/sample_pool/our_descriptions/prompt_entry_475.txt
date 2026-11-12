@@ -33,15 +33,18 @@ then refer to it as "it" subsequently. Integrate the
 semantics of the behavior tree nodes into the 
 behavior descriptions of the robot. A value in curly
 braces, e.g. {key}, is a blackboard key, not a
-literal. State the
-behavior of a parent node before describing its
-children. Describe the root node in its own
-paragraph directly after the scope sentence. Each 
-paragraph must describe only one subtree. Begin each 
-subtree paragraph with a connecting word (e.g., 
+literal. State the behavior of a parent node (including
+a decorator) before describing its children. Describe the
+root node in its own paragraph directly after the scope
+sentence.
+Each paragraph must describe only one subtree. Begin
+each subtree paragraph with a connecting word (e.g., 
 First, Next, Finally). Avoid redundant sentences,
 but apply a node's template every time that node
-type occurs, and only that node.
+type occurs, and only that node. If an action has
+more than two ports, state only the action in the
+narrative and list its ports in a final paragraph
+beginning with "Parameters:", one action per sentence.
 [Chat prompt]
 Dictionary:
 <<<BEGIN_DICTIONARY>>>
@@ -49,14 +52,14 @@ Dictionary:
   "title": "Dictionary for Interpreting Behavior Control and Modification",
   "nodes": [
     {
-      "node": "\\midrule Sequence",
+      "node": "Sequence",
       "description": "Execute a series of child nodes in order from left to right.",
       "behaviorTemplate": "Execute the following actions ([Actions]) in order and stop the sequence if any action fails."
     },
     {
       "node": "SequenceWithMemory, SequenceStar",
       "description": "Execute a series of child nodes in order, from left to right, remembering which ones have already succeeded.",
-      "behaviorTemplate": "Execute the following actions ([Actions]) in sequence. If any action succeeds, remember it and move to the next. If any action fails, start the sequence again from that action."
+      "behaviorTemplate": "Execute the following actions ([Actions]) in sequence. If any action succeeds, remember it and move to the next. If any action fails, start the sequence again from the failed action."
     },
     {
       "node": "PipelineSequence",
@@ -174,7 +177,7 @@ Dictionary:
     },
     {
       "node": "[Actions]",
-      "description": "a series of child node names, listed by name; a child without a name is referred to by its node type and position (e.g., the second fallback)."
+      "description": "a series of child node names, listed by name; a composite node is referred to by its node type together with its name attribute if present (e.g., the sequence doSelfLocalization), otherwise by type and position (e.g., the second fallback); do not invent names."
     },
     {
       "node": "[Condition]",

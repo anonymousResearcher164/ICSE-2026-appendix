@@ -2,14 +2,14 @@
   "title": "Dictionary for Interpreting Behavior Control and Modification",
   "nodes": [
     {
-      "node": "\\midrule Sequence",
+      "node": "Sequence",
       "description": "Execute a series of child nodes in order from left to right.",
       "behaviorTemplate": "Execute the following actions ([Actions]) in order and stop the sequence if any action fails."
     },
     {
       "node": "SequenceWithMemory, SequenceStar",
       "description": "Execute a series of child nodes in order, from left to right, remembering which ones have already succeeded.",
-      "behaviorTemplate": "Execute the following actions ([Actions]) in sequence. If any action succeeds, remember it and move to the next. If any action fails, start the sequence again from that action."
+      "behaviorTemplate": "Execute the following actions ([Actions]) in sequence. If any action succeeds, remember it and move to the next. If any action fails, start the sequence again from the failed action."
     },
     {
       "node": "PipelineSequence",
@@ -127,7 +127,7 @@
     },
     {
       "node": "[Actions]",
-      "description": "a series of child node names, listed by name; a child without a name is referred to by its node type and position (e.g., the second fallback)."
+      "description": "a series of child node names, listed by name; a composite node is referred to by its node type together with its name attribute if present (e.g., the sequence doSelfLocalization), otherwise by type and position (e.g., the second fallback); do not invent names."
     },
     {
       "node": "[Condition]",

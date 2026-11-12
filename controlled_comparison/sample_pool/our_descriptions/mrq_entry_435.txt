@@ -1,18 +1,23 @@
-The mission describes the animal's pasture and shed movement behavior.
+The mission describes a fallback behavior for selecting pasture and shelter activities based on location and time
+of day.
 
-The robot will execute the three fallback branches in order until one branch succeeds. If all branches fail, it
-will restart the fallback from the first branch.
+First, the FallbackStar will execute its child sequences consecutively. If a sequence fails, it will try the next
+sequence. If all sequences fail, it will restart from the first sequence and continue until one succeeds.
 
-First, the first sequence will execute its actions in order while remembering successful actions. If an action
-fails, it will restart the sequence from that action. It will proceed when IsOnPasture is true. It will then
-proceed when IsDay is true. It will then proceed when IsInShed is true. It will execute custom action LeaveShed.
-It will execute custom action FindRandomPastureField. It will execute custom action Move.
+Next, the first SequenceStar will check that IsOnPasture is true. It will check that IsDay is true. It will check
+that IsInShed is true. The robot will execute custom action LeaveShed. It will execute custom action
+FindRandomPastureField. It will execute custom action Move. If an action succeeds, the sequence will remember it
+and continue. If an action fails, the sequence will restart from that action.
 
-Next, the second sequence will execute its actions in order while remembering successful actions. If an action
-fails, it will restart the sequence from that action. It will proceed when IsOnPasture is true. It will then
-proceed when IsNight is true. It will proceed when IsInShed is false. It will execute custom action FindShed. It
-will execute custom action Move. It will execute custom action EnterShed.
+Then, the second SequenceStar will check that IsOnPasture is true. It will check that IsNight is true. It will
+execute an inverted IsInShed condition. If IsInShed is true, the inverted condition will fail. If IsInShed is
+false, the inverted condition will succeed.
 
-Finally, the third sequence will execute its actions in order while remembering successful actions. If an action
-fails, it will restart the sequence from that action. It will proceed when IsDay is true. It will then proceed
-when IsInShed is false. It will execute custom action RandomMove.
+Next, it will execute custom action FindShed. It will execute custom action Move. It will execute custom action
+EnterShed. If an action succeeds, the sequence will remember it and continue. If an action fails, the sequence
+will restart from that action.
+
+Finally, the third SequenceStar will check that IsDay is true. It will execute an inverted IsInShed condition. If
+IsInShed is true, the inverted condition will fail. If IsInShed is false, the inverted condition will succeed. It
+will execute custom action RandomMove. If an action succeeds, the sequence will remember it and continue. If an
+action fails, the sequence will restart from that action.

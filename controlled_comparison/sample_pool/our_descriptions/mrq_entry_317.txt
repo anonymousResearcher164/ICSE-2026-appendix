@@ -1,33 +1,32 @@
-The mission describes navigating to a goal while computing a path, following that path, and performing recovery
-actions when navigation fails.
+The mission describes navigation to a goal with path planning, path following, replanning, and recovery actions.
 
-First, the robot will execute the main navigation action. If navigation fails, it will execute a recovery action
-and retry navigation. It will stop after six recovery attempts fail.
+First, the robot will execute the NavigateWithReplanning pipeline. If the pipeline fails, it will execute the
+RecoveryFallback recovery action and retry the pipeline for up to six retries.
 
-Next, it will execute path computation and path following in order. It will advance to path following while path
-computation is running or has succeeded. It will stop the sequence if either action fails.
+Next, it will execute the ComputePathToPose recovery node at a rate of 1.0 Hz and then execute the FollowPath
+recovery node. The pipeline will advance to the next node while the current node is running or has succeeded, and
+it will stop if a node fails.
 
-Then, it will execute path computation at a rate of 1.0 hertz. It will retry path computation once if it fails. It
-will use the goal stored under {goal}. It will store the computed path under {path}. It will use the GridBased
-planner.
+Next, it will execute the ComputePathToPose action. If this action fails, it will execute the
+ComputePathToPoseRecoveryFallback recovery action and retry the ComputePathToPose action once.
 
-Next, it will check whether the goal has been updated. If the goal has not been updated, it will clear the global
-costmap. It will stop the recovery fallback when either action succeeds.
+Next, it will execute the ComputePathToPoseRecoveryFallback reactive fallback. If GoalUpdated succeeds, it will
+stop the fallback. If GoalUpdated fails, it will clear the global costmap.
 
-Then, it will execute path following. It will use the path stored under {path}. It will use the FollowPath
-controller. It will retry path following once if it fails.
+Next, it will execute the FollowPath action. If this action fails, it will execute the FollowPathRecoveryFallback
+recovery action and retry the FollowPath action once.
 
-Next, it will check whether the goal has been updated. If the goal has not been updated, it will clear the local
-costmap. It will stop the recovery fallback when either action succeeds.
+Next, it will execute the FollowPathRecoveryFallback reactive fallback. If GoalUpdated succeeds, it will stop the
+fallback. If GoalUpdated fails, it will clear the local costmap.
 
-Then, it will execute the navigation recovery fallback after navigation fails. It will check whether the goal has
-been updated. If the goal has not been updated, it will perform recovery actions in rotation.
+Next, it will execute the RecoveryFallback reactive fallback. If GoalUpdated succeeds, it will stop the fallback.
+If GoalUpdated fails, it will execute the RecoveryActions recovery sequence.
 
-Next, it will clear the local costmap and then clear the global costmap in order. It will stop this clearing
-sequence if either action fails.
+Next, it will execute the RecoveryActions recovery actions in turn. It will first execute the ClearingActions
+sequence, then spin, then wait, and then back up.
 
-Then, it will spin by 1.57 radians.
+Next, it will execute the ClearingActions sequence in order. It will clear the local costmap and then clear the
+global costmap, and it will stop the sequence if either action fails.
 
-Next, it will wait for 5 seconds.
-
-Finally, it will back up by 0.15 meters at a speed of 0.025 meters per second.
+Parameters: The ComputePathToPose action will read the goal from {goal}, store the computed path under {path}, and
+use the literal planner identifier GridBased.
