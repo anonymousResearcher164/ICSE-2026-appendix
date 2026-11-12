@@ -1,10 +1,10 @@
-The mission describes a sequential behavior that executes go1 and then go2.
+The mission describes a sequential behavior for executing go1 followed by go2.
 
-First, the robot will execute the first Sequence and custom action go2 in order. It will stop the sequence if any
-action fails.
+First, the root Sequence will execute the first nested Sequence and custom action go2 in order and stop the
+sequence if any action fails.
 
-Next, it will execute the first Sequence in order. It will stop the sequence if any action fails.
+Next, the robot will execute the second nested Sequence in order and stop the sequence if any action fails.
 
-Finally, it will execute the first Sequence in order. It will stop the sequence if any action fails.
+Then, it will execute the third nested Sequence in order and stop the sequence if any action fails.
 
-It will execute custom action go1.
+Finally, it will execute custom action go1 and stop the sequence if the action fails.

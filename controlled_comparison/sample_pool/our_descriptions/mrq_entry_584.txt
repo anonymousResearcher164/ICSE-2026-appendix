@@ -1,20 +1,23 @@
-The mission describes navigating to a dynamic pose while continuously replanning the path and following it.
+The mission describes navigation that follows a dynamically updated pose.
 
-First, the PipelineSequence named NavigateWithReplanning will execute the RateController and the
-KeepRunningUntilFailure in order. It will advance to the next child while the current child is running or has
-succeeded. It will stop if a child fails.
+First, the robot will execute the PipelineSequence NavigateWithReplanning, which will run the rate-controlled path
+computation and the failure-monitored path following in order. While an action is running or has succeeded, it will
+proceed to the next action. It will stop the sequence if any action fails.
 
-Next, the RateController will execute its child sequence at a rate of 2.0 Hz.
+Next, the RateController will execute its child at a rate of 2.0 Hz.
 
-Then, the Sequence will execute the GoalUpdater in order and stop if the GoalUpdater fails.
+Next, the Sequence will execute the GoalUpdater in order and stop if it fails.
 
-Next, the GoalUpdater will update the navigation goal from {goal} and store the updated goal under {updated_goal}.
-It will execute the ComputePathToPose using the updated goal.
+Next, the GoalUpdater will update the input goal and execute its child with the updated goal.
 
-Then, the ComputePathToPose will calculate a path and store it under {path}.
+Next, the ComputePathToPose ROS action will compute a path using the GridBased planner.
 
-Finally, the KeepRunningUntilFailure will execute the FollowPath. If the FollowPath succeeds, it will restart it.
-If the FollowPath fails, it will stop looping and continue execution.
+Next, the KeepRunningUntilFailure will execute the FollowPath ROS action. If it succeeds, it will restart the
+action. If it fails, it will stop looping and continue execution.
 
-Parameters: The ComputePathToPose will use the planner identifier GridBased. The FollowPath will use {path} as its
-path input. The FollowPath will use the controller identifier FollowPath.
+Next, the FollowPath ROS action will follow the computed path.
+
+Parameters: The RateController will use a rate of 2.0 Hz. The GoalUpdater will read the input goal from {goal} and
+store the updated goal under {updated_goal}. The ComputePathToPose ROS action will read the goal from
+{updated_goal}, store the computed path under {path}, and use the literal planner identifier GridBased. The
+FollowPath ROS action will read the path from {path} and use the literal controller identifier FollowPath.

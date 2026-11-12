@@ -1,5 +1,5 @@
-The mission describes the sequential execution of the SaySomething and SayHello actions.
+The mission describes the SayStuff behavior in which the robot will say something and then say hello.
 
-First, the robot will execute the SequenceStar control node. It will execute custom action SaySomething and custom
-action SayHello in sequence. If an action succeeds, it will remember that action and move to the next action. If
-an action fails, it will restart the sequence from the failed action.
+First, the SequenceStar root will execute custom action SaySomething and custom action SayHello in sequence. If an
+action succeeds, it will remember that action and move to the next action. If an action fails, it will restart the
+sequence from the failed action.

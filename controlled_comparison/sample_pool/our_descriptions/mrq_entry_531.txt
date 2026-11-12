@@ -1,63 +1,46 @@
-The mission describes recovery-based navigation to a goal, including path planning, path smoothing, path
-following, progress monitoring, and recovery actions.
+The mission describes navigation to a goal with path planning, path smoothing, path following, feedback monitoring,
+and recovery actions.
 
-First, the root RecoveryNode will execute the main ResetterNode action. If the main action fails, it will execute
-the recovery action and retry the main action up to six times. If recovery fails after the retries are exhausted,
-the mission will stop.
+First, the robot will execute the main ResetterNode action. If it fails, it will execute the RecoveryFallback
+action, retry the main action, and stop after six recovery attempts are exhausted.
 
-Next, the ResetterNode will execute the GoalUpdated condition and the NavigateWithReplanning action.
+Next, ResetterNode will execute the GoalUpdated condition and the NavigateWithReplanning subtree in order.
 
-Then, the GoalUpdated condition will determine whether the navigation goal has been updated.
+Then, NavigateWithReplanning will execute the RateController, DistanceController, FollowPath recovery subtree, and
+HadFeedback condition in order. It will proceed to the next child while the current child is running or has
+succeeded, and it will stop if a child fails.
 
-Next, the NavigateWithReplanning action will execute the ComputePathToPose recovery node at a rate of 0.02 hertz.
-It will then execute the SmoothPath recovery node when the distance condition is satisfied for a distance of 2.0.
-It will then execute the FollowPath recovery node and the HadFeedback_FollowPath action in sequence. If any action
-fails, the pipeline will stop. While an action is running or has succeeded, it will continue to the next action.
+Next, RateController will execute the ComputePathToPose recovery subtree at the configured rate. ComputePathToPose
+will calculate a coarse path. If it fails, ComputePathToPoseRecoveryFallback will check whether the goal has been
+updated. If the goal has not been updated, it will clear the global costmap. The recovery will retry
+ComputePathToPose once after recovery.
 
-Then, the ComputePathToPose recovery node will execute the ComputePathToPose action. If that action fails, it will
-execute the ComputePathToPoseRecoveryFallback recovery action and retry the main action once.
+Then, DistanceController will execute the SmoothPath recovery subtree after the configured distance condition is
+met. SmoothPath will smooth the coarse path. If it fails, SmoothPathRecoveryFallback will check whether the goal
+has been updated. If the goal has not been updated, it will clear the global costmap and calculate a new coarse
+path in sequence. The recovery will retry SmoothPath once after recovery.
 
-Next, the ComputePathToPoseRecoveryFallback reactive fallback will execute the GoalUpdated condition and the
-ClearGlobalCostmap-Context action in order. If the GoalUpdated condition succeeds, it will stop. Otherwise, it
-will execute the ClearGlobalCostmap-Context action. While that action is running, it will re-evaluate the
-GoalUpdated condition and stop if the condition succeeds.
+Next, the FollowPath recovery subtree will follow the smoothed path. If it fails, FollowPathRecoveryFallback will
+check whether the goal has been updated. If the goal has not been updated, it will clear the local costmap. The
+recovery will retry FollowPath once after recovery.
 
-Then, the SmoothPath recovery node will execute the SmoothPath action. If that action fails, it will execute the
-SmoothPathRecoveryFallback recovery action and retry the main action once.
+Then, the outer RecoveryFallback will check whether the goal has been updated after the main navigation action
+fails. If the goal has not been updated, it will execute the RecoveryActions round-robin subtree.
 
-Next, the SmoothPathRecoveryFallback reactive fallback will execute the GoalUpdated condition and the recovery
-sequence in order. If the GoalUpdated condition succeeds, it will stop. Otherwise, it will clear the global
-costmap and compute a new path. While the recovery sequence is running, it will re-evaluate the GoalUpdated
-condition and stop if the condition succeeds.
+Next, RecoveryActions will execute ClearingActions, Wait, and BackUp in rotation. ClearingActions will clear the
+local costmap and then the global costmap in sequence. Wait will pause for the configured duration. BackUp will
+move the robot backward for the configured distance.
 
-Then, the recovery sequence will execute the ClearGlobalCostmapSmoother-Context action and the ComputePathToPose
-action in order. It will stop if either action fails.
-
-Next, the FollowPath recovery node will execute the FollowPath action. If that action fails, it will execute the
-FollowPathRecoveryFallback recovery action and retry the main action once.
-
-Then, the FollowPathRecoveryFallback reactive fallback will execute the GoalUpdated condition and the
-ClearLocalCostmap-Context action in order. If the GoalUpdated condition succeeds, it will stop. Otherwise, it will
-clear the local costmap. While that action is running, it will re-evaluate the GoalUpdated condition and stop if
-the condition succeeds.
-
-Next, the HadFeedback_FollowPath action will verify that feedback has been received during path following.
-
-Then, the root RecoveryNode will execute the RecoveryFallback reactive fallback when the ResetterNode action
-fails. If the GoalUpdated condition succeeds, it will stop the recovery fallback. Otherwise, it will execute the
-RecoveryActions round-robin action. While a recovery action is running, it will re-evaluate the GoalUpdated
-condition and stop if the condition succeeds.
-
-Finally, the RecoveryActions round-robin action will execute the ClearingActions sequence, the Wait action, and
-the BackUp action in rotation.
-
-Next, the ClearingActions sequence will clear the local costmap and then clear the global costmap. It will stop if
-either clearing action fails.
-
-Then, the Wait action will wait for five seconds.
-
-Finally, the BackUp action will move backward by 0.15 meters at a speed of 0.025 meters per second.
-
-Parameters: The ComputePathToPose action will read the goal from {goal}, store the coarse path under
-{path_coarse}, and use the GridBased planner. The SmoothPath action will read the path from {path_coarse}, store
-the smoothed path under {path}, and use the SmoothPath smoother.
+Parameters: ComputePathToPose will receive goal from {goal}, store its output under {path_coarse}, and use the
+planner ID GridBased. ClearGlobalCostmap-Context will use the service global_costmap/clear_entirely_global_costmap.
+SmoothPath will receive the input path from {path_coarse}, store its output under {path}, and use the smoother ID
+SmoothPath. ClearGlobalCostmapSmoother-Context will use the service global_costmap/clear_entirely_global_costmap.
+ComputePathToPose will receive goal from {goal}, store its output under {path_coarse}, and use the planner ID
+GridBased. FollowPath will receive the path from {path} and use the controller ID FollowPath.
+ClearLocalCostmap-Context will use the service local_costmap/clear_entirely_local_costmap.
+ClearLocalCostmap-Subtree will use the service local_costmap/clear_entirely_local_costmap.
+ClearGlobalCostmap-Subtree will use the service global_costmap/clear_entirely_global_costmap. Wait will use a wait
+duration of 5. BackUp will use a backup distance of 0.15 and a backup speed of 0.025. RateController will use a
+frequency of 0.02 hertz. DistanceController will use a distance of 2.0. NavigateRecovery will allow 6 recovery
+attempts. ComputePathToPose will allow 1 recovery retry. SmoothPath will allow 1 recovery retry. FollowPath will
+allow 1 recovery retry.

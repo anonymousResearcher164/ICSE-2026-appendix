@@ -1,28 +1,26 @@
-The mission describes generating grasp candidates from a tabletop scene.
+The mission describes the generation of grasping candidates from a segmented tabletop scene, including optional
+desired-object extraction and tabletop clustering.
 
-First, the root sequence will execute the following actions in order and stop if any action fails. The robot will
-first perform tabletop segmentation, then conditionally extract and cluster the desired object, and finally
-generate grasping candidates.
+First, the root Sequence will execute the RetryUntilSuccesful subtree, the ConditionalSequence subtree, and the
+GenerateGraspingCandidates action in order and stop if any action fails.
 
-Next, it will retry tabletop segmentation until it succeeds or three attempts have been made.
+Next, the RetryUntilSuccesful subtree will retry the TableTopSegmentation action until it succeeds or three
+attempts are completed.
 
-Then, the conditional sequence will execute object cloud extraction and tabletop clustering in order while
-checking whether the False condition is true. If the False condition is false, it will end the sequence.
+Next, the ConditionalSequence subtree will execute its actions in order while checking whether the condition False
+is true for each action. If the condition False is false, the sequence will end. The DesiredObjectEntryCheck
+decorator will check the desired_object entry before allowing the ObjectCloudExtraction action to execute. The
+TableTopClustering action will execute after the decorated action succeeds.
 
-Next, the BlackboardEntryCheck decorator will check whether the desired object entry is available before executing
-object cloud extraction.
+Finally, the GenerateGraspingCandidates action will execute.
 
-Finally, it will generate grasping candidates.
-
-Parameters: TableTopSegmentation will read original_cloud from the original_cloud key. TableTopSegmentation will
-read image_scene from the image_scene key. TableTopSegmentation will read table_height from the table_height key.
-TableTopSegmentation will store the transformed cloud under the original_cloud_transformed key.
-TableTopSegmentation will store the tabletop cloud under the tabletop_cloud key. TableTopSegmentation will store
-the plane cloud under the plane_cloud key. TableTopSegmentation will store the nonplane cloud under the
-nonplane_cloud key. ObjectCloudExtraction will read original_cloud from the original_cloud key.
-ObjectCloudExtraction will read image_scene from the image_scene key. ObjectCloudExtraction will store the object
-cloud under the object_cloud key. ObjectCloudExtraction will read tabletop_cloud from the tabletop_cloud key.
-ObjectCloudExtraction will read desired_object from the desired_object key. GenerateGraspingCandidates will read
-object_cloud from the object_cloud key. GenerateGraspingCandidates will read table_height from the table_height
-key. GenerateGraspingCandidates will store grasp candidates under the grasp_candidates key.
-GenerateGraspingCandidates will read original_cloud_transformed from the original_cloud_transformed key.
+Parameters: The TableTopSegmentation action will receive original_cloud="{original_cloud}",
+image_scene="{image_scene}", table_height="{table_height}",
+original_cloud_transformed="{original_cloud_transformed}", tabletop_cloud="{tabletop_cloud}", and
+plane_cloud="{plane_cloud}", and it will store nonplane_cloud under {nonplane_cloud}. The DesiredObjectEntryCheck
+decorator will receive entry="{desired_object}". The ObjectCloudExtraction action will receive
+original_cloud="{original_cloud}", image_scene="{image_scene}", object_cloud="{object_cloud}",
+tabletop_cloud="{tabletop_cloud}", and desired_object="{desired_object}". The TableTopClustering action will
+receive object_cloud="{object_cloud}" and tabletop_cloud="{tabletop_cloud}". The GenerateGraspingCandidates action
+will receive object_cloud="{object_cloud}", table_height="{table_height}", grasp_candidates="{grasp_candidates}",
+and original_cloud_transformed="{original_cloud_transformed}".

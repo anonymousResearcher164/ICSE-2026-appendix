@@ -1,11 +1,14 @@
-The mission describes a sequence that announces a thought prompt, generates an answer, and announces the generated
-answer.
+The mission describes a sequential behavior that announces a starting message, generates an answer, and announces
+the answer.
 
-First, the Sequence will execute SaySomething, ThinkWhatToSay, and SaySomething in order and will stop if any
-action fails.
+First, the root Sequence will execute the actions in order and stop the sequence if any action fails.
 
-Next, the robot will use SaySomething to say "Start thinking...".
+Next, The robot will execute the custom action SaySomething to announce the starting message.
 
-Then, it will use ThinkWhatToSay to generate text and store it under the_answer.
+Then, it will execute the custom action ThinkWhatToSay to generate an answer.
 
-Finally, it will use SaySomething to say the value read from the_answer.
+Finally, it will execute the custom action SaySomething to announce the generated answer.
+
+Parameters: The first custom action SaySomething will use the literal message "Start thinking...". The custom
+action ThinkWhatToSay will store its output from the text port under the blackboard key {the_answer}. The second
+custom action SaySomething will use the message read from the blackboard key {the_answer}.

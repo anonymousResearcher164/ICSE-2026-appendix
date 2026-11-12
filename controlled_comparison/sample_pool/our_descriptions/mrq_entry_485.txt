@@ -1,33 +1,37 @@
-The mission describes a behavior tree that moves both arms through the UPTRAY, EXTENDED, GRIPPING, and REST poses.
+The mission describes sequentially positioning both arms through the UPTRAY, EXTENDED, GRIPPING, and REST poses.
 
-First, the robot will execute the following actions in order: GetArmJointsForPose, the first Parallel node,
-GetArmJointsForPose, the second Parallel node, GetArmJointsForPose, the third Parallel node, GetArmJointsForPose,
-and the fourth Parallel node. The sequence will stop if any action fails.
+First, The robot will execute the following actions in order and stop the sequence if any action fails: obtain the
+joint configuration for the UPTRAY pose, set both arms to that configuration simultaneously, obtain the joint
+configuration for the EXTENDED pose, set both arms to that configuration simultaneously, obtain the joint
+configuration for the GRIPPING pose, set both arms to that configuration simultaneously, obtain the joint
+configuration for the REST pose, and set both arms to that configuration simultaneously.
 
-Next, it will execute custom action GetArmJointsForPose with pose UPTRAY and store the resulting joints under
-{joints_pose}.
+Next, it will execute GetArmJointsForPose to obtain the UPTRAY joint configuration.
 
-Next, it will execute the first Parallel node simultaneously. Both actions must succeed for the parallel execution
-to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
-SetArmJointsRight will apply the joints read from {joints_pose}.
+Next, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
 
-Next, it will execute custom action GetArmJointsForPose with pose EXTENDED and store the resulting joints under
-{joints_pose}.
+Next, it will execute GetArmJointsForPose to obtain the EXTENDED joint configuration.
 
-Next, it will execute the second Parallel node simultaneously. Both actions must succeed for the parallel
-execution to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
-SetArmJointsRight will apply the joints read from {joints_pose}.
+Next, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
 
-Next, it will execute custom action GetArmJointsForPose with pose GRIPPING and store the resulting joints under
-{joints_pose}.
+Next, it will execute GetArmJointsForPose to obtain the GRIPPING joint configuration.
 
-Next, it will execute the third Parallel node simultaneously. Both actions must succeed for the parallel execution
-to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
-SetArmJointsRight will apply the joints read from {joints_pose}.
+Next, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
 
-Finally, it will execute custom action GetArmJointsForPose with pose REST and store the resulting joints under
-{joints_pose}.
+Finally, it will execute GetArmJointsForPose to obtain the REST joint configuration.
 
-Finally, it will execute the fourth Parallel node simultaneously. Both actions must succeed for the parallel
-execution to succeed. Custom action SetArmJointsLeft will apply the joints read from {joints_pose}. Custom action
-SetArmJointsRight will apply the joints read from {joints_pose}.
+Finally, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
+
+Parameters: GetArmJointsForPose will use pose UPTRAY and store the result under {joints_pose}. GetArmJointsForPose
+will use pose EXTENDED and store the result under {joints_pose}. GetArmJointsForPose will use pose GRIPPING and
+store the result under {joints_pose}. GetArmJointsForPose will use pose REST and store the result under
+{joints_pose}. SetArmJointsLeft will read the joint configuration from {joints_pose}. SetArmJointsRight will read
+the joint configuration from {joints_pose}. SetArmJointsLeft will read the joint configuration from {joints_pose}.
+SetArmJointsRight will read the joint configuration from {joints_pose}. SetArmJointsLeft will read the joint
+configuration from {joints_pose}. SetArmJointsRight will read the joint configuration from {joints_pose}.
+SetArmJointsLeft will read the joint configuration from {joints_pose}. SetArmJointsRight will read the joint
+configuration from {joints_pose}.

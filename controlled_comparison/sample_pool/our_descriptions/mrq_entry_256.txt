@@ -1,12 +1,15 @@
-The mission describes a repeated sequence of logical-state checking, movement, and logical-state updating for a
+The mission describes a repeated sequence for checking and updating linear temporal logic states while moving the
 robot.
 
-First, the robot will execute the sequence num_cycles times.
+First, the robot will execute the sequence {num_cycles} times.
 
-Next, it will execute the custom action LTLPreCheck, the custom action MoveAction, and the custom action UpdateLTL
-in order. If any action fails, the sequence will stop.
+Next, it will execute custom action LTLPreCheck, custom action MoveAction, and custom action UpdateLTL in order and
+stop the sequence if any action fails.
 
-Parameters: The custom action LTLPreCheck will read ltl_state_current and ltl_state_desired_sequence from the
-blackboard. The custom action MoveAction will store action on the blackboard and read move_base_finished,
-move_base_idle, and nav_goal from the blackboard. The custom action UpdateLTL will read and update action_sequence
-and ltl_state_desired_sequence on the blackboard and store nav_goal on the blackboard.
+Parameters: Custom action LTLPreCheck will read ltl_state_current from {ltl_state_current}. Custom action
+LTLPreCheck will read ltl_state_desired_sequence from {ltl_state_desired_sequence}. Custom action MoveAction will
+store its action under {action}. Custom action MoveAction will read move_base_finished from {move_base_finished}.
+Custom action MoveAction will read move_base_idle from {move_base_idle}. Custom action MoveAction will read
+nav_goal from {nav_goal}. Custom action UpdateLTL will read and update action_sequence in {action_sequence}. Custom
+action UpdateLTL will read and update ltl_state_desired_sequence in {ltl_state_desired_sequence}. Custom action
+UpdateLTL will store nav_goal under {nav_goal}.

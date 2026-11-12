@@ -1,32 +1,35 @@
-The mission describes navigation to a goal with path planning, path following, replanning, and recovery actions.
+The mission describes a navigation behavior that plans a path to a goal, follows the path, and performs recovery
+actions when navigation fails.
 
-First, the robot will execute the NavigateWithReplanning pipeline. If the pipeline fails, it will execute the
-RecoveryFallback recovery action and retry the pipeline for up to six retries.
+First, the robot will execute NavigateWithReplanning. If navigation fails, it will execute RecoveryFallback and
+then retry navigation. It will stop after six recovery attempts if navigation remains unsuccessful.
 
-Next, it will execute the ComputePathToPose recovery node at a rate of 1.0 Hz and then execute the FollowPath
-recovery node. The pipeline will advance to the next node while the current node is running or has succeeded, and
-it will stop if a node fails.
+Next, NavigateWithReplanning will execute RateController and FollowPath in order. It will advance to the next
+action while the current action is running or has succeeded, and it will stop if an action fails.
 
-Next, it will execute the ComputePathToPose action. If this action fails, it will execute the
-ComputePathToPoseRecoveryFallback recovery action and retry the ComputePathToPose action once.
+Then, RateController will regulate execution of ComputePathToPose at one cycle per second.
 
-Next, it will execute the ComputePathToPoseRecoveryFallback reactive fallback. If GoalUpdated succeeds, it will
-stop the fallback. If GoalUpdated fails, it will clear the global costmap.
+Next, ComputePathToPose will calculate a path to the goal. If it fails, ComputePathToPoseRecoveryFallback will
+first check whether the goal has been updated. If the goal has not been updated, it will clear the global costmap.
+After recovery, it will retry ComputePathToPose once.
 
-Next, it will execute the FollowPath action. If this action fails, it will execute the FollowPathRecoveryFallback
-recovery action and retry the FollowPath action once.
+Then, FollowPath will follow the calculated path. If it fails, FollowPathRecoveryFallback will first check whether
+the goal has been updated. If the goal has not been updated, it will clear the local costmap. After recovery, it
+will retry FollowPath once.
 
-Next, it will execute the FollowPathRecoveryFallback reactive fallback. If GoalUpdated succeeds, it will stop the
-fallback. If GoalUpdated fails, it will clear the local costmap.
+Next, RecoveryFallback will first check whether the goal has been updated. If the goal has not been updated, it
+will execute RecoveryActions.
 
-Next, it will execute the RecoveryFallback reactive fallback. If GoalUpdated succeeds, it will stop the fallback.
-If GoalUpdated fails, it will execute the RecoveryActions recovery sequence.
+Then, RecoveryActions will execute its recovery actions in rotation. It will execute ClearingActions, Spin, Wait,
+and BackUp as separate recovery actions.
 
-Next, it will execute the RecoveryActions recovery actions in turn. It will first execute the ClearingActions
-sequence, then spin, then wait, and then back up.
+Finally, ClearingActions will clear the local costmap and then clear the global costmap. It will stop if either
+clearing action fails.
 
-Next, it will execute the ClearingActions sequence in order. It will clear the local costmap and then clear the
-global costmap, and it will stop the sequence if either action fails.
-
-Parameters: The ComputePathToPose action will read the goal from {goal}, store the computed path under {path}, and
-use the literal planner identifier GridBased.
+Parameters: ComputePathToPose will use goal read from {goal}, path stored under {path}, and planner_id set to
+GridBased. ClearGlobalCostmap-Context will use service_name set to local_costmap/clear_entirely_global_costmap.
+FollowPath will use path read from {path} and controller_id set to FollowPath. ClearLocalCostmap-Context will use
+service_name set to local_costmap/clear_entirely_local_costmap. ClearLocalCostmap-Subtree will use service_name set
+to local_costmap/clear_entirely_local_costmap. ClearGlobalCostmap-Subtree will use service_name set to
+global_costmap/clear_entirely_global_costmap. Spin will use spin_dist set to 1.57. Wait will use wait_duration set
+to 5. BackUp will use backup_dist set to 0.15 and backup_speed set to 0.025.

@@ -1,19 +1,29 @@
-The mission describes a robot repeatedly detecting human poses on the left and right and producing corresponding
-speech messages.
+The mission describes a repeated behavior for detecting human poses and announcing left or right speech.
 
-First, the robot will execute the contained sequence 9999 times.
+First, the root Repeat will execute its child 9,999 times. The robot will execute the child behavior during each
+iteration.
 
-Next, it will execute the left-pose subtree followed by the right-pose subtree in order. The sequence will stop if
-either subtree fails.
+Next, the outer Sequence will execute its child in order and stop if the child fails.
 
-Then, it will execute the left-pose fallback. It will first execute the HumanPoseDetect action with empty expected
-left and right poses and store the detected speech values in the pose_left_speech and pose_right_speech blackboard
-keys. If this action fails, it will execute the Script action with the code full_left_msg := 'Left, ' +
-pose_left_speech. If the Script action also fails, it will execute the TextToSpeechActionClient action with the
-message full_left_msg.
+Then, the inner Sequence will execute its child in order and stop if the child fails.
 
-Next, it will execute the right-pose fallback. It will first execute the HumanPoseDetect action with empty
-expected left and right poses and store the detected speech values in the pose_left_speech and pose_right_speech
-blackboard keys. If this action fails, it will execute the Script action with the code full_right_msg := 'Right, '
-+ pose_right_speech. If the Script action also fails, it will execute the TextToSpeechActionClient action with the
-message full_right_msg.
+Next, the first Fallback will execute its child actions consecutively. If the first child fails, it will execute
+the second child. If the second child fails, it will execute the third child. It will stop when a child succeeds.
+If no child succeeds, the Fallback will fail.
+
+Then, the first child Sequence will execute the HumanPoseDetect action in order and stop if the action fails.
+
+Next, the second Fallback will execute its child actions consecutively. If the first child fails, it will execute
+the second child. If the second child fails, it will execute the third child. It will stop when a child succeeds.
+If no child succeeds, the Fallback will fail.
+
+Then, the second child Sequence will execute the HumanPoseDetect action in order and stop if the action fails.
+
+Parameters: The first HumanPoseDetect action will use empty for expected_pose_left, empty for expected_pose_right,
+and the value read from key pose_left_speech for pose_left_speech and the value read from key pose_right_speech for
+pose_right_speech. The Script action will use “full_left_msg := 'Left, ' + pose_left_speech” for code. The
+TextToSpeechActionClient action will use “full_left_msg” for msg. The second HumanPoseDetect action will use empty
+for expected_pose_left, empty for expected_pose_right, and the value read from key pose_left_speech for
+pose_left_speech and the value read from key pose_right_speech for pose_right_speech. The Script action will use
+“full_right_msg := 'Right, ' + pose_right_speech” for code. The TextToSpeechActionClient action will use
+“full_right_msg” for msg.

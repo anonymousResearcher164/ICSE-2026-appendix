@@ -1,5 +1,9 @@
-The mission describes clearing the global navigation cost map and seeking robot initialization.
+The mission describes clearing the global navigation cost map and initializing robot seeking.
 
-First, the robot will execute the ROS action Nav2ClearGlobalCostMap and then the custom action RobotSeekInitAction
-in order. It will stop the sequence if either action fails. The custom action will use the literal game file
-robot_seek_1.json.
+First, the robot will execute the actions in sequence and stop if any action fails.
+
+Next, it will execute the ROS action Nav2ClearGlobalCostMap.
+
+Finally, it will execute the custom action RobotSeekInitAction.
+
+Parameters: The custom action RobotSeekInitAction will use robot_seek_1.json as its game_file parameter.

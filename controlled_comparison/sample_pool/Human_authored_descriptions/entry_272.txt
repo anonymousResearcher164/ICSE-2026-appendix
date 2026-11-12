@@ -1,0 +1,2 @@
+The robot should follow a specific path which is allowed to changed during operation..
+The path computation and following is done in parallel, and the path is updated/new calculated every second based on the robot’s current position and goal. 

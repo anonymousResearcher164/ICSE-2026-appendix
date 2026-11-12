@@ -1,8 +1,9 @@
-The mission describes a sequential behavior that checks whether the robot is full, moves to the closest resource,
-and waits for 15 frames.
+The mission describes checking whether the robot is full, moving to the closest resource, and waiting for 15
+frames.
 
-First, the Sequence Sequence1 will execute the following actions in order and stop the sequence if any action
-fails. The robot will check whether isFull is true. It will execute custom action goClosestR. It will execute
-custom action waitFrames.
+First, the Sequence1 sequence will execute its actions in order and stop if any action fails. It will first require
+isFull to be true. It will then execute custom action goClosestR. It will finally execute custom action waitFrames.
 
-Parameters: The custom action waitFrames will use barout="", baz="", fooin="", and frames="15".
+Parameters: The custom action waitFrames will use barout="" as an output port. The custom action waitFrames will
+use baz="" as an input port. The custom action waitFrames will use fooin="" as an input port. The custom action
+waitFrames will use frames="15" as an input port.

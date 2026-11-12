@@ -1,18 +1,18 @@
-The mission describes conditional movement between a shed and pasture according to time and location.
+The mission describes movement between a pasture and a shed during the day and night.
 
-First, the robot will execute the first SequenceStar, the second SequenceStar, and the third SequenceStar
-consecutively. If any sequence fails, it will move to the next sequence until one succeeds. If all sequences fail,
-it will start again from the first sequence until one succeeds.
+First, the robot will execute the three SequenceStar subtrees consecutively. If a subtree succeeds, it will stop
+the fallback. If all three subtrees fail, it will restart with the first subtree until one succeeds.
 
-Next, it will execute IsOnPasture, IsDay, IsInShed, LeaveShed, FindRandomPastureField, and Move in sequence. After
-a node succeeds, it will remember that node and move to the next node. If a node fails, it will restart the
-sequence from that failed node.
+Next, the first SequenceStar will check IsOnPasture, IsDay, and IsInShed in order. If a check succeeds, it will
+remember the check and continue to the next child. If a check fails, it will restart the sequence from the failed
+check. After all checks succeed, it will execute LeaveShed, FindRandomPastureField, and Move in order.
 
-Next, it will execute IsOnPasture, IsNight, inverted IsInShed, FindShed, Move, and EnterShed in sequence. After a
-node succeeds, it will remember that node and move to the next node. If a node fails, it will restart the sequence
-from that failed node. The inverted IsInShed condition will fail when IsInShed is true and will succeed when
-IsInShed is false.
+Next, the second SequenceStar will check IsOnPasture and IsNight in order. If a check succeeds, it will remember
+the check and continue to the next child. If a check fails, it will restart the sequence from the failed check. It
+will execute an inverted IsInShed check. If IsInShed is true, the inverted check will fail. If IsInShed is false,
+the inverted check will succeed. After all checks succeed, it will execute FindShed, Move, and EnterShed in order.
 
-Finally, it will execute IsDay, inverted IsInShed, and RandomMove in sequence. After a node succeeds, it will
-remember that node and move to the next node. If a node fails, it will restart the sequence from that failed node.
-The inverted IsInShed condition will fail when IsInShed is true and will succeed when IsInShed is false.
+Finally, the third SequenceStar will check IsDay in order. If the check succeeds, it will remember the check and
+continue to the next child. If the check fails, it will restart the sequence from the failed check. It will execute
+an inverted IsInShed check. If IsInShed is true, the inverted check will fail. If IsInShed is false, the inverted
+check will succeed. After the checks succeed, it will execute RandomMove.

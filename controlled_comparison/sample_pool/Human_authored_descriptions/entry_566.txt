@@ -1,0 +1,15 @@
+entry_566.xml
+
+1. Repeat decarator num_cycles runs the whole process for the given number of cycles. 
+2. Sequence with 3 children, only will return sucess if all three children succeed.
+3. first Child : Fallback node with action node on left, LTLPreCheck checks the current state with the desired sequence. if FAILURE then shifts to the right child with Decarator node which forces FAILURE even though th child Action node is a SUCCESS.
+4. Now with the first child of the sequence done, shift to the second child which has a ' Reactive Sequence ' with 2 child trees, through a fallback.
+5. Fallback : Any child is SUCCESS is a SUCCESS. 
+6. First decorator node, RetryUntilSuccessful_attempts=3, no matter if success of failure will run three times and if it fails the three times then returns FAILURE.
+7. And the another Fallback with an Action child and Sequence child, left Action node, gives a status check on locomotion, which the status being SUCCESS, FAILURE or RUNNING and then goes to the right child Sequence node has left Action node which is for the RecoveryStand from locomation_status and from the status if SUCCESS then goes to the right decorator node which starts the locomotion again with a Delay of 5000ms - delay_msec.
+8. With either Fallback returning SUCCESS from the existing locomotion_status or from the recovery locomotion_status, runs it for 3 times until SUCCESSFUL even if it is successful. 
+9. Then goes right to the ForceFailure Decorator node which forces failure even the Action child node ReplanningRequestLevel3 returns SUCCESS.
+10. So SUCCESS expected from left Decorator node -Fallback - which returns SUCCESS if even one child is successful (which is from the left Sequence).
+11. If FAILURE is expected at the RetruUntilSuccessful num_attempts =3 node, then fallback returns FAILURE which makes REACTIVE SEQUENCE go to the right fallback node.
+12. This right Fallback node with an ACtion node  and Force Decorator node. 
+13. Action node - to Move with the nav_goal given which either node SUCCESS or FAILURE. If SUCCESS, fallback returns SUCCESS, if not the right Decorator node forces FAILURE, which makes the whole fallback failure and the Sequence atop goes to the third child node Action - UpdateLTL, which updates the logic as per the nav_goal.

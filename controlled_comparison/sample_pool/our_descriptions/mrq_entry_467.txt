@@ -1,19 +1,16 @@
-The mission describes fallback behavior for moving or returning an object, waiting, and entering standby.
+The mission describes alternative object movement, object return, and standby behaviors.
 
-First, the robot will execute the first Sequence, the second Sequence, and custom action StandbyObject
-consecutively. If the first Sequence fails, it will move to the second Sequence. If the second Sequence fails, it
-will execute custom action StandbyObject. If no action succeeds, the fallback execution will fail.
+First, the robot will execute the fallback. It will try the first sequence and move to the next sequence if any
+action fails. If no sequence succeeds, it will execute StandbyObject.
 
-Next, it will execute custom action MoveObject followed by custom action WaitObject in order. The sequence will
-stop if either action fails.
+Next, the first sequence will execute MoveObject followed by WaitObject. It will stop if either action fails.
 
-Then, it will execute custom action ReturnObject followed by custom action WaitObject in order. The sequence will
-stop if either action fails.
+Then, the second sequence will execute ReturnObject followed by WaitObject. It will stop if either action fails.
 
-Finally, it will execute custom action StandbyObject.
+Finally, the fallback will execute StandbyObject if the preceding sequences do not succeed.
 
-Parameters: Custom action MoveObject will store its action output under {action}, read {move_base_finished}, read
-{move_base_idle}, and read {pose_queue_size}. Custom action WaitObject will store its action output under {action}
-and use a wait duration of 3. Custom action ReturnObject will store its action output under {action}, read
-{home_pose_far}, read {move_base_finished}, and read {move_base_idle}. Custom action StandbyObject will store its
-action output under {action}.
+Parameters: MoveObject will use action from {action}, move_base_finished from {move_base_finished}, move_base_idle
+from {move_base_idle}, and pose_queue_size from {pose_queue_size}. WaitObject will use action from {action} and
+wait_duration set to 3. ReturnObject will use action from {action}, home_pose_far from {home_pose_far},
+move_base_finished from {move_base_finished}, and move_base_idle from {move_base_idle}. StandbyObject will use
+action from {action}.

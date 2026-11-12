@@ -1,0 +1,4 @@
+In a sequential order, the robot get the location of an object that it needs to pick up. 
+After the robot got the location, it gets the placing pose of the object.
+Thereafter, the robot approaches the object and finally it puts the object into the required pose. 
+If all four steps must be successful in a row, for a successful mission.

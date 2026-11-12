@@ -1,47 +1,28 @@
-The mission describes a repeated behavior for updating a planning scene, navigating to two poses, scanning
-shelves, updating tray loci, and pausing.
+The mission describes a robot repeatedly updating its planning scene, navigating to two locations, scanning shelf
+positions, configuring a shelf tray, and pausing between cycles.
 
-First, the robot will execute the following sequence continuously until it fails or succeeds. If the sequence
-neither fails nor succeeds, it will continue forever.
+First, the Repeat node will execute its child continuously because its cycle limit is -1.
 
-Next, it will execute the planning-scene update, the first movement, the second movement, the nested sequence, and
-the pause in order. It will stop the sequence if any action fails.
+Next, the Sequence will execute its actions in order and stop if any action fails. The robot will update the
+planning scene, move to the first location, move to the second location, execute the inner sequence, and pause.
 
-Then, it will execute torso control, head control, shelf scanning, tray-locus configuration, and another
-planning-scene update in order. It will stop this sequence if any action fails.
+Then, the inner Sequence will execute its actions in order and stop if any action fails. It will control the torso,
+control the head, scan the shelves, set the tray loci, and update the planning scene.
 
-Finally, it will execute the custom action TrayUpdatePlanningScene.
+Finally, the pause action will delay the next repetition after the inner sequence completes.
 
-Next, it will execute the custom action MoveBase.
+Parameters: The first MoveBase action will use goal 2.1;-2.0;0.0.
 
-Then, it will execute the custom action MoveBase.
+The second MoveBase action will use goal 2.1;-0.0;1.57.
 
-Next, it will execute the nested sequence in order. It will stop this sequence if any action fails.
+The TorsoControl action will use relative_height 0.1.
 
-Then, it will execute the custom action TorsoControl.
+The HeadControl action will use pitch 0.0 and yaw 90.0.
 
-Next, it will execute the custom action HeadControl.
+The ScanShelves action will store its tomato_can_stocking_target_poses output under the
+tomato_can_stocking_target_poses key.
 
-Then, it will execute the custom action ScanShelves.
-
-Next, it will execute the custom action TraySetLoci.
-
-Finally, it will execute the custom action TrayUpdatePlanningScene.
-
-Next, it will execute the custom action Pause.
-
-Parameters: The custom action MoveBase will use goal 2.1;-2.0;0.0.
-
-The custom action MoveBase will use goal 2.1;-0.0;1.57.
-
-The custom action TorsoControl will use relative_height 0.1.
-
-The custom action HeadControl will use pitch 0.0 and yaw 90.0.
-
-The custom action ScanShelves will store its tomato_can_stocking_target_poses output under
-{tomato_can_stocking_target_poses}.
-
-The custom action TraySetLoci will use tray_name shelf, read locus_poses from {tomato_can_stocking_target_poses},
+The TraySetLoci action will use tray_name shelf, read locus_poses from the tomato_can_stocking_target_poses key,
 and use occupied false.
 
-The custom action Pause will use time_limit_sec 5.
+The Pause action will use time_limit_sec 5.

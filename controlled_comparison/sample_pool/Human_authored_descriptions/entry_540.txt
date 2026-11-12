@@ -1,0 +1,6 @@
+entry_540.xml  
+
+1. Entry point : SayStuff 
+2. *SequenceStar contains of two actions. 
+3. All Children nodes must succeed in order to return SUCCESS
+4. Action nodes go from left to right . First Action "SaySomething" executed and if success then goes to second Action "Say Hello". If both actions are success, then the "SequenceStar" sequence is a success.

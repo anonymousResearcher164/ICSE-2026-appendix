@@ -1,0 +1,7 @@
+entry_529.xml 
+
+1. Entry point : MainTree
+2. Pipeline Sequence - NavigateWithReplanning with 2 children (left to right).
+3. First Child, Initiating with condition DistanceController node with condition, distance = 1
+4. If condition node success then Grid_based pose planner (ComputePathToPoseplanner_id - Condition: Grid based) computes path through goal.
+5. Then if the above child node (left is a success), then the path is passed on to the next child to the right, FollowPathcontroller_id : FollowPath, with the path extracted from left, the controller follows the path.

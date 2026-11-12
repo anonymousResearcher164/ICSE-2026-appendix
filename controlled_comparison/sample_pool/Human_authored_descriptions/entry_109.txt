@@ -1,0 +1,1 @@
+The robot moves between two positions. First it moves to (0.5, 0.5, 0) after that it moves to (-0.5, -0.5, 0), then back. The robot repeats it ten times.

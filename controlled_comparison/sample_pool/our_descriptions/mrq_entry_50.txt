@@ -1,7 +1,10 @@
-The mission describes the robot fixing a rudder and then waiting for one second.
+The mission describes fixing a rudder and then waiting for a delayed successful completion.
 
-First, the robot will execute the following actions in order and stop the sequence if any action fails. It will
-execute custom action FixRudder. It will execute DelayFor and delay its child for 1000 milliseconds. It will then
-execute custom action AlwaysSuccess.
+First, the robot will execute the custom action FixRudder and the custom action DelayFor in order and stop the
+sequence if either action fails.
 
-Parameters: The custom action FixRudder will use depth 1.0, rudder 2.0, and speed_knots 3.0.
+Next, it will execute the custom action DelayFor after its delay timer expires. It will then execute the custom
+action AlwaysSuccess.
+
+Parameters: The custom action FixRudder will use depth="1.0", rudder="2.0", and speed_knots="3.0". The custom
+action DelayFor will use delay_msec="1000".

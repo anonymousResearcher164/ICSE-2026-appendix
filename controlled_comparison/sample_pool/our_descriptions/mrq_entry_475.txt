@@ -1,34 +1,45 @@
-The mission describes charging at a charging station and leaving the station after charging.
+The mission describes a robot charging routine that starts with speaking, waits, charges, and then leaves the
+charging station.
 
-First, the robot will execute the ChargeST subtree.
+First, the root node will execute the ChargeST subtree.
 
-Next, it will execute the actions in the ChargeST SequenceStar in order. If an action succeeds, it will remember
-that action and move to the next action. If an action fails, it will restart the sequence from the failed action.
-It will first execute Speak, then Wait2Seconds, then the Fallback, then WaitForXSeconds, then Speak, and finally
-Charge with action STOP_CHARGE and action_name charging_action.
+Next, the robot will execute the actions in the ChargeST sequence from left to right. If an action succeeds, it
+will remember that action and move to the next action. If an action fails, it will restart the sequence from the
+failed action.
 
-Next, it will execute the single child of the Fallback consecutively. If the child fails, the Fallback will fail
-because no alternative child remains.
+Then, it will speak that it is hungry.
 
-Next, it will execute the actions in the inner SequenceStar in order. If an action succeeds, it will remember that
-action and move to the next action. If an action fails, it will restart the sequence from the failed action. It
-will first execute RetryUntilSuccesful and then the Parallel.
+Next, it will wait for two seconds.
 
-Next, it will execute ROS action MoveBase through RetryUntilSuccesful. If the action fails, it will re-execute it
-up to three attempts or until it succeeds.
+Then, it will execute the fallback. If the first action sequence fails, it will proceed to the next action. If no
+action succeeds, the fallback will fail.
 
-Next, it will execute ROS action Charge and the Repeat simultaneously through the Parallel. If both actions
-succeed, the Parallel will succeed. If either action fails, the Parallel will fail.
+Next, it will execute the first nested sequence. If an action succeeds, it will remember that action and move to
+the next action. If an action fails, it will restart the sequence from the failed action.
 
-Next, it will execute Speak through the Repeat five times.
+Then, it will keep trying the ROS action MoveBase until it succeeds or until it has made three attempts.
 
-Next, it will wait for two seconds through Wait2Seconds.
+Next, it will execute the ROS action MoveBase.
 
-Next, it will execute Speak to announce that it is full and will leave the station.
+Then, it will execute the Parallel node by charging and speaking simultaneously. The parallel execution will
+succeed when two actions succeed. It will fail if any action fails.
 
-Next, it will execute Charge with action STOP_CHARGE and action_name charging_action.
+Next, it will execute the Charge action.
 
-Parameters: The first Speak action will use action_name /gcloud_tts, language pt_PT, utterance Tenho fome, and
-voice pt-PT-Wavenet-D. The MoveBase action will use action_name move_base, frame_id map, and goal_pose
--1.7971;-5.5118;0.0;0;0;0.72703;0.68659. The repeated Speak action will use action_name /gcloud_tts, language
-pt_PT, utterance bip bip, and voice pt-PT-Wavenet-D.
+At the same time, it will repeat the Speak action five times.
+
+Then, it will wait for ten seconds.
+
+Next, it will speak that it is full and will leave the station.
+
+Finally, it will stop charging.
+
+Parameters: The first Speak action will use action_name "/gcloud_tts", language "pt_PT", utterance "Tenho fome",
+and voice "pt-PT-Wavenet-D". The first WaitForXSeconds action will use result "SUCCESS" and seconds "2". The
+MoveBase action will use action_name "move_base", frame_id "map", and goal_pose
+"-1.7971;-5.5118;0.0;0;0;0.72703;0.68659". The Charge action will use action "CHARGE" and action_name
+"charging_action". The repeated Speak action will use action_name "/gcloud_tts", language "pt_PT", utterance "bip
+bip", and voice "pt-PT-Wavenet-D". The second WaitForXSeconds action will use result "SUCCESS" and seconds "10".
+The second Speak action will use action_name "/gcloud_tts", language "pt_PT", utterance "Estou cheio, vou sair da
+estação", and voice "pt-PT-Wavenet-D". The final Charge action will use action "STOP_CHARGE" and action_name
+"charging_action".

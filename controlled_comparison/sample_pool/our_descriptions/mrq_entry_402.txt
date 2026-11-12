@@ -1,34 +1,38 @@
-The mission describes initialization, repeated human-pose detection, image saving, speech, antenna signaling, and
-delayed blackboard updates.
+The mission describes initializing pose-detection settings and antenna signals, then continuously detecting a
+person in a specified pose, saving an image, announcing the save, signaling completion, and waiting before
+repeating the process.
 
-First, the robot will execute the first Sequence and the KeepRunningUntilFailure in order. It will stop the root
-sequence if either child fails.
+First, the root Sequence will execute the initialization Sequence followed by KeepRunningUntilFailure in order and
+stop if either child fails.
 
-Next, it will execute the SetBlackboard actions in order. It will store TouchingNeck under pose_name_l, store
-TouchingNeck under pose_name_r, store any under pose_lr_check, and execute the first AntennaAction. It will stop
-this sequence if any action fails.
+Next, the initialization Sequence will execute the SetBlackboard actions and the AntennaAction in order and stop if
+any action fails. The robot will set the left expected pose to TouchingNeck, set the right expected pose to
+TouchingNeck, set the pose comparison mode to any, and set the antenna rate, intensity, and blink patterns to zero.
 
-Next, it will execute the KeepRunningUntilFailure child. If its child succeeds, it will restart that child. If its
-child fails, it will stop looping and continue the root sequence.
+Then, KeepRunningUntilFailure will execute its child Sequence. If the child Sequence succeeds, it will restart the
+child Sequence. If the child Sequence fails, it will stop looping and continue execution.
 
-Next, it will execute the Sequence inside KeepRunningUntilFailure in order. It will execute ForceSuccess followed
-by the second Sequence. It will stop this sequence if either child fails.
+Next, the child Sequence will execute ForceSuccess followed by the second Sequence in order and stop if either
+child fails.
 
-Next, it will execute the ForceSuccess child and make sure it always succeeds.
+Then, ForceSuccess will execute its child Sequence and make sure that it always succeeds.
 
-Next, it will execute the Sequence inside ForceSuccess in order. It will detect the specified human pose, execute
-the third AntennaAction, save an image, announce Saved, and execute the fourth AntennaAction. It will stop this
-sequence if any action fails.
+Next, the child Sequence will execute HumanPoseDetect, AntennaAction, SaveImageAction, TextToSpeechActionClient,
+and AntennaAction in order and stop if any action fails.
 
-Next, it will execute the second Sequence. It will execute the delayed SetBlackboard action after the delay timer.
-The delay will last 1000 milliseconds before it stores 0 under dummy.
+Then, the second Sequence will execute Delay and stop if Delay fails.
 
-Parameters: The first AntennaAction will use rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0.
+Finally, Delay will execute SetBlackboard after its delay timer expires and resume execution after the delay
+period.
 
-The HumanPoseDetect action will read expected_pose_left from pose_name_l, read expected_pose_right from
-pose_name_r, read pose_lr_check from pose_lr_check, store its detected person under detected_person, store its
-left-pose speech under pose_left_speech, and store its right-pose speech under pose_right_speech.
-
-The second AntennaAction will use rate 0, intensity 10, left_blink_pattern 10, and right_blink_pattern 10.
-
-The third AntennaAction will use rate 0, intensity 0, left_blink_pattern 0, and right_blink_pattern 0.
+Parameters: The first SetBlackboard action will use output_key "pose_name_l" and value "TouchingNeck". The second
+SetBlackboard action will use output_key "pose_name_r" and value "TouchingNeck". The third SetBlackboard action
+will use output_key "pose_lr_check" and value "any". The first AntennaAction will use rate "0", intensity "0",
+left_blink_pattern "0", and right_blink_pattern "0". The HumanPoseDetect action will read expected_pose_left from
+key pose_name_l, read expected_pose_right from key pose_name_r, read pose_lr_check from key pose_lr_check, store
+detected_person under key detected_person, store pose_left_speech under key pose_left_speech, and store
+pose_right_speech under key pose_right_speech. The second AntennaAction will use rate "0", intensity "10",
+left_blink_pattern "10", and right_blink_pattern "10". The SaveImageAction will use filename "image#.jpg" and
+directory "/home/ubuntu/saved_images". The TextToSpeechActionClient will use msg "Saved". The third AntennaAction
+will use rate "0", intensity "0", left_blink_pattern "0", and right_blink_pattern "0". The Delay action will use
+delay_msec "1000". The fourth SetBlackboard action will use output_key "dummy" and value "0".

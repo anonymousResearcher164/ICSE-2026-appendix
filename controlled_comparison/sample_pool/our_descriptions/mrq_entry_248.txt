@@ -1,39 +1,39 @@
-The mission describes navigating a robot to a specified goal while recovering from navigation failures.
+The mission describes navigation to a goal with path replanning and recovery.
 
-First, the robot will execute the main action PipelineSequence NavigateWithReplanning. If it fails, it will
-execute the recovery action ReactiveFallback RecoveryFallback. After recovery, it will retry the main action. If
-recovery fails and six retries are exhausted, it will stop execution.
+First, the root recovery node NavigateRecovery will execute the main action NavigateWithReplanning. The robot will
+execute the recovery action RecoveryFallback if the main action fails. It will retry the main action after recovery
+and stop when six recovery attempts are exhausted.
 
-Next, it will execute the actions RateController and RecoveryNode FollowPath in order. It will stop the sequence
-if any action fails. While an action is running or has succeeded, it will proceed to the next action.
+Next, the PipelineSequence NavigateWithReplanning will execute the actions RateController and FollowPath in order.
+It will advance to the next action while the current action is running or has succeeded. It will stop if an action
+fails.
 
-Then, it will execute RateController around RecoveryNode ComputePathToPose.
+Then, the ROS action RateController will execute the recovery node ComputePathToPose at a rate of 1.0 hertz.
 
-Next, it will execute the main action ComputePathToPose with the goal read from {goal}, store the resulting path
-under {path}, and use the planner identifier GridBased. If it fails, it will execute ClearEntireCostmap
-ClearGlobalCostmap-Context with the service name global_costmap/clear_entirely_global_costmap. After recovery, it
-will retry the main action. If recovery fails and one retry is exhausted, it will stop execution.
+After that, the recovery node ComputePathToPose will execute the ROS action ComputePathToPose. If the action fails,
+it will execute the ROS action ClearEntireCostmap named ClearGlobalCostmap-Context. It will retry the path
+computation after recovery and stop after one retry.
 
-Then, it will execute the main action FollowPath with the path read from {path} and use the controller identifier
-FollowPath. If it fails, it will execute ClearEntireCostmap ClearLocalCostmap-Context with the service name
-local_costmap/clear_entirely_local_costmap. After recovery, it will retry the main action. If recovery fails and
-one retry is exhausted, it will stop execution.
+Next, the recovery node FollowPath will execute the ROS action FollowPath. If the action fails, it will execute the
+ROS action ClearEntireCostmap named ClearLocalCostmap-Context. It will retry path following after recovery and stop
+after one retry.
 
-Finally, it will execute the recovery action ReactiveFallback RecoveryFallback. It will execute GoalUpdated and
-SequenceStar RecoveryActions in order. If GoalUpdated succeeds, it will stop execution. Otherwise, it will
-continue with SequenceStar RecoveryActions and re-evaluate GoalUpdated whenever a later action is running. If
-GoalUpdated then succeeds, it will halt the running action and stop the fallback.
+Then, the ReactiveFallback RecoveryFallback will execute the ROS action GoalUpdated first. If GoalUpdated succeeds,
+it will stop the recovery fallback. If GoalUpdated fails, it will execute the recovery action RecoveryActions. It
+will re-evaluate GoalUpdated while the recovery action is running and stop the recovery action if GoalUpdated
+succeeds.
 
-Next, it will execute ClearEntireCostmap ClearLocalCostmap-Subtree, ClearEntireCostmap ClearGlobalCostmap-Subtree,
-Spin, and Wait in sequence. If any action succeeds, it will remember it and move to the next action. If any action
-fails, it will start the sequence again from the failed action.
+Finally, the SequenceStar RecoveryActions will execute the actions ClearLocalCostmap-Subtree,
+ClearGlobalCostmap-Subtree, Spin, and Wait in order. If an action succeeds, it will remember that action and move
+to the next action. If an action fails, it will restart from the failed action.
 
-Then, it will execute ClearEntireCostmap ClearLocalCostmap-Subtree with the service name
-local_costmap/clear_entirely_local_costmap.
-
-Next, it will execute ClearEntireCostmap ClearGlobalCostmap-Subtree with the service name
-global_costmap/clear_entirely_global_costmap.
-
-Then, it will execute Spin with a spin distance of 1.57.
-
-Finally, it will execute Wait with a wait duration of 5.
+Parameters: The ROS action RateController will use the literal hz value 1.0. The ROS action ComputePathToPose will
+read the goal from blackboard key {goal}, store the path under blackboard key {path}, and use the literal
+planner_id value GridBased. The ROS action ClearEntireCostmap named ClearGlobalCostmap-Context will use the literal
+service_name value global_costmap/clear_entirely_global_costmap. The ROS action FollowPath will read the path from
+blackboard key {path} and use the literal controller_id value FollowPath. The ROS action ClearEntireCostmap named
+ClearLocalCostmap-Context will use the literal service_name value local_costmap/clear_entirely_local_costmap. The
+ROS action ClearEntireCostmap named ClearLocalCostmap-Subtree will use the literal service_name value
+local_costmap/clear_entirely_local_costmap. The ROS action ClearEntireCostmap named ClearGlobalCostmap-Subtree will
+use the literal service_name value global_costmap/clear_entirely_global_costmap. The ROS action Spin will use the
+literal spin_dist value 1.57. The ROS action Wait will use the literal wait_duration value 5.

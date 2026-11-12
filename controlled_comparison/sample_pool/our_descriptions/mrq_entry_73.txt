@@ -1,17 +1,10 @@
-The mission describes looking at a tray, detecting its handles, picking up the tray, moving to a table, and
-placing the tray.
+The mission describes transporting a tray to a table.
 
-First, the robot will execute the sequence one time.
+First, the robot will execute the tray-transport sequence one time.
 
-Next, it will execute the actions in order and stop the sequence if any action fails.
+Next, it will execute the following actions in order and stop the sequence if any action fails: look at the tray,
+detect the handles, pick the tray, look up, move back, go to the table, and place the tray.
 
-Then, it will execute custom action LookAtTheTray.
+Then, it will keep trying to detect the handles until detection succeeds or three attempts are completed.
 
-After that, it will keep trying to execute custom action DetectHandles until it succeeds or three attempts have
-been made.
-
-Next, it will execute custom action DetectHandles with a timeout of 300 milliseconds for each attempt. If an
-attempt does not execute within 300 milliseconds, it will interrupt that attempt and stop it.
-
-Then, it will execute custom action PickTray, custom action LookUp, custom action MoveBack, custom action
-GoToTable, and custom action PlaceTray in order.
+Finally, it will interrupt each handle-detection attempt if it does not execute within 300 milliseconds.

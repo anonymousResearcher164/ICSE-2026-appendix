@@ -1,21 +1,15 @@
-The mission describes a target acquisition, movement, and attack behavior with random movement as a fallback.
+The mission describes a target-engagement behavior with random movement as a fallback.
 
-First, the robot will execute SequenceStar Main. If it fails, it will execute RandomMove. If neither action
-succeeds, the fallback will fail.
+First, the robot will execute the Fallback. It will try the Main sequence and will execute RandomMove if the Main
+sequence fails.
 
-Next, it will execute custom action GetTarget, custom action Move, and Sequence in order. If an action succeeds,
-it will remember that action and move to the next one. If an action fails, it will restart the sequence from that
+Next, it will execute GetTarget, Move, and the final Sequence in order. If an action succeeds, it will remember
+that action and move to the next action. If an action fails, it will restart the Main sequence from the failed
 action.
 
-Finally, it will execute custom action GetTarget.
+Then, it will check whether TargetAdjacent is true and will execute AttackTarget if the check succeeds. It will
+stop this sequence if either action fails.
 
-Next, it will execute custom action Move.
+Finally, it will execute RandomMove when the Main sequence fails.
 
-Finally, it will execute Sequence. It will execute TargetAdjacent and custom action AttackTarget in order and stop
-the sequence if any action fails.
-
-Next, it will check whether TargetAdjacent is true.
-
-Finally, it will execute custom action AttackTarget.
-
-Next, it will execute custom action RandomMove.
+Parameters: The actions GetTarget, Move, AttackTarget, and RandomMove have no ports.

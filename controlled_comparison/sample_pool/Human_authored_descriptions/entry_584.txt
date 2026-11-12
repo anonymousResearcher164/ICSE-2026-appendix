@@ -1,0 +1,9 @@
+entry_584.xml
+
+1. entry point : MainTree
+2. 2 fallback/Selectors, Returns ssuccess if any of the child Succeeds within 2 fallbacks 
+3. left fallback : Initaited within Frequency of Rate Controller = 2.0 Hz. Through the child Sequence with one child.
+4. GoalUpdater Selector : within the left fallback : Gives out the updated goal with an input goal given.
+5. Further child node ComputePathToPoseplanner_id = grid based planner uses updated_goal to output path.
+6. Now to the right fallback : Condition with KeepRunningUntilFailure and the child node FollowPathcontroller_id = FollowPath, controller node to follow the path from the left sequence.
+7. But there is no condition observed to determine failure

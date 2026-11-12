@@ -1,38 +1,25 @@
-The mission describes navigating the robot to a goal while computing and following a path, replanning when
-necessary, and recovering from navigation failures.
+The mission describes navigation to a goal with path computation, path following, replanning, and recovery actions.
 
-First, the robot will execute the main navigation sequence NavigateWithReplanning. If this sequence fails, it will
-execute the recovery fallback RecoveryFallback. After recovery, it will retry the main navigation sequence. If
-recovery fails and two retries are exhausted, it will stop execution.
+First, the robot will execute the NavigateWithReplanning pipeline and stop if a required action fails. If the
+pipeline fails, it will check whether the goal has been updated and then perform recovery actions. After recovery,
+it will retry the navigation pipeline up to two times.
 
-Next, it will execute the actions RateController and FollowPath in order. While an action is running or has
-succeeded, it will proceed to the next action. If an action fails, it will stop the sequence.
+Next, it will execute the ComputePathToPose recovery sequence at a rate of 1.0 hertz. It will compute a path to the
+goal and store the result. If path computation fails, it will check whether the goal has been updated and then
+clear the global costmap or wait. After recovery, it will retry path computation up to four times. While an action
+is running, it will continue with the next action in the pipeline.
 
-Then, it will execute ROS action RateController around the recovery node ComputePathToPose.
+Then, it will execute the FollowPath recovery sequence. It will follow the computed path. If path following fails,
+it will check whether the goal has been updated and then clear the local costmap or spin. After recovery, it will
+retry path following up to four times.
 
-Next, it will execute the main ROS action ComputePathToPose. If this action fails, it will execute the recovery
-fallback PathToPoseFallback. After recovery, it will retry the main action. If recovery fails and four retries are
-exhausted, it will stop execution.
+Finally, if navigation recovery fails, it will check whether the goal has been updated and then wait for five
+seconds before retrying the navigation sequence.
 
-Then, it will execute the actions GoalUpdated and GlobalPlannerRecoveryActions in order. If GoalUpdated succeeds,
-it will stop the fallback. Otherwise, it will execute GlobalPlannerRecoveryActions. While a later action is
-running, it will re-evaluate GoalUpdated. If GoalUpdated succeeds during this evaluation, it will halt the running
-action and stop the fallback.
-
-Next, it will execute the recovery actions ClearGlobalCostmap-Context and Wait consecutively. If
-ClearGlobalCostmap-Context fails, it will move to Wait. If Wait also fails, the recovery action will fail.
-
-Then, it will execute the main ROS action FollowPath. If this action fails, it will execute the recovery fallback
-FollowPathFallback. After recovery, it will retry the main action. If recovery fails and four retries are
-exhausted, it will stop execution.
-
-Next, it will execute the actions GoalUpdated and PlannerRecoveryActions in order. If GoalUpdated succeeds, it
-will stop the fallback. Otherwise, it will execute PlannerRecoveryActions. While a later action is running, it
-will re-evaluate GoalUpdated. If GoalUpdated succeeds during this evaluation, it will halt the running action and
-stop the fallback.
-
-Finally, it will execute the recovery actions ClearLocalCostmap-Context and Spin consecutively. If
-ClearLocalCostmap-Context fails, it will move to Spin. If Spin also fails, the recovery action will fail.
-
-Parameters: ROS action ComputePathToPose will read {goal} as its goal. ROS action ComputePathToPose will store its
-computed path under {path}. ROS action ComputePathToPose will use GridBased as its planner_id.
+Parameters: The ROS action ComputePathToPose will read the goal from {goal}, store the computed path under {path},
+and use GridBased as the planner_id. The ROS action ClearEntireCostmap named ClearGlobalCostmap-Context will use
+global_costmap/clear_entirely_global_costmap as its service_name. The ROS action Wait in
+GlobalPlannerRecoveryActions will use 2 as its wait_duration. The ROS action FollowPath will read the path from
+{path} and use FollowPath as its controller_id. The ROS action ClearEntireCostmap named ClearLocalCostmap-Context
+will use local_costmap/clear_entirely_local_costmap as its service_name. The ROS action Spin will use 1.57 as its
+spin_dist. The ROS action Wait in RecoveryFallback will use 5 as its wait_duration.

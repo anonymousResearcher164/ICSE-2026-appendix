@@ -1,111 +1,81 @@
-The mission describes an autonomous vehicle that initializes global paths, follows lanes, changes lanes, avoids
-front objects, responds to traffic lights, and uses A* path planning for local recovery.
+The mission describes mission waiting, path initialization, lane keeping, lane changes, A* navigation, global path
+following, obstacle handling, traffic-light handling, and driving.
 
-First, the robot will execute the Core_seq fallback. It will first execute the unnamed sequence containing the
-checkMissionWait condition and the stop action. If checkMissionWait is false, it will move to the Init sequence.
-If checkMissionWait is true, it will execute the stop action and stop the fallback.
+First, the robot will try the Core_seq fallback. If checkMissionWait is true, it will stop. If that sequence fails,
+it will try the Init sequence. If Init fails, it will try a sequence that always fails and will then report
+failure.
 
-Next, it will execute the Init sequence when the checkExistPathGlobal condition is true. It will initialize the
-vehicle and execute the StateSelect fallback. After StateSelect succeeds, it will publish data.
+Next, it will execute the Init sequence only if checkExistPathGlobal is true. It will initialize the navigation
+system, select a driving state, and publish data after the selected state behavior completes.
 
-Then, it will execute the StateSelect fallback. It will first try the LaneKeeping sequence. If LaneKeeping fails,
-it will try the LaneChangeLeft sequence. If that fails, it will try the LaneChangeRigth sequence. If that fails,
-it will try the Astar sequence. If Astar fails, it will try the Recovery sequence, which will always fail.
+First, it will try the LaneKeeping sequence if checkStateLaneKeeping is true. It will generate a lane-keeping path
+and set the path.
 
-Next, it will execute the LaneKeeping sequence when checkStateLaneKeeping is true. It will generate a lane-keeping
-path and set the path. It will then execute the unnamed fallback that handles front objects, global lane changes,
-and the default lane-keeping state.
+Next, it will check for a front object. If a front object is detected, it will try the near-corner sequence, the
+near-stopline sequence, and the profitable-lane-keeping sequence in order until one succeeds. Each successful
+sequence will accelerate the robot.
 
-Then, it will execute the first sequence in the unnamed LaneKeeping fallback when checkFrontObject is true. It
-will execute the nested fallback that first tries the near-corner, near-stopline, and profitable-keeping
-conditions. If those alternatives fail, it will try the state_change fallback.
+Then, it will try the state_change fallback. If lane changing to the left is possible, it will generate a left
+lane-change path. If a collision is detected, it will set the state to lane keeping and keep the lane. Otherwise,
+it will set the state to left lane changing and change to the left lane.
 
-Next, it will execute the first nested fallback when checkNearCorner is true, and it will accelerate. If
-checkNearCorner is false, it will check whether checkNearStopline is true and accelerate if it is. If both
-conditions are false, it will check whether checkProfitKeeplane is true and accelerate if it is.
+Next, if lane changing to the right is possible, it will generate a right lane-change path. If a collision is
+detected, it will set the state to lane keeping and keep the lane. Otherwise, it will set the state to right lane
+changing and change to the right lane.
 
-Then, it will execute the state_change fallback if the preceding acceleration alternatives fail. It will first try
-the lane_change_left sequence. If that fails, it will try the lane_change_right sequence. If that fails, it will
-try the astar sequence.
-
-Next, it will execute the lane_change_left sequence when checkLaneChangeableLeft is true. It will generate a path
-for a left lane change. It will then try to execute the unnamed fallback that checks for a collision and keeps the
-lane. If that fallback fails, it will set the left lane-change state and change lanes to the left.
-
-Then, it will execute the lane_change_right sequence when checkLaneChangeableRight is true. It will generate a
-path for a right lane change. It will then try to execute the unnamed fallback that checks for a collision and
-keeps the lane. If that fallback fails, it will set the right lane-change state and change lanes to the right.
-
-Next, it will execute the astar sequence when checkAbleAstar is true. It will check whether the local area is
-empty. If checkEmptyLocal is true, it will execute the Gen_Local sequence. It will stop, set the A* state, and
+Then, if A* navigation is possible and the local area is empty, it will stop, set the state to A* navigation, and
 generate an A* path.
 
-Then, it will execute the second sequence in the LaneKeeping fallback when checkGlobalLaneChange is true. It will
-first try the unnamed sequence that checks checkLeftChange. If checkLeftChange is true, it will try the left
-lane-change path and maneuver. If that sequence fails, it will try the right lane-change path and maneuver.
+If the front-object handling fails, it will check for a global lane change. If a left global lane change is
+required, it will check whether a left lane-change path can be generated. If the check fails, it will generate a
+left lane-change path. If a collision is detected, it will set the state to lane keeping and keep the lane.
+Otherwise, it will set the state to left lane changing and change to the left lane.
 
-Next, it will generate a left lane-change path when checkGenPathLaneChange is true. If that condition is false, it
-will generate the left lane-change path directly. It will then try the unnamed fallback that checks for a
-collision, sets the lane-keeping state, and keeps the lane. If that fallback fails, it will set the left
-lane-change state and change lanes to the left.
+Next, if a right global lane change is required, it will check whether a right lane-change path can be generated.
+If the check fails, it will generate a right lane-change path. If a collision is detected, it will set the state to
+lane keeping and keep the lane. Otherwise, it will set the state to right lane changing and change to the right
+lane.
 
-Then, it will generate a right lane-change path when checkGenPathLaneChange is true. If that condition is false,
-it will generate the right lane-change path directly. It will then try the unnamed fallback that checks for a
-collision, sets the lane-keeping state, and keeps the lane. If that fallback fails, it will set the right
-lane-change state and change lanes to the right.
+If no global lane change is completed, it will set the state to lane keeping.
 
-Next, if the lane-keeping alternatives fail, it will set the lane-keeping state.
+Next, it will execute the LaneChangeLeft sequence if checkStateLaneChangeLeft is true. It will set the path. If a
+collision is detected, it will set the state to lane keeping. Otherwise, if the lane change has ended, it will set
+the state to lane keeping. If neither condition succeeds, it will keep the state as left lane changing.
 
-Then, it will execute the LaneChangeLeft sequence when checkStateLaneChangeLeft is true. It will set the path. It
-will then try the unnamed fallback that sets the lane-keeping state when checkCollision is true. If that fails, it
-will set the lane-keeping state when checkEndLaneChange is true. If both alternatives fail, it will set the left
-lane-change state.
+Then, it will execute the LaneChangeRigth sequence if checkStateLaneChangeRight is true. It will set the path. If a
+collision is detected, it will set the state to lane keeping. Otherwise, if the lane change has ended, it will set
+the state to lane keeping. If neither condition succeeds, it will keep the state as right lane changing.
 
-Next, it will execute the LaneChangeRigth sequence when checkStateLaneChangeRight is true. It will set the path.
-It will then try the unnamed fallback that sets the lane-keeping state when checkCollision is true. If that fails,
-it will set the lane-keeping state when checkEndLaneChange is true. If both alternatives fail, it will set the
-right lane-change state.
+Next, it will execute the Astar sequence if checkStateAstar is true. It will set the path. If a collision is
+detected, it will stop and generate an A* path. Otherwise, if A* navigation has finished, it will mark the local
+navigation as finished and set the state to lane keeping. If neither condition succeeds, it will follow the local
+path.
 
-Then, it will execute the Astar sequence when checkStateAstar is true. It will set the path and execute the
-local_check fallback. If checkCollision is true, it will stop and generate an A* path. If that sequence fails, it
-will set the local path as finished and return to the lane-keeping state when checkFinishAstar is true. If that
-sequence also fails, it will follow the local path.
+Then, it will try the Recovery sequence, which will always fail.
 
-Next, it will execute the Recovery sequence if all preceding StateSelect alternatives fail. It will execute the
-AlwaysFailure action, and the Recovery sequence will fail.
+Finally, if the Init sequence fails, it will try the third root sequence. This sequence will always fail
+immediately because its first child always fails.
 
-Then, if the Init sequence fails, it will execute the final unnamed sequence in Core_seq. The AlwaysFailure action
-will fail. It will then check whether checkExistPathGlobal is true, initialize the vehicle, and execute the
-unnamed fallback that checks for a global lane change. If checkGlobalLaneChange is true, the fallback will
-succeed. Otherwise, it will generate a global following path. It will set the path and execute the unnamed
-fallback for front objects, traffic lights, and driving.
+Next, it will execute the second root branch only if its initial failure condition does not prevent evaluation. It
+will check whether a global path exists and initialize the navigation system. If a global lane change is detected,
+it will use that result. Otherwise, it will generate a global following path.
 
-Next, it will execute the first sequence in the final unnamed fallback when checkFrontObject is true. It will
-first check whether checkIsGlobalFollow is true. If it is true, it will execute the loc_check fallback. If it is
-false, it will execute the lane_check fallback.
+Then, it will set the path and check for a front object. If a front object is detected and global following is
+active, it will try the near-corner sequence, the near-stopline sequence, and the profitable-lane-keeping sequence
+until one succeeds. Each successful sequence will accelerate the robot.
 
-Then, it will execute the loc_check fallback when checkIsGlobalFollow is true. It will accelerate when
-checkNearCorner is true. If that condition is false, it will accelerate when checkNearStopline is true. If both
-conditions are false, it will accelerate when checkProfitKeeplane is true.
+If global following is not active, it will check whether a lane change is required. If a left lane change is
+possible, it will check whether a lane-change path already exists. If it does not exist, it will generate a left
+lane-change path. If a collision is detected, it will keep the lane. Otherwise, it will change to the left lane.
 
-Next, it will execute the lane_check fallback if the global-following alternative fails. It will check whether
-checkLaneChange is true. If it is true, it will execute the nested lane_check fallback. If it is false, the
-lane_check sequence will fail.
+If a left lane change is not selected, it will check whether a right lane-change path already exists. If it does
+not exist, it will generate a right lane-change path. If a collision is detected, it will keep the lane. Otherwise,
+it will change to the right lane.
 
-Then, it will execute the nested lane_check fallback when checkLaneChange is true. It will first try the left
-lane-change sequence. If that fails, it will try the right lane-change sequence.
+Next, it will check for a traffic light. If the traffic light can be passed, it will check for a collision and stop
+if a collision is detected. It will then drive. If the traffic light cannot be passed, it will stop at the traffic
+light.
 
-Next, it will execute the left lane-change sequence when checkLaneChangeableLeft is true. It will generate a
-lane-change path when checkGenPathLaneChange is false. It will then check for a collision and keep the lane when
-checkCollision is true. If that sequence fails, it will change lanes to the left.
+Finally, it will drive and set the path again.
 
-Then, it will execute the right lane-change sequence if the left lane-change sequence fails. It will generate a
-lane-change path when checkGenPathLaneChange is false. It will then check for a collision and keep the lane when
-checkCollision is true. If that sequence fails, it will change lanes to the right.
-
-Next, it will execute the second sequence in the final unnamed fallback when checkTrafficLight is true. It will
-check whether the traffic light can be passed. If checkPassAbleTrafficLight is true, it will check for a collision
-and stop when checkCollision is true. It will then drive. If checkPassAbleTrafficLight is false, it will stop at
-the traffic light.
-
-Finally, if the front-object and traffic-light alternatives fail, it will drive and set the path.
+Parameters: No action in the behavior tree has XML ports.

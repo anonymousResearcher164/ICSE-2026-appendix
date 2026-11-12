@@ -1,9 +1,10 @@
-The mission describes a robot repeating a speech interaction three times.
+The mission describes repeated speech transcription and speech synthesis.
 
-First, The robot will execute the sequence three times.
+First, the robot will execute the enclosed sequence three times.
 
-Next, it will execute the following actions in order and stop the sequence if any action fails. It will execute
-SpeechToTextActionClient and store the recognized text under the said blackboard key. It will execute
-TextToSpeechActionClient using the text stored under the said blackboard key. It will execute
-SpeechToTextActionClient again and store the recognized text under the said blackboard key. It will execute
-TextToSpeechActionClient again using the text stored under the said blackboard key.
+Next, it will execute SpeechToTextActionClient, TextToSpeechActionClient, SpeechToTextActionClient, and
+TextToSpeechActionClient in order and stop the sequence if any action fails.
+
+Parameters: The first SpeechToTextActionClient will store its text under {said}. The first TextToSpeechActionClient
+will use the value read from {said} as its msg. The second SpeechToTextActionClient will store its text under
+{said}. The second TextToSpeechActionClient will use the value read from {said} as its msg.

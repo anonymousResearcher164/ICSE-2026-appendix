@@ -1,0 +1,2 @@
+This behavior tree describes checking some conditions over a state before and after a move action.
+For a choosable number of times (num_cycles) the behavior tree first checks the current state against a desired state with a LTL specification. Then the robot conducts a move action where it moves to a specific goal and logs the action taken into the blackboard. After that, the robot conducts another check against the LTL specification.

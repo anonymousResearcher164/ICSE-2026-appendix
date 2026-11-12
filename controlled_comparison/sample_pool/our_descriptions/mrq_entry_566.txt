@@ -1,30 +1,33 @@
-The mission describes repeated locomotion planning, replanning, movement, and temporal-logic state updates.
+The mission describes a repeated navigation behavior that checks the current logical state, maintains locomotion,
+moves toward a navigation goal, and updates the logical state.
 
-First, the robot will execute the sequence for the number of cycles stored under num_cycles.
+First, the robot will execute the root repeat node for the number of cycles specified by {num_cycles}.
 
-Next, it will execute the first fallback. It will execute custom action LTLPreCheck with ltl_state_current read
-from ltl_state_current and ltl_state_desired_sequence read from ltl_state_desired_sequence. If LTLPreCheck will
-fail, it will execute ForceFailure with custom action ReplanningRequestLevel2 and make sure that action always
-fails. The fallback will fail if no action will succeed.
+Next, it will execute the sequence in order and stop the sequence if any action fails.
 
-Next, it will execute the reactive sequence. It will execute the first fallback in the reactive sequence. It will
-repeatedly try the nested fallback until it will succeed. The nested fallback will first execute custom action
-LocomotionStatusCheck with locomotion_status read from locomotion_status. If that action will fail, it will
-execute the sequence that follows. The sequence will execute custom action RecoveryStand with locomotion_status
-read from locomotion_status. It will then wait for 5000 milliseconds before executing custom action
-LocomotionStart with locomotion_status read from locomotion_status. If all attempts will fail, it will execute
-ForceFailure with custom action ReplanningRequestLevel3 and make sure that action always fails.
+Next, it will execute the first fallback consecutively. If LTLPreCheck fails, it will execute
+ReplanningRequestLevel2 through ForceFailure, and that branch will always fail.
 
-Next, while the reactive sequence will execute its later actions, it will re-evaluate the earlier actions. If an
-earlier action will fail, it will halt the running action and stop the reactive sequence.
+Next, it will execute the reactive sequence. It will execute its child fallbacks in order and stop if an action
+fails. While a later action is running, it will re-evaluate the preceding actions and stop the running action if a
+preceding action fails.
 
-Next, it will execute the second fallback in the reactive sequence. It will execute custom action MoveAction. If
-MoveAction will fail, it will execute ForceFailure with custom action ReplanningRequestLevel3 and make sure that
-action always fails. The fallback will fail if neither action will succeed.
+Next, it will execute the retry-until-successful decorator. It will repeatedly execute the enclosed fallback until
+that fallback succeeds.
 
-Finally, it will execute custom action UpdateLTL.
+Next, it will execute the enclosed fallback consecutively. It will first execute LocomotionStatusCheck. If
+LocomotionStatusCheck fails, it will execute the sequence that runs RecoveryStand and then delays LocomotionStart
+for the specified delay. If the sequence fails, the fallback will finish unsuccessfully.
 
-Parameters: MoveAction will use action stored under action, move_base_finished read from move_base_finished,
-move_base_idle read from move_base_idle, and nav_goal read from nav_goal. UpdateLTL will use action_sequence
-stored under action_sequence, ltl_state_desired_sequence stored under ltl_state_desired_sequence, and will store
-its navigation goal under nav_goal.
+Next, it will execute the second fallback consecutively. It will first execute MoveAction. If MoveAction fails, it
+will execute ReplanningRequestLevel3 through ForceFailure, and that branch will always fail.
+
+Next, it will execute UpdateLTL after the reactive sequence succeeds.
+
+Parameters: LTLPreCheck will read {ltl_state_current} and {ltl_state_desired_sequence}. ReplanningRequestLevel2
+will read and update {replanning_request}. LocomotionStatusCheck will read {locomotion_status}. RecoveryStand will
+read {locomotion_status}. Delay will use a delay of 5000 milliseconds. LocomotionStart will read
+{locomotion_status}. ReplanningRequestLevel3 will read and update {replanning_request}. MoveAction will store its
+action in {action}, read {move_base_finished}, read {move_base_idle}, and read {nav_goal}. UpdateLTL will read and
+update {action_sequence}, read and update {ltl_state_desired_sequence}, and store the navigation goal in
+{nav_goal}.

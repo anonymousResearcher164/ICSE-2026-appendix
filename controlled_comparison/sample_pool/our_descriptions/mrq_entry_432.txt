@@ -1,22 +1,24 @@
-The mission describes a pipeline that repeatedly plans and follows a path to a goal while updating the goal and
-truncating the planned path.
+The mission describes navigation to a goal with periodic path replanning and continuous path following.
 
-First, the PipelineSequence NavigateWithReplanning will execute the RateController and the KeepRunningUntilFailure
-in order. While the RateController is running or has succeeded, it will proceed to the KeepRunningUntilFailure. It
-will stop the pipeline if either action fails.
+First, the robot will execute the ROS action RateController and the KeepRunningUntilFailure decorator in pipeline
+sequence. It will advance to the next node while the current node is running or has succeeded. It will stop the
+pipeline if a node fails.
 
-Next, the ROS action RateController will execute its child at a rate of 1.0 Hz.
+Next, the ROS action RateController will execute its child sequence at a rate of 1.0 hertz.
 
-Then, the Sequence will execute the GoalUpdater and the TruncatePath in order. It will stop if either action fails.
+Then, the sequence will execute the ROS action GoalUpdater followed by the custom action TruncatePath. It will stop
+the sequence if either action fails.
 
-Next, the GoalUpdater will execute the ComputePathToPose action using the updated goal.
+After that, the ROS action GoalUpdater will update the navigation goal and execute the ROS action ComputePathToPose
+with the updated goal. If path computation succeeds, the ROS action GoalUpdater will provide the computed path to
+the next action.
 
-Finally, the ComputePathToPose action will calculate a path, and the TruncatePath action will shorten that path to
-a distance of 1.0.
+Finally, the custom action TruncatePath will shorten the computed path to a distance of 1.0 before the ROS action
+FollowPath follows the truncated path. The KeepRunningUntilFailure decorator will restart the ROS action FollowPath
+whenever it succeeds and will stop looping when it fails.
 
-Next, the KeepRunningUntilFailure will execute the FollowPath action. If the FollowPath action succeeds, it will
-restart the action. If the FollowPath action fails, it will stop looping and continue execution.
-
-Parameters: The ComputePathToPose action will read the goal from {updated_goal}, store the resulting path under
-{path}, and use GridBased as the planner identifier. The TruncatePath action will use 1.0 as the distance, read
-the input path from {path}, and store the truncated path under {truncated_path}.
+Parameters: The ROS action RateController will use hz as 1.0. The ROS action GoalUpdater will read input_goal from
+{goal} and store output_goal under {updated_goal}. The ROS action ComputePathToPose will read goal from
+{updated_goal}, store path under {path}, and use planner_id as GridBased. The custom action TruncatePath will use
+distance as 1.0, read input_path from {path}, and store output_path under {truncated_path}. The ROS action
+FollowPath will read path from {truncated_path} and use controller_id as FollowPath.

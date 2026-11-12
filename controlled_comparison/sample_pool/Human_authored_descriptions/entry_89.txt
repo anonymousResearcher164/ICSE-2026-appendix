@@ -1,0 +1,5 @@
+Start: 16:11
+Finish: 16:15
+
+Description: So the behavior tree is a sequence of instructions. It starts with 'ComputePathToPoseplanner_id=GridBased' with a goal as its input and a path as its output. The next node in the equence is 'FollowPathcontroller_id=FollowPath' with 'path' as its input. So essentially it is first computing a path to a goal and then following that path. The sequence has no fallback for failures.
+

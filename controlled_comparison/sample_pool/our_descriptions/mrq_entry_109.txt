@@ -1,10 +1,9 @@
-The mission describes a repeated navigation routine between two target poses.
+The mission describes repeatedly navigating between two target poses.
 
-First, the Repeat node will execute its child sequence 10 times.
+First, the robot will execute the sequence ten times.
 
-Next, the sequence will execute the NavigateToAction with goal 0.5;0.5;0, followed by the NavigateToAction with
-goal -0.5;-0.5;0, in order, and it will stop if either action fails.
+Next, it will execute the custom action NavigateToAction for the first target pose and then the custom action
+NavigateToAction for the second target pose in order, stopping the sequence if either action fails.
 
-Then, the robot will execute the NavigateToAction with goal 0.5;0.5;0.
-
-Finally, it will execute the NavigateToAction with goal -0.5;-0.5;0.
+Parameters: The first custom action NavigateToAction will use goal 0.5;0.5;0. The second custom action
+NavigateToAction will use goal -0.5;-0.5;0.

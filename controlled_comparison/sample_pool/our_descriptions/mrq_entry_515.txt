@@ -1,19 +1,20 @@
-The mission describes continuous handling of a variant while recognizing a person and obtaining the person's
-position or moving to a specified position.
+The mission describes continuous variant processing, people recognition, and positioning near Thomas.
 
-First, the parallel node will execute the repeat node and the sequence node simultaneously. It will succeed only
-when all actions succeed, and it will fail if any action fails.
+First, the robot will execute the Repeat and Sequence branches simultaneously. The parallel execution will succeed
+only when both branches succeed and will fail if either branch fails.
 
-Next, the repeat node will execute custom action VariantAction continuously. The action will store its value under
-{variant}.
+Next, it will repeatedly execute VariantAction without a cycle limit.
 
-Then, the sequence node will execute custom action peoplerecognition followed by the fallback node in order. It
-will stop if any action fails.
+Then, it will execute peoplerecognition followed by the Fallback branch in order and will stop the sequence if
+either action fails.
 
-Finally, the fallback node will execute custom action getPersonPose. If that action fails, it will execute custom
-action moveRoboterPosition. If no action succeeds, the fallback will fail.
+Finally, it will try getPersonPose first. If getPersonPose fails, it will execute moveRoboterPosition instead. If
+no action succeeds, the fallback execution will fail.
 
-Parameters: custom action getPersonPose will use personname=THOMAS, store its x output under {x_}, store its y
-output under {y_}, and store its z output under {z_}.
+Parameters: VariantAction will store its value under {variant}.
 
-Custom action moveRoboterPosition will use approachRadius=200, x=3000, and y=-12000.
+getPersonPose will use the literal personname value THOMAS and will store its x, y, and z outputs under {x_}, {y_},
+and {z_}.
+
+moveRoboterPosition will use the literal approachRadius value 200, the literal x value 3000, and the literal y
+value -12000.

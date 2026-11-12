@@ -1,13 +1,13 @@
-The mission describes replanning a path to a goal and following that path.
+The mission describes navigating to a goal while computing and following a path with replanning.
 
-First, the pipeline sequence NavigateWithReplanning will execute its actions in order. If an action fails, the
-sequence will stop. While an action is running or has succeeded, it will proceed to the next action.
+The robot will execute RateController and FollowPath in order and stop the pipeline if any action fails. While an
+action is running or has succeeded, it will proceed to the next action.
 
-Next, it will execute ROS action RateController and reevaluate the path computation at a rate of 1.0 Hz. It will
-compute a path to the goal while the rate controller is active.
+First, the ROS action RateController will regulate the execution of the ROS action ComputePathToPose. It will
+compute a path to the goal and store the result for later use.
 
-Finally, it will execute ROS action FollowPath using the computed path.
+Next, it will execute the ROS action FollowPath to follow the computed path.
 
-Parameters: The goal of ROS action ComputePathToPose will be read from the goal blackboard key. The path produced
-by ROS action ComputePathToPose will be stored under the path blackboard key. ROS action ComputePathToPose will
-use GridBased as its planner ID. ROS action FollowPath will use FollowPath as its controller ID.
+Parameters: The ROS action RateController will use a frequency of 1.0 hertz. The ROS action ComputePathToPose will
+read the goal from {goal}, store the computed path under {path}, and use the planner identifier GridBased. The ROS
+action FollowPath will read the path from {path} and use the controller identifier FollowPath.

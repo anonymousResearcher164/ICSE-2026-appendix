@@ -1,134 +1,96 @@
-The mission describes a robot arm that will construct a collision scene and move a box from the center to the left
-and right sides.
+The mission describes a robot arm that will construct a collision scene and move objects from both sides into
+designated locations.
 
-First, the root sequence will execute the sequence add collisions, add the box surface, the left repeat operation,
-and the right repeat operation in order and will stop if any operation fails. The robot will execute these
-operations sequentially.
+First, the root sequence will execute the add collisions sequence, add a box surface, repeat the left-side
+manipulation sequence once, and repeat the right-side manipulation sequence once. The sequence will stop if any
+action fails.
 
-Next, the sequence add collisions will execute Add groud to scene, Add left wall, Add right wall, Add top wall,
-and Add conveyor in order and will stop if any action fails.
+Next, the add collisions sequence will add a ground plane, a left wall, a right wall, a top wall, and a conveyor.
+The sequence will stop if any action fails.
 
-Then, it will add a ground plane to the scene.
+Then, the left-side sequence will move the arm to the left pre-middle position. It will remove the box surface. It
+will move to the left picking pose. It will lift the object along the z-axis. It will pull the object along the
+negative x-axis. It will move to the left post-middle position. It will move to the left placing position. It will
+return to the left post-middle position. It will restore the box surface. The sequence will stop if any action
+fails.
 
-Next, it will add the left wall to the scene.
+Finally, the right-side sequence will move the arm to the right pre-middle position. It will remove the box
+surface. It will move to the right picking pose. It will lift the object along the z-axis. It will pull the object
+along the negative x-axis. It will move to the right post-middle position. It will move to the right placing
+position. It will return to the right post-middle position. It will restore the box surface. The sequence will stop
+if any action fails.
 
-Next, it will add the right wall to the scene.
+Parameters: The custom action Add groud to scene will use group_name="arm", plane_name="ground", plane_normal="0 0
+1", plane_pose="0 0 0 0 0 0 1", and service_name="execute_add_plane".
 
-Next, it will add the top wall to the scene.
-
-Finally, it will add the conveyor to the scene.
-
-Next, it will add the box surface after the collision objects have been added.
-
-Next, the first repeat node will execute its child sequence once.
-
-Then, the sequence left will execute pre middle left, remove boxes_surface, pick, lift up, pull out, post middle
-left, place, post middle left, and box_surface in order and will stop if any action fails.
-
-Next, it will move the arm to the pre middle left joint state.
-
-Next, it will remove the boxsur object from the scene.
-
-Next, it will move the arm through the pick pose.
-
-Next, it will shift the arm upward by 0.1 along the z-axis.
-
-Next, it will shift the arm by -0.4 along the x-axis.
-
-Next, it will move the arm to the post middle left joint state.
-
-Next, it will move the arm to the place joint state.
-
-Next, it will move the arm back to the post middle left joint state.
-
-Finally, it will add the box surface back to the scene.
-
-Next, the second repeat node will execute its child sequence once.
-
-Then, the sequence right will execute pre middle right, remove the boxsur object, pick, lift up, pull out, post
-middle left, place left, post middle left, and boxes_surface in order and will stop if any action fails.
-
-Next, it will move the arm to the pre middle right joint state.
-
-Next, it will remove the boxsur object from the scene.
-
-Next, it will move the arm through the pick pose.
-
-Next, it will shift the arm upward by 0.1 along the z-axis.
-
-Next, it will shift the arm by -0.4 along the x-axis.
-
-Next, it will move the arm to the post middle left joint state.
-
-Next, it will move the arm to the place left joint state.
-
-Next, it will move the arm back to the post middle left joint state.
-
-Finally, it will add the box surface back to the scene.
-
-Parameters: The Add groud to scene action will use group_name="arm", plane_name="ground", plane_normal="0 0 1",
-plane_pose="0 0 0 0 0 0 1", and service_name="execute_add_plane".
-
-The Add left wall action will use auto_subfix="1", box_name="left_wall", box_pose="2.76 1.2 1.35 0 0 0 1",
+The custom action Add left wall will use auto_subfix="1", box_name="left_wall", box_pose="2.76 1.2 1.35 0 0 0 1",
 box_size="5.0 0.001 2.7", group_name="arm", is_absolute="1", and service_name="execute_add_box".
 
-The Add right wall action will use auto_subfix="1", box_name="right_wall", box_pose="2.76 -1.2 1.35 0 0 0 1",
-box_size="5.0 0.001 2.7", group_name="arm", is_absolute="1", and service_name="execute_add_box".
+The custom action Add right wall will use auto_subfix="1", box_name="right_wall", box_pose="2.76 -1.2 1.35 0 0 0
+1", box_size="5.0 0.001 2.7", group_name="arm", is_absolute="1", and service_name="execute_add_box".
 
-The Add top wall action will use auto_subfix="1", box_name="top_wall", box_pose="4 0 2.7 0 0 0 1", box_size="2 2.4
-0.001", group_name="arm", is_absolute="1", and service_name="execute_add_box".
+The custom action Add top wall will use auto_subfix="1", box_name="top_wall", box_pose="4 0 2.7 0 0 0 1",
+box_size="2 2.4 0.001", group_name="arm", is_absolute="1", and service_name="execute_add_box".
 
-The Add conveyor action will use auto_subfix="1", box_name="conveyor", box_pose="-1.341 0 0.25 0 0 0 1",
+The custom action Add conveyor will use auto_subfix="1", box_name="conveyor", box_pose="-1.341 0 0.25 0 0 0 1",
 box_size="2.56 0.56 0.5", group_name="arm", is_absolute="1", and service_name="execute_add_box".
 
-The box surface action will use auto_subfix="0", box_name="boxsur", box_pose="0.901 0 1.35 0 0 0 1",
+The custom action box_surface will use auto_subfix="0", box_name="boxsur", box_pose="0.901 0 1.35 0 0 0 1",
 box_size="0.001 2.4 2.7", group_name="arm", is_absolute="1", and service_name="execute_add_box".
 
-The pre middle left action will use goal="0.0829 -1.7568 2.5506 0.7786 -1.5734 -0.0038", group_name="arm",
+The custom action pre middle left will use goal="0.0829 -1.7568 2.5506 0.7786 -1.5734 -0.0038", group_name="arm",
 service_name="execute_group_joint_states", and tolerance="0.01".
 
-The remove boxes_surface action will use is_exact="1", obj_name="boxsur", and service_name="execute_remove_object".
+The custom action remove boxes_surface will use is_exact="1", obj_name="boxsur", and
+service_name="execute_remove_object".
 
-The left pick action will use constraint="", eef_step="0.1", goal_type="0", goals="0.88 0.4994 0.5723 0.4979
-0.5006 0.5000 0.5012", group_name="arm", service_name="execute_group_many_poses", and tolerance="0.01".
+The custom action pick in the left-side sequence will use constraint="", eef_step="0.1", goal_type="0", goals="0.88
+0.4994 0.5723 0.4979 0.5006 0.5000 0.5012", group_name="arm", service_name="execute_group_many_poses", and
+tolerance="0.01".
 
-The left lift up action will use axis="z", goal="0.1", group_name="arm", is_absolute="0",
-service_name="execute_group_shift", and tolerance="0.01".
+The custom action lift up in the left-side sequence will use axis="z", goal="0.1", group_name="arm",
+is_absolute="0", service_name="execute_group_shift", and tolerance="0.01".
 
-The left pull out action will use axis="x", goal="-0.4", group_name="arm", is_absolute="0",
-service_name="execute_group_shift", and tolerance="0.01".
+The custom action pull out in the left-side sequence will use axis="x", goal="-0.4", group_name="arm",
+is_absolute="0", service_name="execute_group_shift", and tolerance="0.01".
 
-The left post middle left action will use goal="0.7015 0.4237 1.7017 -0.0747 -0.0040 -0.0806", group_name="arm",
-service_name="execute_group_joint_states", and tolerance="0.01".
+The custom action post middle left in the left-side sequence will use goal="0.7015 0.4237 1.7017 -0.0747 -0.0040
+-0.0806", group_name="arm", service_name="execute_group_joint_states", and tolerance="0.01".
 
-The place action will use goal="0.7005 1.8997 2.0341 0.8173 0.0009 -0.0041", group_name="arm",
-service_name="execute_group_joint_states", and tolerance="0.01".
-
-The second left post middle left action will use goal="0.7015 0.4237 1.7017 -0.0747 -0.0040 -0.0806",
+The custom action place in the left-side sequence will use goal="0.7005 1.8997 2.0341 0.8173 0.0009 -0.0041",
 group_name="arm", service_name="execute_group_joint_states", and tolerance="0.01".
 
-The right pre middle right action will use goal="0.0777 1.8904 -2.4741 -0.9875 1.5718 -0.0037", group_name="arm",
+The custom action post middle left in the left-side sequence will use goal="0.7015 0.4237 1.7017 -0.0747 -0.0040
+-0.0806", group_name="arm", service_name="execute_group_joint_states", and tolerance="0.01".
+
+The custom action box_surface in the left-side sequence will use auto_subfix="0", box_name="boxsur",
+box_pose="0.901 0 1.35 0 0 0 1", box_size="0.001 2.4 2.7", group_name="arm", is_absolute="1", and
+service_name="execute_add_box".
+
+The custom action pre middle right will use goal="0.0777 1.8904 -2.4741 -0.9875 1.5718 -0.0037", group_name="arm",
 service_name="execute_group_joint_states", and tolerance="0.01".
 
-The remove boxsur object action will use is_exact="1", obj_name="boxsur", and service_name="execute_remove_object".
+The custom action ExecuteRemoveObject in the right-side sequence will use is_exact="1", obj_name="boxsur", and
+service_name="execute_remove_object".
 
-The right pick action will use constraint="", eef_step="0.1", goal_type="0", goals="0.88 -0.4455 0.5713 -0.5115
-0.4876 -0.4901 0.5101", group_name="arm", service_name="execute_group_many_poses", and tolerance="0.01".
+The custom action pick in the right-side sequence will use constraint="", eef_step="0.1", goal_type="0",
+goals="0.88 -0.4455 0.5713 -0.5115 0.4876 -0.4901 0.5101", group_name="arm",
+service_name="execute_group_many_poses", and tolerance="0.01".
 
-The right lift up action will use axis="z", goal="0.1", group_name="arm", is_absolute="0",
-service_name="execute_group_shift", and tolerance="0.01".
+The custom action lift up in the right-side sequence will use axis="z", goal="0.1", group_name="arm",
+is_absolute="0", service_name="execute_group_shift", and tolerance="0.01".
 
-The right pull out action will use axis="x", goal="-0.4", group_name="arm", is_absolute="0",
-service_name="execute_group_shift", and tolerance="0.01".
+The custom action pull out in the right-side sequence will use axis="x", goal="-0.4", group_name="arm",
+is_absolute="0", service_name="execute_group_shift", and tolerance="0.01".
 
-The right post middle left action will use goal="0.7015 -0.4631 -1.6642 -1.0472 0.0081 -0.0615", group_name="arm",
+The custom action post middle left in the right-side sequence will use goal="0.7015 -0.4631 -1.6642 -1.0472 0.0081
+-0.0615", group_name="arm", service_name="execute_group_joint_states", and tolerance="0.01".
+
+The custom action place left will use goal="0.7015 -1.8999 -2.0660 -0.7844 0.0080 -0.0615", group_name="arm",
 service_name="execute_group_joint_states", and tolerance="0.01".
 
-The place left action will use goal="0.7015 -1.8999 -2.0660 -0.7844 0.0080 -0.0615", group_name="arm",
-service_name="execute_group_joint_states", and tolerance="0.01".
+The custom action post middle left in the right-side sequence will use goal="0.7015 -0.4631 -1.6642 -1.0472 0.0081
+-0.0615", group_name="arm", service_name="execute_group_joint_states", and tolerance="0.01".
 
-The second right post middle left action will use goal="0.7015 -0.4631 -1.6642 -1.0472 0.0081 -0.0615",
-group_name="arm", service_name="execute_group_joint_states", and tolerance="0.01".
-
-The boxes_surface action will use auto_subfix="0", box_name="boxsur", box_pose="0.901 0 1.35 0 0 0 1",
+The custom action boxes_surface will use auto_subfix="0", box_name="boxsur", box_pose="0.901 0 1.35 0 0 0 1",
 box_size="0.001 2.4 2.7", group_name="arm", is_absolute="1", and service_name="execute_add_box".

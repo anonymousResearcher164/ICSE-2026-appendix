@@ -1,83 +1,42 @@
-The mission describes a repeated sequence that checks LTL state, handles replanning, selects an action, and
-updates the LTL state.
+The mission describes repeated evaluation of LTL states, replanning requests, and selected robot actions.
 
-First, the robot will execute the contained sequence {num_cycles} times.
+First, the robot will execute the sequence {num_cycles} times.
 
-Next, it will execute the first fallback, the reactive sequence, and UpdateLTL in order. It will stop the sequence
-if any action fails.
+Next, it will execute the pre-check, reactive decision process, and LTL update in order and stop the sequence if
+any action fails.
 
-Next, it will execute LTLPreCheck and then the first ForceFailure consecutively. If LTLPreCheck fails, it will
-move to the first ForceFailure. If no action succeeds, the fallback will fail.
+First, it will check whether LTLPreCheck matches the current LTL state, desired LTL state sequence, and executed
+LTL state sequence. If LTLPreCheck fails, it will execute ReplanningRequestLevel2 and force that recovery branch to
+fail.
 
-Next, it will check whether LTLPreCheck is true for ltl_state_current {ltl_state_current},
-ltl_state_desired_sequence {ltl_state_desired_sequence}, and ltl_state_executed_sequence
-{ltl_state_executed_sequence}.
+Next, it will execute the reactive sequence in order. While a child is running, it will re-evaluate the preceding
+children. If a preceding child fails, it will halt the running child and stop the reactive sequence.
 
-Next, it will execute ReplanningRequestLevel2 and make sure it always fails.
+First, it will execute FakeDetectionLevel1. If FakeDetectionLevel1 fails, it will execute ReplanningRequestLevel1
+and force that recovery branch to fail.
 
-Next, it will execute the reactive sequence in order. If an action fails, it will stop execution. While a later
-action is running, it will re-evaluate the previous actions. If a previous action fails, it will halt the running
-action and stop the sequence.
+Next, it will check whether ReactiveLTLStateCheck matches the current LTL state and desired LTL state sequence. If
+the check fails, it will execute ReplanningRequestLevel2 and force that recovery branch to fail.
 
-Next, it will execute the first fallback and then the second fallback in order. If an action succeeds, it will
-stop execution. Otherwise, it will continue to the next action.
+Next, it will execute FakeDetectionLevel3. If FakeDetectionLevel3 fails, it will execute ReplanningRequestLevel3
+and force that recovery branch to fail.
 
-Next, it will execute FakeDetectionLevel1 and then the second ForceFailure consecutively. If FakeDetectionLevel1
-fails, it will move to the second ForceFailure. If no action succeeds, the fallback will fail.
+Next, it will read {bt_action_type} and compare it with the cases move, stay, start_training, and
+terminate_training. If the value is move, it will execute MoveAction. If the value is stay, it will execute
+StayAction. If the value is start_training, it will execute GuideAction. If the value is terminate_training, it
+will execute BackNormalAction. If no case matches, it will execute the default failure branch. If the selected
+action fails, it will execute ReplanningRequestLevel3 and force that recovery branch to fail.
 
-Next, it will execute the second ForceFailure and make sure it always fails.
+Finally, it will execute UpdateLTL after the reactive sequence.
 
-Next, it will execute ReplanningRequestLevel1 and make sure it always fails.
-
-Next, it will execute ReactiveLTLStateCheck and then the third ForceFailure consecutively. If
-ReactiveLTLStateCheck fails, it will move to the third ForceFailure. If no action succeeds, the fallback will fail.
-
-Next, it will check whether ReactiveLTLStateCheck is true for ltl_state_current {ltl_state_current} and
-ltl_state_desired_sequence {ltl_state_desired_sequence}.
-
-Next, it will execute ReplanningRequestLevel2 and make sure it always fails.
-
-Next, it will execute FakeDetectionLevel3 and then the fourth ForceFailure consecutively. If FakeDetectionLevel3
-fails, it will move to the fourth ForceFailure. If no action succeeds, the fallback will fail.
-
-Next, it will execute ReplanningRequestLevel3 and make sure it always fails.
-
-Next, it will execute the fourth fallback and then the fifth ForceFailure consecutively. If an action succeeds, it
-will stop execution. Otherwise, it will continue to the next action. If no action succeeds, the fallback will fail.
-
-Next, it will execute Switch4. If bt_action_type {bt_action_type} matches move, it will execute MoveAction. If it
-matches stay, it will execute StayAction. If it matches start_training, it will execute GuideAction. If it matches
-terminate_training, it will execute BackNormalAction. If no case matches, it will execute AlwaysFailure.
-
-Next, it will execute ReplanningRequestLevel3 and make sure it always fails.
-
-Next, it will execute UpdateLTL.
-
-Parameters: ReplanningRequestLevel2 will read ltl_state_current from {ltl_state_current}, read and update
-ltl_state_executed_sequence under {ltl_state_executed_sequence}, and read and update replanning_request under
-{replanning_request}.
-
-ReplanningRequestLevel1 will read ltl_state_current from {ltl_state_current}, read and update
-ltl_state_executed_sequence under {ltl_state_executed_sequence}, and read and update replanning_request under
-{replanning_request}.
-
-FakeDetectionLevel1 will read replanning_fake_input from {replanning_fake_input}.
-
-FakeDetectionLevel3 will read replanning_fake_input from {replanning_fake_input}.
-
-MoveAction will read bt_action_type from {bt_action_type}, read current_action from {current_action}, store
-goal_sent under {goal_sent}, read move_base_finished from {move_base_finished}, and read move_base_idle from
-{move_base_idle}.
-
-StayAction will read bt_action_type from {bt_action_type}, read current_action from {current_action}, and read and
-update ltl_state_current under {ltl_state_current}.
-
-GuideAction will read bt_action_type from {bt_action_type}, read current_action from {current_action}, and read
-and update ltl_state_current under {ltl_state_current}.
-
-BackNormalAction will read bt_action_type from {bt_action_type}, read current_action from {current_action}, and
-read and update ltl_state_current under {ltl_state_current}.
-
-UpdateLTL will read and update action_sequence under {action_sequence}, read and update action_sequence_executed
-under {action_sequence_executed}, store bt_action_type under {bt_action_type}, store current_action under
-{current_action}, and read and update ltl_state_desired_sequence under {ltl_state_desired_sequence}.
+Parameters: ReplanningRequestLevel2 will use {ltl_state_current}, update {ltl_state_executed_sequence}, and update
+{replanning_request}. FakeDetectionLevel1 will use {replanning_fake_input}. ReplanningRequestLevel1 will use
+{ltl_state_current}, update {ltl_state_executed_sequence}, and update {replanning_request}. ReactiveLTLStateCheck
+will use {ltl_state_current} and {ltl_state_desired_sequence}. FakeDetectionLevel3 will use
+{replanning_fake_input}. MoveAction will use {bt_action_type}, {current_action}, update {goal_sent},
+{move_base_finished}, and {move_base_idle}. StayAction will use {bt_action_type}, {current_action}, and update
+{ltl_state_current}. GuideAction will use {bt_action_type}, {current_action}, and update {ltl_state_current}.
+BackNormalAction will use {bt_action_type}, {current_action}, and update {ltl_state_current}.
+ReplanningRequestLevel3 will use {ltl_state_current}, update {ltl_state_executed_sequence}, and update
+{replanning_request}. UpdateLTL will update {action_sequence}, update {action_sequence_executed}, update
+{bt_action_type}, update {current_action}, and update {ltl_state_desired_sequence}.
