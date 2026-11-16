@@ -1,0 +1,10 @@
+Description:
+The execution starts at the entry point MainTree with the root node root_AutoLocalization, which is a FallbackStar node. This means the robot will first try to execute its primary condition. The first child is the condition node initialPoseReceived. If the robot already has an initial pose, this condition succeeds, the FallbackStar succeeds immediately and the tree finishes.
+
+If initialPoseReceived fails, the FallbackStar goes to its second child, which is a SequenceStar named doSelfLocalization. The robot must now actively try to find its position. This sequence has two sequential steps, both wrapped in RetryUntilSuccessful decorators.
+
+First the robot tries a globalLocalizationServiceRequest with a retry_client_request decorator allowing a maximum of 5 attempts (num_attempts=5). If this global localization fails after 5 tries, the entire doSelfLocalization sequence fails and the root FallbackStar fails.
+
+If the global request succeeds, the sequence moves to the next step: a local localization attempt. This is a RetryUntilSuccessful node named retry_localization with num_attempts=10. If this succeeds, the sequence goes to a final verification Sequence.
+
+In this final Sequence, the robot uses a Fallback node to check its status. First, it checks the condition IsLocalized. If this is true, the fallback succeeds. If IsLocalized is false, the robot executes a Spin action to look around. If the Spin action fails, it executes a BackUp action, followed by another Spin action. This ensures the robot physically moves to gather sensor data if the service calls were not enough to confirm localization.

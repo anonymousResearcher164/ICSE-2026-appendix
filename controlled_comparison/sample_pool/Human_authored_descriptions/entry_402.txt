@@ -1,0 +1,7 @@
+Start time: 9:07:05
+
+Description:
+
+This Behavior Tree is a Sequence. The first node of this Sequence is another Sequence with four actions, SetBlackboard with output_key=pose_name_l and value=TouchingNeck, SetBlackboard with output_key=pose_name_r and value=TouchingNeck, SetBlackboard with output_key=pose_lr_check and value=any. The last node of this Sequence is AntennaAction, with the parameters of rate, intensity, left_blink_pattern and right_blink_pattern all set to 0. The second and last node of the first Sequence is a decorated Sequence with the policy KeepRunningUntilFailure. The first of two children of this Sequence is another decorated Sequence with the policy ForceSuccess, and this one will first tick the action HumanPoseDetect that will check the relevant blackboard variables, then tick Antenna action with the same parameters as before all set to 10, except for "rate" which remain 0. Afterwards, it will use SaveImageAction to save a jpg image in the directory /home/ubuntu/saved_images, call TextToSpeechActionClient to say the image is saved by using the text "Saved", then call AntennaAction with all parameters set to 0 again. The second child of the Sequence with a KeepRunningUntilFailure policy is a simple Sequence, with only one decorated child Action with a policy of a Delay for 1000ms. This action is SetBlackboard with output_key=dummy and value=0
+
+End time: 9:16:28

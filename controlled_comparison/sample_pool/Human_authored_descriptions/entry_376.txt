@@ -1,0 +1,7 @@
+08:48 - 09:04
+
+This is a tree with a sequence node at its root. Its only child is a "Repeat" decorator node with `num_cycles=100`, which in turn has a single child: a "Parallel" node with `success_threshold=failure_threshold=1`. This means that if any child node returns success, the Parallel node will also return success; the same applies to failure—whichever result occurs first determines the state of the Parallel node.
+
+The Parallel node has two child nodes, which it executes simultaneously: "Dialog" and "SocialNav2Action" (with parameters `goal=hri` and `agent_id=agent_3`).
+
+As long as the Parallel node returns success, the Repeat node (and, consequently, the sequence) will return "running." This continues until all 100 cycles are completed, at which point the Repeat node returns success, resulting in the success of the entire sequence. If, however, one of the Parallel node's children fails first, both the Parallel and Repeat nodes will immediately return failure,without completing the remaining cycles,which results in the failure of the sequence.

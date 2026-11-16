@@ -1,0 +1,7 @@
+This tree is a repeating cycle of var times.
+It checks if LTLPreCheck if these following properties has the desired values.
+{ltl_state_current} {ltl_state_desired_sequence} {ltl_state_executed_sequence}
+Other wise iut runt the action of setting them to it called (ReplanningRequestLevel2)
+Then it makes a paralles execution of (FakeDetectionLevel1) if it failes then also (ReplanningRequestLevel1). It also checks (ReactiveLTLStateCheck) if it is not true then sets the values by the action (ReplanningRequestLevel2). It also checks (FakeDetectionLevel3) if it nost set then  the action (ReplanningRequestLevel3) to set them. it also decides of following cases move, stay, start training or terminate training. according to the decision it also execute one of following actions. (MoveAction),(StayAction),(GuideAction), (BackNormalAction) and despite of the choice it executes at the end the (ReplanningRequestLevel3) action. These al four action sets are executed in parallel or async using a reactive sequence.
+Afterwards it will update using the (UpdateLTL) action and redo the cycle.
+And this whole cycle will be repeated as many times as the {num_cycles} is set to.

@@ -1,26 +1,26 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <Repeat num_cycles="-1">
-      <Sequence name="outer_sequence">
-        <TrayUpdatePlanningScene/>
+      <Sequence>
+        <UpdatePlanningScene/>
         <MoveBase goal="2.1;-2.0;0.0"/>
         <MoveBase goal="2.1;-0.0;1.57"/>
-        <Sequence name="scan_shelves">
+        <Sequence>
           <TorsoControl relative_height="0.1"/>
           <HeadControl pitch="0.0" yaw="90.0"/>
           <ScanShelves tomato_can_stocking_target_poses="{tomato_can_stocking_target_poses}"/>
           <TraySetLoci tray_name="shelf"
                        locus_poses="{tomato_can_stocking_target_poses}"
                        occupied="false"/>
-          <TrayUpdatePlanningScene/>
+          <UpdatePlanningScene/>
         </Sequence>
-        <Pause time_limit="5"/>
+        <Pause time_limit_sec="5"/>
       </Sequence>
     </Repeat>
   </BehaviorTree>
 
   <TreeNodesModel>
-    <Action ID="TrayUpdatePlanningScene"/>
+    <Action ID="UpdatePlanningScene"/>
     <Action ID="MoveBase">
       <input_port name="goal"/>
     </Action>
@@ -40,7 +40,7 @@
       <input_port name="occupied"/>
     </Action>
     <Action ID="Pause">
-      <input_port name="time_limit"/>
+      <input_port name="time_limit_sec"/>
     </Action>
   </TreeNodesModel>
 </root>

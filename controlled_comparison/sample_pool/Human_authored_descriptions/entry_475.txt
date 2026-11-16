@@ -1,0 +1,8 @@
+entry 475
+start time: 01:15pm
+end time: 01:32pm
+
+The robot start by starting its speak action with the parameters: gcloud_tts as action name, pt_PT as its language and 'Tenho fome' as utterance, the voice is selected as pt-PT-Wavenet-D. Then it will wait for about 2 seconds.
+The robot will attempt to go to the first point with its action name as move base, fame id as map and goal pose as (-1.7971; -5.5118; 0.0; 0; 0; 0.72703; 0.68659), it will attempt until is successful with a attempt limit of 3 chances.
+Then parallally, it will start two actions. First, it will start charging where action is CHARGE and action name is charging action. Second, it will start an speaking action where the parameters are action name is gclouds_tts, language is pt_PT, uttarance is bip bip and voice is pt-PT-Wavenet-D. This last action will be repeated 5 times.
+When these parallels actions are finalized, the robot will wait for 10 seconds, then it will speak again with the following parameters, gclouds_tts as action name, pt_PT as language, 'Estou cheiom vou sair da estacao' as utterance and pt-PT-Wavenet-D as voice. After, it will stop charging where action is STOP_CHARGE and action name is charging_action.

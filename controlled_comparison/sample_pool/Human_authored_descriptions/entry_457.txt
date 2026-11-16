@@ -1,0 +1,17 @@
+The behaviour tree seems to be for a vehicle in motion.
+First the sequence checks the condition and the robot stops and does nothing. Otherwise, it runs the main driving steps in order. If any of these steps fails, the whole behavior fails.
+
+The robot checks the condition to see if there exist a global path. If it is lane keeping and a lane change has failed, it asks for the global path again. Then it initializes and generates its path.
+
+To generate the path, it chooses what to do based on its current state.
+In the first  sequence, if it is lane keeping, it generates a lane keeping path and decides whether to change lanes. If the global route needs a lane change, it tries the left lane when a left change is needed, otherwise the right lane. It only switches to a lane change if that lane is changeable, otherwise it stays in lane keeping.
+
+If there is an object in front, the robot stays in its lane when the object is not irregular and it is near a corner. Otherwise it tries to change to the left lane if that is profitable and safe, and then to the right lane. If no lane change is possible, it stays in lane keeping.
+
+If it is changing lanes left or right, it follows a lane change speed profile. When the lane change ends, it goes back to lane keeping and asks for the global path again.
+
+If it is in none of these states, it resets to lane keeping.
+
+Next, if the traffic light is not passable, the robot stops at the light. At an unprotected turn that is not passable, the robot stops. Otherwise it continues.
+
+Then it sets the path and publishes the data. Finally, if it has arrived at the goal, it sets the mission to arrived and publishes the mission state. Otherwise, it sets the mission state to going.

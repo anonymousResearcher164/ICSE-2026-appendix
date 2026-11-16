@@ -1,0 +1,12 @@
+Robot Mission
+• The robot mission (FullCompetitionMode) is composed of two subtrees: Get in Rest Pose and Do Your Trick.
+• In the Get in Rest Pose subtree, the robot sets its arm positions to Rest and adjusts its head, left, and right joints/arms in parallel.
+• The DoYourTrick subtree is divided into two subtrees: FillYourTray and FillTheShelf.
+• When out of the Rest Position, the robot fills the tray and the shelf.
+2. FillingYourTray
+• To fill the tray, the robot moves towards the table and scans it. It checks whether the tray is empty.
+• If the tray is empty, the robot uses its right arm to fill the tray.
+• If the tray is unavailable, the robot rechecks the space, starting with the left side and then checking the right side. Otherwise, it releases the tray. (TryIsFull task)
+3. FillingYourShelf
+• To fill the shelf, the robot must enter the Rest Position, move towards the shelf, and scan it.
+• It adjusts the robot's head and checks whether the tray has space. If there is no space, it executes the TryIsFull task. If there is space, it uses its left arm to fill the tray.

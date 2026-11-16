@@ -1,0 +1,5 @@
+Entry_58  start: 08:27 finish: 08:33
+
+This behavior tree describes a sequence within a sequence where it commands the agent to go to somewhere named 1 through a sequence and, after reaching that place or state, commands the agent to go to somewhere named 2.
+
+So there is a primary sequence that leads to a second sequence that leads to another sequence with just one command, to go to somewhere. After that the state goes to the first sequence that commands, now, the agent to go another place and after that the behavior ends.

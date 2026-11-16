@@ -1,28 +1,30 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <Parallel success_count="2" failure_count="1">
-
       <Repeat num_cycles="-1">
         <VariantAction variant="{variant}"/>
       </Repeat>
-
-      <Sequence name="person_recognition">
+      <Sequence>
         <peoplerecognition/>
-        <Fallback name="locate_person">
-          <getPersonPose/>
+        <Fallback>
+          <getPersonPose personname="THOMAS" x="{x_}" y="{y_}" z="{z_}"/>
           <moveRoboterPosition approachRadius="200" x="3000" y="-12000"/>
         </Fallback>
       </Sequence>
-
     </Parallel>
   </BehaviorTree>
 
   <TreeNodesModel>
     <Action ID="VariantAction">
-      <input_port name="variant"/>
+      <output_port name="variant"/>
     </Action>
     <Action ID="peoplerecognition"/>
-    <Action ID="getPersonPose"/>
+    <Action ID="getPersonPose">
+      <input_port name="personname"/>
+      <output_port name="x"/>
+      <output_port name="y"/>
+      <output_port name="z"/>
+    </Action>
     <Action ID="moveRoboterPosition">
       <input_port name="approachRadius"/>
       <input_port name="x"/>

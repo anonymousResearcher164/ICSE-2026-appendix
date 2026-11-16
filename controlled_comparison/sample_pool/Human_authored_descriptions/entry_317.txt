@@ -1,0 +1,7 @@
+This tree seems to handle recovery a total of 6 times.
+
+First it tries to do this with Navigate with replanning node. To do this, at 1hz, it computes the path to the pose.  If it fails to compute the path to the pose, it first tries to update the goal pose. If that fails, it clears the entire costmap.
+
+While this the previous path computing is working correctly, a follow path node will try to follow said path. If following the path  fails mid execution, the goal gets updated before retrying. If it that also fails, then the local costmap gets cleared. 
+
+If the Navigate with replanning node fails, then the Navigate Recovery Selector switches to a recovery fallback, which tries to update the goal. If that fails, it proceeds to delete the local and the global costmaps. If after that it still doesnt work, it tries to spin 90 degrees, then retry. If that fails, it waits five seconds and retries again. And if that fails, it backs up a certain distance before retrying again.

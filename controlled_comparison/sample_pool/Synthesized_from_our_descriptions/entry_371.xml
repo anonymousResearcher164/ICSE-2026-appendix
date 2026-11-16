@@ -1,10 +1,9 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <Repeat num_cycles="{num_cycles}">
-      <Sequence name="main_sequence">
+      <Sequence>
 
-        <!-- Pre-check -->
-        <Fallback name="pre_check">
+        <Fallback>
           <LTLPreCheck ltl_state_current="{ltl_state_current}"
                        ltl_state_desired_sequence="{ltl_state_desired_sequence}"
                        ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
@@ -15,10 +14,8 @@
           </ForceFailure>
         </Fallback>
 
-        <!-- Reactive action execution -->
-        <ReactiveSequence name="reactive_action">
-
-          <Fallback name="fake_detection_level1">
+        <ReactiveSequence>
+          <Fallback>
             <FakeDetectionLevel1 replanning_fake_input="{replanning_fake_input}"/>
             <ForceFailure>
               <ReplanningRequestLevel1 ltl_state_current="{ltl_state_current}"
@@ -27,7 +24,7 @@
             </ForceFailure>
           </Fallback>
 
-          <Fallback name="reactive_ltl_state_check">
+          <Fallback>
             <ReactiveLTLStateCheck ltl_state_current="{ltl_state_current}"
                                    ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
             <ForceFailure>
@@ -37,7 +34,7 @@
             </ForceFailure>
           </Fallback>
 
-          <Fallback name="fake_detection_level3">
+          <Fallback>
             <FakeDetectionLevel3 replanning_fake_input="{replanning_fake_input}"/>
             <ForceFailure>
               <ReplanningRequestLevel3 ltl_state_current="{ltl_state_current}"
@@ -46,15 +43,15 @@
             </ForceFailure>
           </Fallback>
 
-          <Fallback name="action_dispatch">
+          <Fallback>
             <Switch4 variable="{bt_action_type}"
                      case_1="move" case_2="stay"
                      case_3="start_training" case_4="terminate_training">
               <MoveAction bt_action_type="{bt_action_type}"
                           current_action="{current_action}"
+                          goal_sent="{goal_sent}"
                           move_base_finished="{move_base_finished}"
-                          move_base_idle="{move_base_idle}"
-                          goal_sent="{goal_sent}"/>
+                          move_base_idle="{move_base_idle}"/>
               <StayAction bt_action_type="{bt_action_type}"
                           current_action="{current_action}"
                           ltl_state_current="{ltl_state_current}"/>
@@ -72,15 +69,13 @@
                                        replanning_request="{replanning_request}"/>
             </ForceFailure>
           </Fallback>
-
         </ReactiveSequence>
 
-        <!-- LTL update -->
         <UpdateLTL action_sequence="{action_sequence}"
                    action_sequence_executed="{action_sequence_executed}"
-                   ltl_state_desired_sequence="{ltl_state_desired_sequence}"
                    bt_action_type="{bt_action_type}"
-                   current_action="{current_action}"/>
+                   current_action="{current_action}"
+                   ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
 
       </Sequence>
     </Repeat>
@@ -104,47 +99,47 @@
     </Action>
     <Action ID="ReplanningRequestLevel1">
       <input_port name="ltl_state_current"/>
-      <input_port name="ltl_state_executed_sequence"/>
-      <output_port name="replanning_request"/>
+      <inout_port name="ltl_state_executed_sequence"/>
+      <inout_port name="replanning_request"/>
     </Action>
     <Action ID="ReplanningRequestLevel2">
       <input_port name="ltl_state_current"/>
-      <input_port name="ltl_state_executed_sequence"/>
-      <output_port name="replanning_request"/>
+      <inout_port name="ltl_state_executed_sequence"/>
+      <inout_port name="replanning_request"/>
     </Action>
     <Action ID="ReplanningRequestLevel3">
       <input_port name="ltl_state_current"/>
-      <input_port name="ltl_state_executed_sequence"/>
-      <output_port name="replanning_request"/>
+      <inout_port name="ltl_state_executed_sequence"/>
+      <inout_port name="replanning_request"/>
     </Action>
     <Action ID="MoveAction">
       <input_port name="bt_action_type"/>
       <input_port name="current_action"/>
-      <input_port name="move_base_finished"/>
-      <input_port name="move_base_idle"/>
-      <output_port name="goal_sent"/>
+      <inout_port name="goal_sent"/>
+      <inout_port name="move_base_finished"/>
+      <inout_port name="move_base_idle"/>
     </Action>
     <Action ID="StayAction">
       <input_port name="bt_action_type"/>
       <input_port name="current_action"/>
-      <input_port name="ltl_state_current"/>
+      <inout_port name="ltl_state_current"/>
     </Action>
     <Action ID="GuideAction">
       <input_port name="bt_action_type"/>
       <input_port name="current_action"/>
-      <input_port name="ltl_state_current"/>
+      <inout_port name="ltl_state_current"/>
     </Action>
     <Action ID="BackNormalAction">
       <input_port name="bt_action_type"/>
       <input_port name="current_action"/>
-      <input_port name="ltl_state_current"/>
+      <inout_port name="ltl_state_current"/>
     </Action>
     <Action ID="UpdateLTL">
       <inout_port name="action_sequence"/>
       <inout_port name="action_sequence_executed"/>
+      <inout_port name="bt_action_type"/>
+      <inout_port name="current_action"/>
       <inout_port name="ltl_state_desired_sequence"/>
-      <output_port name="bt_action_type"/>
-      <output_port name="current_action"/>
     </Action>
   </TreeNodesModel>
 </root>

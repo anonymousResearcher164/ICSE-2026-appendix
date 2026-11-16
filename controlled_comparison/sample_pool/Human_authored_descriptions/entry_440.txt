@@ -1,0 +1,12 @@
+Description:
+This behavior tree is designed for a continuous interaction loop. The root node is a Repeat decorator with num_cycles=9999, meaning the entire control flow will execute repeatedly until it reaches 9999 cycles.
+
+The main child of the Repeat node is a top-level Sequence. This Sequence contains two parallel sub-sequences (a left branch and a right branch) that execute simultaneously.
+
+Left Branch:
+The robot enters a Sequence. It first uses a HumanPoseDetect action to look for a human. If detection succeeds, it moves to a Script node. This script calculates a variable named full_left_msg by concatenating the static string Left, with the dynamic blackboard variable {pose_left_speech}. Once the message is generated, the sequence executes a TextToSpeechActionClient node to speak the full_left_msg out loud. If the HumanPoseDetect action fails, the Sequence fails. However, a Fallback node wraps this logic, ensuring that a failure in detection does not stop the entire tree from functioning; it simply moves on.
+
+Right Branch:
+Running concurrently, the robot enters another Sequence. It runs a HumanPoseDetect action. If a human is detected, it runs a Script node that creates the variable full_right_msg by combining the string Right, with {pose_right_speech}. Finally, it uses a TextToSpeechActionClient to vocalize full_right_msg. Similar to the left branch, a Fallback node manages any failures in detection or speech, allowing the main Sequence to complete its tick and loop back to the Repeat node.
+
+Because both branches are within the main Sequence under the Repeat node, the robot will continuously look for humans on both sides, generate the appropriate speech string and speak to them, repeating this behavior up to 9999 times.

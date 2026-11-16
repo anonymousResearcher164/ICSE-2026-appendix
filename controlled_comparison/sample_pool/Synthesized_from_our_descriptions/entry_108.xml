@@ -1,29 +1,16 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
-
   <BehaviorTree ID="MainTree">
-    <ReactiveFallback name="select_mg_goal">
-      <SubTree ID="3-goal" _autoremap="true"/>
-      <SubTree ID="2-traverse" _autoremap="true"/>
-      <SubTree ID="mg_goal1" _autoremap="true"/>
+    <ReactiveFallback name="root_sequence">
+      <ReactiveSequence name="3-goal">
+        <EEYThreshold threshold="{y_threshold}" ee_y="{ee_y}"/>
+        <SetMGGoal name="mg_goal3" mp_param_x="{mp_3_x}" mg_trans_x="{mg_trans_x}"/>
+      </ReactiveSequence>
+      <ReactiveSequence name="2-traverse">
+        <EEZThreshold threshold="{z_threshold}" ee_z="{ee_z}"/>
+        <SetMGGoal name="mg_goal2" mp_param_x="{mp_2_x}" mg_trans_x="{mg_trans_x}"/>
+      </ReactiveSequence>
+      <SetMGGoal name="mg_goal1" mp_param_x="{mp_1_x}" mg_trans_x="{mg_trans_x}"/>
     </ReactiveFallback>
-  </BehaviorTree>
-
-  <BehaviorTree ID="3-goal">
-    <ReactiveSequence>
-      <EEYThreshold threshold="{y_threshold}" ee_y="{ee_y}"/>
-      <SetMGGoal mp_param_x="{mp_3_x}" mg_trans_x="{mg_trans_x}"/>
-    </ReactiveSequence>
-  </BehaviorTree>
-
-  <BehaviorTree ID="2-traverse">
-    <ReactiveSequence>
-      <EEZThreshold threshold="{z_threshold}" ee_z="{ee_z}"/>
-      <SetMGGoal mp_param_x="{mp_2_x}" mg_trans_x="{mg_trans_x}"/>
-    </ReactiveSequence>
-  </BehaviorTree>
-
-  <BehaviorTree ID="mg_goal1">
-    <SetMGGoal mp_param_x="{mp_1_x}" mg_trans_x="{mg_trans_x}"/>
   </BehaviorTree>
 
   <TreeNodesModel>
@@ -40,5 +27,4 @@
       <output_port name="mg_trans_x"/>
     </Action>
   </TreeNodesModel>
-
 </root>

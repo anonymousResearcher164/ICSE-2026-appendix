@@ -1,0 +1,13 @@
+entry 92
+start time: 12:47pm
+end time: 01:03pm
+
+The main behavior of the robot starts by checking if there is a pull over request, then if the pull over is ready and then starts planning the pull over, the results will be assigned to an output variable.
+If there any pull out request, it will check if the pull out is ready and if it is, then it will plan the pull out assigning an output variable as its result.
+If there is any side shift request then the robot will check if the side shift is ready, if yes it will plan a side shift storing its result in a output variable.
+If there is a lane change request then the robot will check if either the lane change is ready or if a force lane change is approved, if yes it will plan a lane change assinging its result to an output variable.
+If there is an avoidance request then the robot will check if avoidance is ready, if it is then it will plan an avoidance, also storing its result in an output variable.
+Otherwise, it will plan a lane following also with its output assigned to a variable.
+If there is an avoidance approval it will asynchronously stop the previous behavior, then the robot will plan a candidate for avoidance until it the planning fails.
+Same for an lane change approval, it will plan a candidate for lane change until it fails. Both planning actions will assign its result to an output variable.
+Once these actions are done, the main behavior resumes.

@@ -1,0 +1,7 @@
+09:11 - 09:24
+
+The tree is rooted in a Fallback node. Its first child node is a SequenceStar; if this returns "failure," the Fallback node will execute a "RandomMove" action node. Because it is a Fallback node, it only requires one of its child nodes to return "success" for the Fallback itself to return "success" and halt execution; conversely, both child nodes must fail for the Fallback to return "failure." During execution, the Fallback node returns "running."
+
+The SequenceStar node executes a "GetTarget" action node. If successful, it proceeds to the next action node, "Move," which, if also successful, moves on to the next child node, that is a sequence. If any of these nodes return "failure," the SequenceStar returns "failure" and halts execution. It is important to note that if execution is resumed, this sequence will continue from the node that previously failed.
+
+Within this sequence, the final child node of the SequenceStar, a "TargetAdjacent" conditional node is executed first. If it succeeds, an "AttackTarget" action node is executed; if that also succeeds, the entire sequence returns "success." If either of these two nodes returns "failure," the sequence likewise returns "failure."

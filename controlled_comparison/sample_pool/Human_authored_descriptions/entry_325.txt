@@ -1,0 +1,9 @@
+The robot follows a prioritized set of behaviors controlled by a FallbackStar node. It evaluates the three SequenceStar branches in order and executes the first behavior whose conditions are satisfied.
+
+During the day, if the robot is on the pasture and currently inside the shed, it leaves the shed, selects a random pasture field, and moves to that location.
+
+At night, if the robot is on the pasture and is not inside the shed, it searches for the shed, moves toward it, and enters it.
+
+If neither of these behaviors can be executed, the robot follows a default behavior. During the day, if it is not inside the shed, the robot performs a random movement.
+
+Overall, the robot attempts to spend the daytime outside on the pasture and move around the pasture, while at night it tries to find and enter the shed. When no higher-priority behavior applies, it moves randomly during the day while outside the shed.

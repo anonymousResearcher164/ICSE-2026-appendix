@@ -1,9 +1,9 @@
-<root BTCPP_format="4" main_tree_to_execute="MainTree">
-  <BehaviorTree ID="MainTree">
-    <SequenceWithMemory name="root_sequence">
+<root main_tree_to_execute="SayStuff">
+  <BehaviorTree ID="SayStuff">
+    <SequenceStar>
       <SaySomething/>
       <SayHello/>
-    </SequenceWithMemory>
+    </SequenceStar>
   </BehaviorTree>
 
   <TreeNodesModel>

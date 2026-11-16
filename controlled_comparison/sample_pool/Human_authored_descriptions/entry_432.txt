@@ -1,0 +1,7 @@
+Start time: 9:18:15
+
+Description:
+
+This Behavior Tree is a PipelineSequence with two children, so it will re-tick the first child if the second returns RUNNING. The first child is a decorated Sequence with the policy of RateController set to 1Hz, which will tick a decorated Action ComputePathToPose with a policy of GoalUpdater and parameters input_goal={goal} and output_goal={updated_goal}, thus setting the variables in the blackboard. The second child of this Sequence is TruncatePath with a distance of 1. The second node of the pipeline sequence is a decorated Action FollowPath and it's policy is to KeepRunningUntilFailure. 
+
+End time: 9:24:37

@@ -1,0 +1,7 @@
+Start time: 8:58:03
+
+Description:
+
+This Behavior Tree starts with a FallbackStar that has three SequenceStars as children. The first SequenceStar will check three conditions, IsOnPasture, IsDay and IsInShed, and if all of them return SUCCESS then it will executes these actions in order: LeaveShed, FindRandomPastureField and Move. The second SequenceStar activates if the previous one returns FAILURE, which happens if one of it's children return FAILURE. This one also checks three conditions, IsOnPasture, IsNight and a decorated condition IsInShed with an Inverter policy, which means it will propagate SUCCESS if the condition fails. In the case these conditions pass, the following actions are ticked: FindShed, Move, EnterShed. However if both of these SequenceStars fail, it will try the last SequenceStar, that checks the condition IsDay and an Inverted condition IsInShed, and then ticks Action RandomMove.
+
+End time: 9:05:04

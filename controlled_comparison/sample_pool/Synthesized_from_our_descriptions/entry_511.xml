@@ -1,7 +1,6 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <RecoveryNode number_of_retries="2" name="NavigateRecovery">
-
       <PipelineSequence name="NavigateWithReplanning">
         <RateController hz="1.0">
           <RecoveryNode number_of_retries="4" name="ComputePathToPose">
@@ -28,12 +27,10 @@
           </ReactiveFallback>
         </RecoveryNode>
       </PipelineSequence>
-
       <ReactiveFallback name="RecoveryFallback">
         <GoalUpdated/>
         <Wait wait_duration="5"/>
       </ReactiveFallback>
-
     </RecoveryNode>
   </BehaviorTree>
 </root>

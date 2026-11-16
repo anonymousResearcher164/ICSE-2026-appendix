@@ -1,0 +1,7 @@
+The Behavior Tree starts with a Parallel node. On its left side, there is a Repeat decorator with num_cycles=-1, which means that its child is executed indefinitely. The child of this decorator is the VariantAction action, which has the parameter value={variant}, where variant is a variable reference.
+
+On the right side of the Parallel node, there is a Sequence node. Its first child is the peopleRecognition action. Its second child is a Fallback node, which is executed only after the peopleRecognition action succeeds.
+
+The Fallback node has two children. The first child, on the left, is the getPersonPose action, which has the parameter personname=THOMAS and three variable references: x={x_}, y={y_}, and z={z_}.
+
+The second child, on the right, is the moveRoboterPosition action, which has three parameters: approachRadius=200, x=3000, and y=-12000.

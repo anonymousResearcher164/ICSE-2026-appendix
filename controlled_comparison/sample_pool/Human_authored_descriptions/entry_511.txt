@@ -1,0 +1,7 @@
+This Behaviour Tree seems to handle recovery after a robot lost its way while navigating. It retries this 2 times. 
+
+First it tries to Navigate with Replaning. For this, every 1 second, it tries a maximum of 4 times to do the following: It begins by trying to compute a path to the pose. If it succeds, it returns the path and the goal. If it fails, it retries by first trying to update the goal. If that fails, it tries to clear the entire global costmap, then waiting 2 seconds before retrying to update the goal. 
+
+While the previous loop is succeeding, the Navigate with replanning node will try to follow the path a total. If it fails while doing so, it will try 4 times to do the following: If it fails while following the path, then it tries to update the goal again. If this fails, then it deletes the local costmap, so only the map near the robot. If that doesnt work,  then the robot spins what seems to be a 90 degree turn or 1.57 radians. 
+
+If all of the previous navigate with replanning node succeeds, then the recovery node worked. It it doesnt , then it tries to update the goal again. If that doesnt work, it waits 5 second before repeating the entire sequence.

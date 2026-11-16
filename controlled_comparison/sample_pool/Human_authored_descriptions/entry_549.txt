@@ -1,0 +1,1 @@
+A robot arm performs a task to change positions change positions based on the goal at coordinates 0 0 0 0 0 0 1 and tolerance 0.01.

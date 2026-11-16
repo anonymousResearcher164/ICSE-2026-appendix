@@ -1,0 +1,7 @@
+Start time: 8:22:18
+
+Description:
+
+The Behavior Tree 380 describes a sequence of actions, in which the first thing to happen is the checking of whether the condition isFull is fulfilled. If this condition returns a FAILURE tick, then the Sequence1 also immediately returns a FAILURE. However if the condition returns a SUCCESS tick, then the sequence follows to the action goClosestR. If and only if this action is successful, the next node to receive a tick in the sequence is the action waitFrames, which makes the system wait for 15 frames. The Sequence1 then returns a SUCCESS tick only in the case both actions are successful.
+
+End time: 8:29:51

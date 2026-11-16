@@ -1,11 +1,21 @@
-<?xml version="1.0"?>
-<root main_tree_to_execute="MainTree">
-    <BehaviorTree ID="MainTree">
-        <Sequence name="root_sequence">
-            <FixRudder depth="1.0" rudder="2.0" speed_knots="3.0"/>
-            <Delay delay_msec="1000">
-                <AlwaysSuccess/>
-            </Delay>
-        </Sequence>
-    </BehaviorTree>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence>
+      <FixRudder depth="1.0" rudder="2.0" speed_knots="3.0"/>
+      <DelayFor delay_msec="1000">
+        <AlwaysSuccess/>
+      </DelayFor>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="FixRudder">
+      <input_port name="depth"/>
+      <input_port name="rudder"/>
+      <input_port name="speed_knots"/>
+    </Action>
+    <Decorator ID="DelayFor">
+      <input_port name="delay_msec"/>
+    </Decorator>
+  </TreeNodesModel>
 </root>

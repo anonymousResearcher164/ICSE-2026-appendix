@@ -1,60 +1,81 @@
-<?xml version="1.0"?>
-<root main_tree_to_execute="MainTree">
-    <BehaviorTree ID="MainTree">
-        <Fallback name="root_fallback">
-            <Sequence name="S1">
-                <Fallback name="FB2">
-                    <Sequence name="S7">
-                        <Condition ID="Room_known"/>
-                        <Fallback name="FB10">
-                            <Condition ID="Robot_in_room"/>
-                            <Action ID="Go_to_room"/>
-                        </Fallback>
-                    </Sequence>
-                    <Action ID="FollowHuman"/>
-                </Fallback>
-                <Sequence name="S2">
-                    <Fallback name="FB3">
-                        <Condition ID="Bottle_found"/>
-                        <Action ID="Find_bottle"/>
-                    </Fallback>
-                    <Fallback name="FB4">
-                        <Condition ID="Bottle_grasped"/>
-                        <Fallback name="FB5">
-                            <Sequence name="S3">
-                                <Fallback name="FB7">
-                                    <Sequence name="S6">
-                                        <Condition ID="Inv_pose_computed"/>
-                                        <Condition ID="Inv_pose_valid"/>
-                                    </Sequence>
-                                    <Action ID="Compute_inv_pose"/>
-                                </Fallback>
-                                <Sequence name="S4">
-                                    <Fallback name="FB8">
-                                        <Condition ID="Robot_at_inv_pose"/>
-                                        <Sequence name="S8">
-                                            <Action ID="Keep_arms_for_grasp"/>
-                                            <Action ID="Go_to_inv_pose"/>
-                                        </Sequence>
-                                    </Fallback>
-                                    <Sequence name="S5">
-                                        <Fallback name="FB9">
-                                            <Condition ID="Bottle_located"/>
-                                            <Action ID="Locate_bottle"/>
-                                        </Fallback>
-                                        <Action ID="Grasp_bottle"/>
-                                    </Sequence>
-                                </Sequence>
-                            </Sequence>
-                            <Fallback name="FB6">
-                                <Action ID="Set_inv_pose_not_valid"/>
-                                <Action ID="Keep_running"/>
-                            </Fallback>
-                        </Fallback>
-                    </Fallback>
-                </Sequence>
-            </Sequence>
-            <Action ID="Ask_for_help"/>
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="FB1">
+      <Sequence name="S1">
+        <Fallback name="FB2">
+          <Sequence name="S7">
+            <Room_known/>
+            <Fallback name="FB10">
+              <Robot_in_room/>
+              <Go_to_room/>
+            </Fallback>
+          </Sequence>
+          <FollowHuman/>
         </Fallback>
-    </BehaviorTree>
+        <Sequence name="S2">
+          <Fallback name="FB3">
+            <Bottle_found/>
+            <Find_bottle/>
+          </Fallback>
+          <Fallback name="FB4">
+            <Bottle_grasped/>
+            <Fallback name="FB5">
+              <Sequence name="S3">
+                <Fallback name="FB7">
+                  <Sequence name="S6">
+                    <Inv_pose_computed/>
+                    <Inv_pose_valid/>
+                  </Sequence>
+                  <Compute_inv_pose/>
+                </Fallback>
+                <Sequence name="S4">
+                  <Fallback name="FB8">
+                    <Robot_at_inv_pose/>
+                    <Sequence name="S8">
+                      <Keep_arms_for_grasp/>
+                      <Go_to_inv_pose/>
+                    </Sequence>
+                  </Fallback>
+                  <Sequence name="S5">
+                    <Fallback name="FB9">
+                      <Bottle_located/>
+                      <Locate_bottle/>
+                    </Fallback>
+                    <Grasp_bottle/>
+                  </Sequence>
+                </Sequence>
+              </Sequence>
+              <Fallback name="FB6">
+                <Set_inv_pose_not_valid/>
+                <Keep_running/>
+              </Fallback>
+            </Fallback>
+          </Fallback>
+        </Sequence>
+      </Sequence>
+      <Ask_for_help/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="Room_known"/>
+    <Condition ID="Robot_in_room"/>
+    <Condition ID="Bottle_found"/>
+    <Condition ID="Bottle_grasped"/>
+    <Condition ID="Inv_pose_computed"/>
+    <Condition ID="Inv_pose_valid"/>
+    <Condition ID="Robot_at_inv_pose"/>
+    <Condition ID="Bottle_located"/>
+    <Action ID="Go_to_room"/>
+    <Action ID="FollowHuman"/>
+    <Action ID="Find_bottle"/>
+    <Action ID="Compute_inv_pose"/>
+    <Action ID="Keep_arms_for_grasp"/>
+    <Action ID="Go_to_inv_pose"/>
+    <Action ID="Locate_bottle"/>
+    <Action ID="Grasp_bottle"/>
+    <Action ID="Set_inv_pose_not_valid"/>
+    <Action ID="Keep_running"/>
+    <Action ID="Ask_for_help"/>
+  </TreeNodesModel>
 </root>

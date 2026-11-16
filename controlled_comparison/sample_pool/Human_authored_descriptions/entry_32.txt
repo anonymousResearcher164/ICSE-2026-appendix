@@ -1,0 +1,2 @@
+The robot searches for something maybe for some entry given. If fails then the whole experiment fail. (Tree also fails).
+if it successful the tree will also be successful.

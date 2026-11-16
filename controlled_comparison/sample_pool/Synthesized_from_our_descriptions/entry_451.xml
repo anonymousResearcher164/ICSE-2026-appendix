@@ -1,10 +1,10 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <Fallback name="root_fallback">
+    <Fallback>
       <SequenceWithMemory name="Main">
         <GetTarget/>
         <Move/>
-        <Sequence name="attack_sequence">
+        <Sequence>
           <TargetAdjacent/>
           <AttackTarget/>
         </Sequence>

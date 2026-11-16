@@ -1,0 +1,17 @@
+The Sequence is executed from left to right.
+
+First, the action GetArmJointsForPose is executed with the pose set to UPTRAY. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Next, a Parallel node is executed, which runs the actions SetArmJointsLeft and SetArmJointsRight at the same time. Because success_threshold and failure_threshold are set to 2, each action is tried up to 2 times. If at least one of them succeeds, the Parallel node succeeds and it switches to the next node. If both fail after 2 attempts, the Parallel node fails and the whole Sequence fails.
+
+Then, the action GetArmJointsForPose is executed with the pose set to EXTENDED. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Next, a second Parallel node is executed, which runs SetArmJointsLeft and SetArmJointsRight at the same time. Again, with the thresholds set to 2, if one of the actions succeeds within 2 tries, it switches to the next node. If both fail, the Parallel node fails and the whole Sequence fails.
+
+Then, the action GetArmJointsForPose is executed with the pose set to GRIPPING. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Next, a third Parallel node is executed, running SetArmJointsLeft and SetArmJointsRight simultaneously. If one of them succeeds within 2 tries, it switches to the next node. If both fail, the Parallel node fails and the whole Sequence fails.
+
+Then, the action GetArmJointsForPose is executed with the pose set to REST. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Finally, the fourth Parallel node is executed, which runs SetArmJointsLeft and SetArmJointsRight at the same time. If at least one of the actions succeeds within 2 attempts, this Parallel node succeeds, the whole Sequence succeeds, and the behavior ends. If both fail, the Parallel node and the whole Sequence fail.

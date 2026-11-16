@@ -1,0 +1,6 @@
+The behavior tree describes how the robot selects alternative motion goals while attempting to
+achieve a primary task in the presence of obstacles. It uses a reactive fallback structure based
+on the end-effector's position. The robot first evaluates the Y-axis threshold and, if satisfied,
+attempts Goal 3. If this strategy fails, it evaluates the Z-axis threshold and attempts Goal 2 as an
+alternative traversal strategy. If neither branch succeeds, the robot falls back to Goal 1, which
+represents the direct goal.

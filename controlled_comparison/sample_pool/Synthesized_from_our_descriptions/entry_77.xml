@@ -1,10 +1,10 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <Repeat num_cycles="3">
-      <Sequence name="speech_exchange">
-        <SpeechToTextActionClient msg="{said}"/>
+      <Sequence>
+        <SpeechToTextActionClient text="{said}"/>
         <TextToSpeechActionClient msg="{said}"/>
-        <SpeechToTextActionClient msg="{said}"/>
+        <SpeechToTextActionClient text="{said}"/>
         <TextToSpeechActionClient msg="{said}"/>
       </Sequence>
     </Repeat>
@@ -12,7 +12,7 @@
 
   <TreeNodesModel>
     <Action ID="SpeechToTextActionClient">
-      <input_port name="msg"/>
+      <output_port name="text"/>
     </Action>
     <Action ID="TextToSpeechActionClient">
       <input_port name="msg"/>

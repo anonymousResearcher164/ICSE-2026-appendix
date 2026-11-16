@@ -1,0 +1,9 @@
+entry 6 
+start time: 12:19pm
+end time: 12:40pm
+
+
+In order to get to the room, the robot will start by checking if it knows the room, if yes then it will check if it is already on the room, if not it will start going to the room. If any of the previous actions fails, it will start following a human.
+Once it arrives to the room, the robot will check if it has found the bottle, if not it will start to search for the bottle. Then, it will check if it has grasped the bottle, if not will start a grasping procedure. 
+The grasping procedure starts by checking if the inverse pose is computed, then check if this ivnerse pose is valid or not, if one of these checks fails the robot will compute a new inverse pose. With a avalid inverse pose, the robot will check if it is on that pose already, if not will start a sequence where first will keep the arms for grasp and then go to the inverse pose. After, it will check if the bottle has been located, if not will locate the bottle. With the bottle located, it will grasp the bottle. If any of the grasping actions fails it will set the inverse pose as not valid and if that is not possible then will just keep running.
+If any action fail it will fallback to ask for help.

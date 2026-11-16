@@ -1,0 +1,4 @@
+This entry describes how a robot tries to locate and act on a target. It first attempts to acquire
+the target and then performs a movement action. After this movement, it checks whether it is
+adjacent to the target now, and if that passes, it attacks the target. If these fail at any point, the
+fallback allows a random movement action instead of stopping.

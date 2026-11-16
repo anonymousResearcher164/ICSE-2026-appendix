@@ -1,6 +1,6 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <Sequence name="root_sequence">
+    <Sequence>
       <ExecuteGroupPose goal="0 0 0 0 0 0 1" group_name="arm" is_absolute="0"
                         service_name="execute_group_pose" tolerance="0.01"/>
     </Sequence>

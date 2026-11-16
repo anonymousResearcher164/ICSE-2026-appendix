@@ -1,0 +1,3 @@
+Entry_41 start: 09:12  finish: 09:18
+
+This behavior tree describes a sequence (Sequence node) through a root_sequence that first checks the battery of the agent through a check_battery node, if its okay goes to the next node that opens the gripper of a robotic arm (OpenGripper node), if it succeeds goes to the next node that approach the object (ApproachObject node) and after that happens it goes to the final node that closes the gripper (CloseGripper) picking the object that it has approached.

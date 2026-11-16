@@ -1,6 +1,6 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <Sequence name="root_sequence">
+    <Sequence name="Sequence1">
       <isFull/>
       <goClosestR/>
       <waitFrames barout="" baz="" fooin="" frames="15"/>
@@ -12,7 +12,7 @@
     <Action ID="goClosestR"/>
     <Action ID="waitFrames">
       <output_port name="barout"/>
-      <input_port name="baz"/>
+      <inout_port name="baz"/>
       <input_port name="fooin"/>
       <input_port name="frames"/>
     </Action>

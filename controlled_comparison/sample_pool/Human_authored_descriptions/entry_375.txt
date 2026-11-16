@@ -1,0 +1,9 @@
+The behavior tree has a Sequence node, called Sequence1, as its root. The robot executes its three child nodes in order.
+
+First, the robot checks whether the condition isFull is satisfied. If the condition is not satisfied, the sequence stops and the robot does not execute the following actions.
+
+If the robot is full, it performs the goClosestR action, which instructs it to go to the closest resource or target represented by R. Once this action has been successfully completed, the robot proceeds to the final action.
+
+Finally, the robot executes the waitFrames action. This action has four parameters barout, baz, fooin, and frames and all of them are set to the value 15. Therefore, after reaching the closest target, the robot performs the waitFrames action using these parameter values.
+
+Overall, the robot first verifies that it is full, then moves to the closest R, and finally waits according to the specified parameters.

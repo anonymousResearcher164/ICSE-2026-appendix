@@ -1,0 +1,13 @@
+The Sequence is executed once, going from left to right. First, the action LookAtTheTray is executed. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Then, RetryUntilSuccessful is executed, which is performed up to 3 times until the action DetectHandles is successful. For each attempt, a Timeout of 300 ms is set. If DetectHandles takes longer than 300 ms or fails, the attempt fails and it tries again. If it succeeds within the 3 attempts, it switches to the next node. If all 3 attempts fail, the whole Sequence fails.
+
+Next, the action PickTray is executed. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Then, the action LookUp is executed, where the camera is tilted upwards. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Next, the action MoveBack is executed. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Then, the action GoToTable is executed. If this is successful, it switches to the next node. If it fails, then the whole Sequence fails.
+
+Finally, the action PlaceTray is executed. If this is successful, the whole Sequence and the Repeat node are successful and the behavior ends. If it fails, then the whole Sequence and the Repeat node fail.

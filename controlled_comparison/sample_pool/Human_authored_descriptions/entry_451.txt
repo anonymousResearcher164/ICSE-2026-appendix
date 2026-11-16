@@ -1,0 +1,11 @@
+The Fallback node is executed from left to right. First, the SequenceStar node named Main is executed. Because it has a star, it executes its child nodes from left to right and repeats them if something changes.
+
+First inside Main, the action GetTarget is executed. If this is successful, it switches to the next node. If it fails, then Main fails, and the Fallback node switches to its second child, the action RandomMove.
+
+Next inside Main, the action Move is executed. If this is successful, it switches to the next node. If it fails, then Main fails, and the Fallback node switches to the action RandomMove.
+
+Then inside Main, the Sequence node is executed from left to right. First, the action TargetAdjacent is executed to check if the target is close. If this is successful, it switches to the next node. If it fails, then this Sequence fails, which causes Main to fail, and the Fallback node switches to the action RandomMove.
+
+Next inside the Sequence, the action AttackTarget is executed. If this is successful, the Sequence succeeds, which makes Main succeed, and the Fallback node succeeds as well. If AttackTarget fails, the Sequence fails, Main fails, and the Fallback node switches to the action RandomMove.
+
+Whenever Main fails at any point, the Fallback node executes its right child, the action RandomMove. If RandomMove is successful, it tries Main again, and if RandomMove fails, then the whole Fallback node fails.

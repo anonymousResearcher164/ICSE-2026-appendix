@@ -1,0 +1,1 @@
+The behavior tree runs a sequence. First, it runs Nav2 clear global costmap. If that succeeds, it runs the second node, which starts the seek game using the file robot_seek_1.json. If clearing the costmap fails, the sequence stops there.

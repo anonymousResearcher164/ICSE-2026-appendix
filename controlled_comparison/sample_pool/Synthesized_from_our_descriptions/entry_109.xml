@@ -1,7 +1,7 @@
 <root BTCPP_format="4" main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <Repeat num_cycles="10">
-      <Sequence name="navigate_between_poses">
+      <Sequence>
         <NavigateToAction goal="0.5;0.5;0"/>
         <NavigateToAction goal="-0.5;-0.5;0"/>
       </Sequence>

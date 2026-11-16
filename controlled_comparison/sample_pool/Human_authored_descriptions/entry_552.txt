@@ -1,0 +1,6 @@
+entry 552
+start time: 01:04pm
+end time: 01:14pm
+
+The robot will be running in a endless loop starting by updating the planning scene. Then, it will move its base to the goal in (2.1; -2.0; 0.0), after to (2.1; 0.0; 1.57).
+With that done it will the move its torso to a relative height of 0.1 and then its head to a pitch of 0.0 and 90.0 of yaw. Then, it will set the the following parameters for the location of tray: the target poses of tomato cans as locus poses, the tray name is shelf and occupied is false. The it will update the tray planning scene. After, it will scan the shelves for the target poses of tomator cans. Finally it will pause with a time limit of 5 seconds then start all over again.
