@@ -1,16 +1,15 @@
 {
   "name": "BT node dictionary",
-  "caption": "Dictionary for interpreting behavior control and modification",
+  "caption": "Dictionary for interpreting behavior control and modification of all evaluated behavior trees",
   "source": "From robotic mission descriptions to specifications: there and back again (ICSE 2026)",
   "placeholders": {
-    "[Action]": "a child node name; if it is a standard ROS action, controller or decorator, refer to it as ROS action [name], else as custom action [name].",
-    "[Actions]": "a series of child node names, listed by name.",
-    "[Condition]": "a check that returns success, rendered as [condition ID] is true.",
+    "[Action]": "a child node name; if it is a standard ROS action, controller or decorator, refer to it as ROS action [name], else as custom action [name]; followed by its ports as written in the XML: a literal value, a {key} as read from key (input) or stored under key (output).",
+    "[Actions]": "a series of child node names, listed by name; a composite node is referred to by its node type together with its name attribute if present (e.g., the sequence doSelfLocalization), otherwise by type and position (e.g., the second fallback); do not invent names.",
+    "[Condition]": "a check that returns success, rendered as [condition ID] is true, naming the ports it compares.",
     "[!Condition]": "a check that returns failure, rendered as [condition ID] is false.",
-    "[Subtree ID]": "the ID of a referenced behavior tree, rendered as subtree [ID].",
-    "[port:name]": "the literal value of the node's name XML attribute, rendered as follows. An integer appears verbatim (up to 5 attempts). A value of -1 is rendered by its meaning rather than quoted: for an attempt, retry or cycle count as the unbounded reading (indefinitely), and for a Parallel threshold as all children. A blackboard remapping \\texttt{{key}} is rendered as a value read from [key] at runtime, never silently dropped. When the attribute is absent, the node's documented default is stated and named as a default (the default of 1 retry). Durations may be converted to the unit a reader expects, so delay_msec=\"1000\" may be rendered as 1 second."
+    "[port:p]": "the value of the node's XML port p as written; -1 means no limit."
   },
-  "entry_count": 32,
+  "entry_count": 24,
   "entries": [
     {
       "label": "Sequence",
@@ -31,21 +30,9 @@
         "SequenceStar"
       ],
       "description": "Execute a series of child nodes in order, from left to right, remembering which ones have already succeeded.",
-      "template": "Execute the following actions ([Actions]) in sequence. If an action fails, stop the sequence; on the next execution, resume from the failed action without repeating the actions that already succeeded.",
+      "template": "Execute the following actions ([Actions]) in sequence. If any action succeeds, remember it and move to the next. If any action fails, start the sequence again from the failed action.",
       "placeholders": [
         "[Actions]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "Delay",
-      "nodes": [
-        "Delay"
-      ],
-      "description": "Wait for a given duration before executing the associated child node.",
-      "template": "Wait for the specified delay, then execute [Action] and return its result.",
-      "placeholders": [
-        "[Action]"
       ],
       "ports": []
     },
@@ -76,6 +63,22 @@
       "ports": []
     },
     {
+      "label": "Switch",
+      "nodes": [
+        "Switch2",
+        "Switch3",
+        "Switch4",
+        "Switch5",
+        "Switch6"
+      ],
+      "description": "Execute child node based on blackboard value.",
+      "template": "Read blackboard value and compare it against a set of cases. If a case matches the blackboard value, execute corresponding [Action]. Else if no case matches, execute default [Action].",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": []
+    },
+    {
       "label": "WhileDoElse",
       "nodes": [
         "WhileDoElse"
@@ -100,6 +103,20 @@
         "[Action]"
       ],
       "ports": []
+    },
+    {
+      "label": "Parallel",
+      "nodes": [
+        "Parallel"
+      ],
+      "description": "Execute multiple child nodes simultaneously, ensuring all are completed successfully.",
+      "template": "Execute the following actions ([Actions]) simultaneously. If [port:success_threshold, default: all actions] actions succeed, the execution was successful. Else if any action fails, the execution fails.",
+      "placeholders": [
+        "[Actions]"
+      ],
+      "ports": [
+        "success_threshold"
+      ]
     },
     {
       "label": "Fallback",
@@ -181,7 +198,7 @@
         "ReactiveSequence"
       ],
       "description": "Execute a series of child nodes in sequence. While a node is running, re-evaluate previous child nodes.",
-      "template": "Execute the following actions ([Actions]) in sequence. If [Action] fails, stop execution. While [Action] is still running, re-evaluate previous actions.",
+      "template": "Execute the following actions ([Actions]) in sequence. If [Action] fails, stop execution. While [Action] is still running, re-evaluate previous actions; if one of them now fails, halt the running action and stop the sequence.",
       "placeholders": [
         "[Action]",
         "[Actions]"
@@ -194,7 +211,7 @@
         "ReactiveFallback"
       ],
       "description": "Execute a series of child nodes in order from left to right. While a later node is running, restart evaluation from node 0.",
-      "template": "Execute the following actions [Actions] in order. If [Action] succeeds, stop execution. Else keep executing and re-evaluating previous actions whenever an action is running.",
+      "template": "Execute the following actions [Actions] in order. If [Action] succeeds, stop execution. Else keep executing and re-evaluating previous actions whenever an action is running; if one of them now succeeds, halt the running action and stop the fallback.",
       "placeholders": [
         "[Action]",
         "[Actions]"
@@ -207,7 +224,36 @@
         "Repeat"
       ],
       "description": "Execute a set of child nodes multiple times.",
-      "template": "Execute [Action] for a set number of times or infinitely.",
+      "template": "Execute [Action] [port:num_cycles] times.",
+      "placeholders": [
+        "[Action]"
+      ],
+      "ports": [
+        "num_cycles"
+      ]
+    },
+    {
+      "label": "BlackboardCheckValue",
+      "nodes": [
+        "BlackboardCheckInt",
+        "BlackboardCheckDouble",
+        "BlackboardCheckString"
+      ],
+      "description": "Check whether a value stored on the blackboard matches the expected value.",
+      "template": "Find a value [port:key] on the blackboard and check if it matches [port:value].",
+      "placeholders": [],
+      "ports": [
+        "key",
+        "value"
+      ]
+    },
+    {
+      "label": "Delay",
+      "nodes": [
+        "Delay"
+      ],
+      "description": "Wait for a given duration before running or returning a result from the associated child node.",
+      "template": "Execute delayed [Action] after delay timer. After delay period is exhausted, resume execution.",
       "placeholders": [
         "[Action]"
       ],
@@ -238,74 +284,28 @@
       "ports": []
     },
     {
-      "label": "Switch (Switch2–Switch6)",
+      "label": "RetryUntilSuccessful",
       "nodes": [
-        "Switch2",
-        "Switch3",
-        "Switch4",
-        "Switch5",
-        "Switch6"
+        "RetryUntilSuccessful"
       ],
-      "description": "Execute child node based on blackboard value.",
-      "template": "Read blackboard value and compare it against a set of cases. If a case matches the blackboard value, execute corresponding [Action]. Else if no case matches, execute default [Action].",
+      "description": "Continuously try to re-execute a child node until it succeeds.",
+      "template": "Keep trying to execute [Action] until it succeeds. If try succeeds, stop retrying and continue. If try fails, keep retrying until it succeeds.",
       "placeholders": [
         "[Action]"
       ],
       "ports": []
-    },
-    {
-      "label": "Parallel, ParallelNode",
-      "nodes": [
-        "Parallel",
-        "ParallelNode"
-      ],
-      "description": "Execute multiple child nodes simultaneously, ensuring all are completed successfully.",
-      "template": "Execute the following actions ([Actions]) simultaneously. If either a success threshold is reached or all actions succeed, the execution was successful. Else if any action fails, the execution fails.",
-      "placeholders": [
-        "[Actions]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "BlackboardCheckValue (Int, Double, String)",
-      "nodes": [
-        "BlackboardCheckInt",
-        "BlackboardCheckDouble",
-        "BlackboardCheckString"
-      ],
-      "description": "Check whether a value stored on the blackboard matches the expected value.",
-      "template": "Find a value on the blackboard and check if it matches a given rule.",
-      "placeholders": [],
-      "ports": []
-    },
-    {
-      "label": "RetryUntilSuccessful, RetryUntilSuccesful",
-      "nodes": [
-        "RetryUntilSuccessful",
-        "RetryUntilSuccesful"
-      ],
-      "description": "Continuously try to re-execute a child node until it succeeds, up to a bounded number of attempts.",
-      "template": "Execute [Action]. If it fails, re-execute it up to [port:num_attempts] attempts in total. If it has still not succeeded, the execution fails. If [port:num_attempts] is -1, keep retrying indefinitely.",
-      "placeholders": [
-        "[Action]"
-      ],
-      "ports": [
-        "num_attempts"
-      ]
     },
     {
       "label": "RecoveryNode",
       "nodes": [
         "RecoveryNode"
       ],
-      "description": "Try to run the primary child node. If it fails, run the next child node to recover and try the primary child node again, for a bounded number of retries.",
-      "template": "Execute main [Action]. If it fails, execute recovery action ([Action]), then retry main [Action]. Repeat this recovery-and-retry cycle up to [port:number_of_retries] times. If main [Action] still has not succeeded after that many retries, or if recovery action ([Action]) fails, stop execution.",
+      "description": "Try to run the primary child node. If it fails, run the next child node to recover and try to execute the primary child node again until retries are exhausted.",
+      "template": "Execute main [Action]. If it fails, execute recovery action ([Action]). After recovery, retry main action ([Action]). If recovery action ([Action]) fails and retries are exhausted, stop execution.",
       "placeholders": [
         "[Action]"
       ],
-      "ports": [
-        "number_of_retries"
-      ]
+      "ports": []
     },
     {
       "label": "Timeout",
@@ -313,112 +313,14 @@
         "Timeout"
       ],
       "description": "Execute child node, but only for a maximum duration.",
-      "template": "If [Action] fails to execute within specified time limit, interrupt the execution and stop it.",
+      "template": "If [Action] fails to execute within [port:msec], interrupt the execution and stop it.",
       "placeholders": [
         "[Action]"
       ],
-      "ports": []
-    },
-    {
-      "label": "ManualSelector",
-      "nodes": [
-        "ManualSelector"
-      ],
-      "description": "Let a human operator choose at runtime which child node to execute.",
-      "template": "Ask the operator which of the following actions ([Actions]) to execute, then execute the selected [Action] and return its result.",
-      "placeholders": [
-        "[Action]",
-        "[Actions]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "RoundRobin",
-      "nodes": [
-        "RoundRobin"
-      ],
-      "description": "Execute child nodes one at a time in rotating order, resuming from the child after the one last executed on the previous tick.",
-      "template": "Execute the next action in the rotation ([Actions]). If [Action] succeeds, stop execution and continue from the following action next time. If [Action] fails, move to the next action. If all actions fail in one full rotation, the execution fails.",
-      "placeholders": [
-        "[Action]",
-        "[Actions]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "IfThenElse",
-      "nodes": [
-        "IfThenElse"
-      ],
-      "description": "Execute a condition child and, depending on its result, execute either the second or the third child node.",
-      "template": "If [Condition], execute [Action]. Else if [!Condition], execute the alternative [Action]. If no alternative is given, the execution fails.",
-      "placeholders": [
-        "[!Condition]",
-        "[Action]",
-        "[Condition]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "RateController",
-      "nodes": [
-        "RateController"
-      ],
-      "description": "Execute a child node at most at a given frequency.",
-      "template": "Execute [Action] at a fixed rate. If the specified period has not yet elapsed, wait before executing [Action] again.",
-      "placeholders": [
-        "[Action]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "GoalUpdater",
-      "nodes": [
-        "GoalUpdater"
-      ],
-      "description": "Update the current goal before executing a child node.",
-      "template": "Check for a new goal. If a new goal is available, replace the current goal with it, then execute [Action].",
-      "placeholders": [
-        "[Action]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "DistanceController",
-      "nodes": [
-        "DistanceController"
-      ],
-      "description": "Execute a child node each time the robot has travelled a given distance.",
-      "template": "Execute [Action] once the robot has moved the specified distance since the last execution. Else do not re-execute [Action].",
-      "placeholders": [
-        "[Action]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "SpeedController",
-      "nodes": [
-        "SpeedController"
-      ],
-      "description": "Execute a child node at a frequency that scales with the robot's speed.",
-      "template": "Execute [Action] more often when the robot moves faster and less often when it moves slower, within a minimum and maximum rate.",
-      "placeholders": [
-        "[Action]"
-      ],
-      "ports": []
-    },
-    {
-      "label": "SubTree",
-      "nodes": [
-        "SubTree"
-      ],
-      "description": "Execute another behavior tree referenced by its ID.",
-      "template": "Execute the subtree [Subtree ID] and return its result as if it were a single [Action].",
-      "placeholders": [
-        "[Action]",
-        "[Subtree ID]"
-      ],
-      "ports": []
+      "ports": [
+        "msec"
+      ]
     }
   ]
 }
+

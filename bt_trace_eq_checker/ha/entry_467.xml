@@ -1,0 +1,65 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <Fallback name="root_fallback">
+
+      <!-- 1st option: deliver all objects, return, stand by -->
+      <Sequence name="deliver_and_return">
+        <MoveBaseIdle/>
+        <PickObject/>
+        <!-- Move objects while the queue is not empty -->
+        <Inverter>
+          <KeepRunningUntilFailure>
+            <Sequence name="move_next_object">
+              <ScriptCondition code="pose_queue_size > 0"/>
+              <GetDestination goal="{goal}" pose_queue_size="{pose_queue_size}"/>
+              <MoveBase goal="{goal}"/>
+              <MoveBaseFinished/>
+            </Sequence>
+          </KeepRunningUntilFailure>
+        </Inverter>
+        <MoveBaseIdle/>
+        <Sleep msec="3000"/>
+        <SubTree ID="ReturnObject"/>
+        <StandByObject/>
+      </Sequence>
+
+      <!-- 2nd option: just return the object and stand by -->
+      <Sequence name="return_only">
+        <SubTree ID="ReturnObject"/>
+        <StandByObject/>
+      </Sequence>
+
+      <!-- Last option: don't move, just stand by the object -->
+      <StandByObject/>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <BehaviorTree ID="ReturnObject">
+    <Sequence name="return_object">
+      <GetReturnAddress return_goal="{return_goal}"/>
+      <MoveBase goal="{return_goal}"/>
+      <MoveBaseFinished/>
+      <MoveBaseIdle/>
+      <Sleep msec="3000"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="MoveBaseIdle"/>
+    <Condition ID="MoveBaseFinished"/>
+    <Action ID="PickObject"/>
+    <Action ID="GetDestination">
+      <output_port name="goal"/>
+      <output_port name="pose_queue_size"/>
+    </Action>
+    <Action ID="GetReturnAddress">
+      <output_port name="return_goal"/>
+    </Action>
+    <Action ID="MoveBase">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="StandByObject"/>
+  </TreeNodesModel>
+</root>

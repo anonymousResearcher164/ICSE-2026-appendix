@@ -1,0 +1,167 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <ReactiveFallback name="root">
+
+      <!-- Mission waiting: hold the vehicle -->
+      <Sequence name="mission_wait">
+        <Condition ID="IsMissionWait"/>
+        <Action ID="Stop"/>
+      </Sequence>
+
+      <!-- No global path: determine state and initialize -->
+      <Sequence name="initialize">
+        <Inverter>
+          <Condition ID="HasGlobalPath"/>
+        </Inverter>
+        <Fallback name="initial_state_check">
+          <Condition ID="IsLaneKeepingState"/>
+          <Condition ID="IsLaneChangeState"/>
+        </Fallback>
+        <Action ID="CallGlobalPath" global_path="{global_path}"/>
+        <Action ID="InitializePath" global_path="{global_path}" path="{path}"/>
+      </Sequence>
+
+      <!-- Normal driving -->
+      <Sequence name="driving">
+        <Fallback name="driving_states">
+          <SubTree ID="EmergencyStop"/>
+          <SubTree ID="MissionState"/>
+          <SubTree ID="TrafficLight"/>
+          <SubTree ID="UnprotectedTurn" path="{path}"/>
+          <SubTree ID="LaneChange" path="{path}"/>
+          <SubTree ID="LaneKeeping" path="{path}"/>
+        </Fallback>
+        <Action ID="PublishData" path="{path}"/>
+      </Sequence>
+
+    </ReactiveFallback>
+  </BehaviorTree>
+
+  <!-- Safety: collision or irregular situation -->
+  <BehaviorTree ID="EmergencyStop">
+    <Sequence>
+      <Fallback>
+        <Condition ID="IsCollisionDetected"/>
+        <Condition ID="IsIrregular"/>
+      </Fallback>
+      <Action ID="Stop"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Mission completed or paused -->
+  <BehaviorTree ID="MissionState">
+    <Sequence>
+      <Condition ID="IsMissionComplete"/>
+      <Action ID="SetState" state="mission_complete"/>
+      <Action ID="Stop"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Traffic light handling -->
+  <BehaviorTree ID="TrafficLight">
+    <Sequence>
+      <Condition ID="IsTrafficLightAhead"/>
+      <Inverter>
+        <Condition ID="IsGreenLight"/>
+      </Inverter>
+      <Action ID="HandleTrafficLight"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Unprotected turn: proceed only when clear -->
+  <BehaviorTree ID="UnprotectedTurn">
+    <Sequence>
+      <Condition ID="IsUnprotectedTurn"/>
+      <Fallback>
+        <Sequence>
+          <Inverter>
+            <Condition ID="IsObjectClose"/>
+          </Inverter>
+          <Action ID="GeneratePath" mode="turn" path="{path}"/>
+        </Sequence>
+        <Action ID="Stop"/>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Lane change in progress -->
+  <BehaviorTree ID="LaneChange">
+    <Sequence>
+      <Condition ID="IsLaneChangeState"/>
+      <Fallback>
+        <Sequence>
+          <Condition ID="IsLaneChangeFeasible"/>
+          <Action ID="GeneratePath" mode="lane_change" path="{path}"/>
+        </Sequence>
+        <Sequence>
+          <Action ID="SetState" state="lane_keeping"/>
+          <Action ID="GeneratePath" mode="lane_keeping" path="{path}"/>
+        </Sequence>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Lane keeping, switching to lane change if blocked -->
+  <BehaviorTree ID="LaneKeeping">
+    <Sequence>
+      <Fallback>
+        <Sequence>
+          <Condition ID="IsObjectClose"/>
+          <Condition ID="IsLaneChangeFeasible"/>
+          <Action ID="SetState" state="lane_change"/>
+        </Sequence>
+        <Action ID="SetState" state="lane_keeping"/>
+      </Fallback>
+      <Action ID="GeneratePath" mode="lane_keeping" path="{path}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsMissionWait"/>
+    <Condition ID="HasGlobalPath"/>
+    <Condition ID="IsLaneKeepingState"/>
+    <Condition ID="IsLaneChangeState"/>
+    <Condition ID="IsLaneChangeFeasible"/>
+    <Condition ID="IsCollisionDetected"/>
+    <Condition ID="IsIrregular"/>
+    <Condition ID="IsObjectClose"/>
+    <Condition ID="IsMissionComplete"/>
+    <Condition ID="IsTrafficLightAhead"/>
+    <Condition ID="IsGreenLight"/>
+    <Condition ID="IsUnprotectedTurn"/>
+
+    <Action ID="Stop"/>
+    <Action ID="CallGlobalPath">
+      <output_port name="global_path"/>
+    </Action>
+    <Action ID="InitializePath">
+      <input_port name="global_path"/>
+      <output_port name="path"/>
+    </Action>
+    <Action ID="SetState">
+      <input_port name="state" type="std::string"/>
+    </Action>
+    <Action ID="GeneratePath">
+      <input_port name="mode" type="std::string">lane_keeping, lane_change or turn</input_port>
+      <output_port name="path"/>
+    </Action>
+    <Action ID="HandleTrafficLight"/>
+    <Action ID="PublishData">
+      <input_port name="path"/>
+    </Action>
+
+    <SubTree ID="EmergencyStop"/>
+    <SubTree ID="MissionState"/>
+    <SubTree ID="TrafficLight"/>
+    <SubTree ID="UnprotectedTurn">
+      <output_port name="path"/>
+    </SubTree>
+    <SubTree ID="LaneChange">
+      <output_port name="path"/>
+    </SubTree>
+    <SubTree ID="LaneKeeping">
+      <output_port name="path"/>
+    </SubTree>
+  </TreeNodesModel>
+</root>

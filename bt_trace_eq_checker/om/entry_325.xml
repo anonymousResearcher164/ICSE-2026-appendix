@@ -1,0 +1,44 @@
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback>
+      <SequenceStar>
+        <IsOnPasture/>
+        <IsDay/>
+        <IsInShed/>
+        <LeaveShed/>
+        <FindRandomPastureField/>
+        <Move/>
+      </SequenceStar>
+      <SequenceStar>
+        <IsOnPasture/>
+        <IsNight/>
+        <Inverter>
+          <IsInShed/>
+        </Inverter>
+        <FindShed/>
+        <Move/>
+        <EnterShed/>
+      </SequenceStar>
+      <SequenceStar>
+        <IsDay/>
+        <Inverter>
+          <IsInShed/>
+        </Inverter>
+        <RandomMove/>
+      </SequenceStar>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsOnPasture"/>
+    <Condition ID="IsDay"/>
+    <Condition ID="IsNight"/>
+    <Condition ID="IsInShed"/>
+    <Action ID="LeaveShed"/>
+    <Action ID="FindRandomPastureField"/>
+    <Action ID="Move"/>
+    <Action ID="FindShed"/>
+    <Action ID="EnterShed"/>
+    <Action ID="RandomMove"/>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,20 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="NavigateWithoutRecovery">
+      <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+      <FollowPath path="{path}" controller_id="FollowPath"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="ComputePathToPose">
+      <input_port name="goal">Destination pose</input_port>
+      <input_port name="planner_id">Planner plugin to use</input_port>
+      <output_port name="path">Computed path</output_port>
+    </Action>
+    <Action ID="FollowPath">
+      <input_port name="path">Path to follow</input_port>
+      <input_port name="controller_id">Controller plugin to use</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

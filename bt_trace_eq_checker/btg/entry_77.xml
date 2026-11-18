@@ -1,0 +1,21 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="3">
+      <Sequence name="conversation_loop">
+        <Action ID="SpeechToText" text="{message}"/>
+        <Action ID="TextToSpeech" message="{message}"/>
+        <Action ID="SpeechToText" text="{message}"/>
+        <Action ID="TextToSpeech" message="{message}"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="SpeechToText">
+      <output_port name="text" type="std::string">Recognized text</output_port>
+    </Action>
+    <Action ID="TextToSpeech">
+      <input_port name="message" type="std::string">Text to vocalize</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

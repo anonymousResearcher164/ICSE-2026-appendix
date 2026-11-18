@@ -1,0 +1,91 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="main_sequence">
+
+      <!-- Build the 3D room -->
+      <Sequence name="add_collisions">
+        <AddCollisionObject name="add_ground_to_scene"
+                            object_id="ground" shape="plane"/>
+        <AddCollisionObject name="add_left_wall"
+                            object_id="left_wall" shape="box" group_name="arm"
+                            box_pose="{left_wall_pose}" box_size="{left_wall_size}"/>
+        <AddCollisionObject name="add_right_wall"
+                            object_id="right_wall" shape="box" group_name="arm"
+                            box_pose="{right_wall_pose}" box_size="{right_wall_size}"/>
+        <AddCollisionObject name="add_top_wall"
+                            object_id="top_wall" shape="box" group_name="arm"
+                            box_pose="{top_wall_pose}" box_size="{top_wall_size}"/>
+        <AddCollisionObject name="add_conveyor"
+                            object_id="conveyor" shape="box" group_name="arm"
+                            box_pose="{conveyor_pose}" box_size="{conveyor_size}"/>
+      </Sequence>
+
+      <AddCollisionObject name="box_surface"
+                          object_id="box_surface" shape="box" group_name="arm"
+                          box_pose="{box_surface_pose}" box_size="{box_surface_size}"/>
+
+      <!-- Left cycle -->
+      <Repeat num_cycles="1">
+        <Sequence name="left">
+          <MoveToPose name="pre_middle_left" goal="{pre_middle_left_goal}" tolerance="0.01"/>
+          <RemoveCollisionObject name="remove_boxes_surface" object_id="box_surface"/>
+          <Pick name="pick" goal="{pick_left_goal}"/>
+          <MoveRelative name="lift_up" dx="0.0" dy="0.0" dz="0.1"/>
+          <MoveRelative name="pull_out" dx="0.4" dy="0.0" dz="0.0"/>
+          <MoveToPose name="post_middle_left" goal="{post_middle_left_goal}" tolerance="0.01"/>
+          <AddCollisionObject name="box_surface"
+                              object_id="box_surface" shape="box" group_name="arm"
+                              box_pose="{box_surface_pose}" box_size="{box_surface_size}"/>
+          <Place name="place" goal="{place_goal}"/>
+          <MoveToPose name="post_middle_left" goal="{post_middle_left_goal}" tolerance="0.01"/>
+        </Sequence>
+      </Repeat>
+
+      <!-- Right cycle -->
+      <Repeat num_cycles="1">
+        <Sequence name="right">
+          <MoveToPose name="pre_middle_right" goal="{pre_middle_right_goal}" tolerance="0.1"/>
+          <RemoveCollisionObject name="ExecuteRemoveObject" object_id="box_surface"/>
+          <Pick name="pick" goal="{pick_right_goal}"/>
+          <MoveRelative name="lift_up" dx="0.0" dy="0.0" dz="0.1"/>
+          <MoveRelative name="pull_out" dx="-0.4" dy="0.0" dz="0.0"/>
+          <MoveToPose name="post_middle_left" goal="{post_middle_left_goal_r}" tolerance="0.1"/>
+          <Place name="place_left" goal="{place_left_goal}"/>
+          <MoveToPose name="post_middle_left" goal="{post_middle_left_goal_r2}" tolerance="0.1"/>
+          <AddCollisionObject name="boxes_surface"
+                              object_id="box_surface" shape="box" group_name="arm"
+                              box_pose="{box_surface_pose}" box_size="{box_surface_size}"/>
+        </Sequence>
+      </Repeat>
+
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="AddCollisionObject">
+      <input_port name="object_id"/>
+      <input_port name="shape">plane | box</input_port>
+      <input_port name="group_name"/>
+      <input_port name="box_pose"/>
+      <input_port name="box_size"/>
+    </Action>
+    <Action ID="RemoveCollisionObject">
+      <input_port name="object_id"/>
+    </Action>
+    <Action ID="MoveToPose">
+      <input_port name="goal"/>
+      <input_port name="tolerance" type="double"/>
+    </Action>
+    <Action ID="Pick">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="Place">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="MoveRelative">
+      <input_port name="dx" type="double"/>
+      <input_port name="dy" type="double"/>
+      <input_port name="dz" type="double"/>
+    </Action>
+  </TreeNodesModel>
+</root>

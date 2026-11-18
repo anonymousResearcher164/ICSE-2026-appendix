@@ -1,5 +1,2 @@
-entry 549
-start time: 12:41pm
-end time: 12:44pm
 
 The robot starts excuting a group pose action with the following parameters. Goal on [0 0 0 0 0 0 1], the instatiated group name is arm, the goal is not absolute, service name is execute group pose and the tolerance for the action is 0.01

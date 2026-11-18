@@ -1,0 +1,99 @@
+<root BTCPP_format="4" main_tree_to_execute="CompetitionMode">
+
+  <BehaviorTree ID="CompetitionMode">
+    <Repeat num_cycles="-1">
+      <Sequence name="competition_cycle">
+        <SubTree ID="GetInRestPose"/>
+        <SubTree ID="DoYourTrick"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <BehaviorTree ID="GetInRestPose">
+    <Sequence name="rest_pose">
+      <Action ID="MoveArm" arm="left" pose="rest"/>
+      <Action ID="MoveArm" arm="right" pose="rest"/>
+      <Action ID="MoveHead" pose="rest"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="DoYourTrick">
+    <Sequence name="trick">
+      <SubTree ID="FillTray"/>
+      <SubTree ID="StockShelves"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="FillTray">
+    <Sequence name="fill_tray">
+      <Action ID="MoveTo" location="table"/>
+      <Fallback name="fill_until_full">
+        <Condition ID="IsTrayFull"/>
+        <RetryUntilSuccessful num_attempts="10">
+          <Sequence name="fill_round">
+            <Action ID="MoveHead" pose="look_at_table"/>
+            <Action ID="ScanTable" objects="{objects}"/>
+            <Action ID="UpdateMap" objects="{objects}"/>
+            <Action ID="PickObject" arm="left" objects="{objects}"/>
+            <Action ID="PlaceOnTray" arm="left"/>
+            <Action ID="PickObject" arm="right" objects="{objects}"/>
+            <Action ID="PlaceOnTray" arm="right"/>
+            <Condition ID="IsTrayFull"/>
+          </Sequence>
+        </RetryUntilSuccessful>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="StockShelves">
+    <Sequence name="stock_shelves">
+      <Action ID="MoveTo" location="shelves"/>
+      <Fallback name="stock_until_empty">
+        <Condition ID="IsTrayEmpty"/>
+        <RetryUntilSuccessful num_attempts="10">
+          <Sequence name="stock_round">
+            <Action ID="PickFromTray" arm="left"/>
+            <Action ID="PlaceOnShelf" arm="left"/>
+            <Action ID="PickFromTray" arm="right"/>
+            <Action ID="PlaceOnShelf" arm="right"/>
+            <Condition ID="IsTrayEmpty"/>
+          </Sequence>
+        </RetryUntilSuccessful>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="MoveArm">
+      <input_port name="arm" type="std::string">left or right</input_port>
+      <input_port name="pose" type="std::string">Named arm pose</input_port>
+    </Action>
+    <Action ID="MoveHead">
+      <input_port name="pose" type="std::string">Named head pose</input_port>
+    </Action>
+    <Action ID="MoveTo">
+      <input_port name="location" type="std::string">table or shelves</input_port>
+    </Action>
+    <Action ID="ScanTable">
+      <output_port name="objects">Detected objects</output_port>
+    </Action>
+    <Action ID="UpdateMap">
+      <input_port name="objects"/>
+    </Action>
+    <Action ID="PickObject">
+      <input_port name="arm" type="std::string"/>
+      <input_port name="objects"/>
+    </Action>
+    <Action ID="PlaceOnTray">
+      <input_port name="arm" type="std::string"/>
+    </Action>
+    <Action ID="PickFromTray">
+      <input_port name="arm" type="std::string"/>
+    </Action>
+    <Action ID="PlaceOnShelf">
+      <input_port name="arm" type="std::string"/>
+    </Action>
+    <Condition ID="IsTrayFull"/>
+    <Condition ID="IsTrayEmpty"/>
+  </TreeNodesModel>
+</root>

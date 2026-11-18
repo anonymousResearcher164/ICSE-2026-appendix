@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <SubTree ID="ChargeST"/>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <BehaviorTree ID="ChargeST">
+        <SequenceStar>
+            <Action ID="Speak" action_name="/gcloud_tts" language="pt_PT" utterance="Tenho fome" voice="pt-PT-Wavenet-D"/>
+            <Action ID="WaitForXSeconds" name="Wait2Seconds" result="SUCCESS" seconds="2"/>
+            <Fallback>
+                <SequenceStar>
+                    <RetryUntilSuccesful num_attempts="3">
+                        <Action ID="MoveBase" action_name="move_base" frame_id="map" goal_pose="-1.7971;-5.5118;0.0;0;0;0.72703;0.68659" name="Go to first point"/>
+                    </RetryUntilSuccesful>
+                    <Parallel failure_threshold="1" success_threshold="2">
+                        <Action ID="Charge" action="CHARGE" action_name="charging_action"/>
+                        <Repeat num_cycles="5">
+                            <Action ID="Speak" action_name="/gcloud_tts" language="pt_PT" utterance="bip bip" voice="pt-PT-Wavenet-D"/>
+                        </Repeat>
+                    </Parallel>
+                </SequenceStar>
+            </Fallback>
+            <Action ID="WaitForXSeconds" result="SUCCESS" seconds="10"/>
+            <Action ID="Speak" action_name="/gcloud_tts" language="pt_PT" utterance="Estou cheio, vou sair da estação" voice="pt-PT-Wavenet-D"/>
+            <Action ID="Charge" action="STOP_CHARGE" action_name="charging_action"/>
+        </SequenceStar>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ArmCartesian">
+            <input_port name="action_name"/>
+            <input_port name="frame_id"/>
+            <input_port name="pose"/>
+            <input_port name="type"/>
+        </Action>
+        <Action ID="ArmRoutines">
+            <input_port name="gesture"/>
+            <input_port name="topic"/>
+        </Action>
+        <Action ID="Charge">
+            <input_port name="action" type="std::string"/>
+            <input_port name="action_name" type="std::string"/>
+        </Action>
+        <SubTree ID="ChargeST"/>
+        <Action ID="CheckBattery">
+            <output_port name="battery_state" type="int"/>
+            <output_port name="percentage" type="double"/>
+            <input_port name="service_name" type="std::string"/>
+        </Action>
+        <Condition ID="CheckBool">
+            <input_port name="variable"/>
+        </Condition>
+        <Action ID="CheckCharging">
+            <output_port name="charging_state" type="int"/>
+            <input_port name="service_name" type="std::string"/>
+        </Action>
+        <Condition ID="CompareDouble">
+            <input_port name="A"/>
+            <input_port name="B"/>
+            <input_port name="Condition"/>
+        </Condition>
+        <Condition ID="CompareInt">
+            <input_port name="A" type="int"/>
+            <input_port name="B" type="int"/>
+            <input_port name="Condition" type="std::string"/>
+        </Condition>
+        <Action ID="DetectBlocks">
+            <output_port name="block_list" type="social_cues::BlockList_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="block_topic" type="std::string"/>
+        </Action>
+        <Action ID="DetectFaces">
+            <output_port name="faceListOut"/>
+            <input_port name="face_topic"/>
+        </Action>
+        <Action ID="FaceCounter">
+            <input_port name="faceListIn"/>
+            <input_port name="number_faces"/>
+        </Action>
+        <Action ID="GazeAtTarget">
+            <input_port name="action_name"/>
+            <input_port name="fixation_pose"/>
+            <input_port name="frame_id"/>
+        </Action>
+        <Action ID="MoveBase">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="frame_id" type="std::string"/>
+            <input_port name="goal_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+        </Action>
+        <Action ID="SelectBlock">
+            <input_port name="block_list" type="social_cues::BlockList_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <output_port name="block_pose" type="geometry_msgs::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;"/>
+            <input_port name="position_in_list" type="std::string"/>
+        </Action>
+        <Action ID="Speak">
+            <input_port name="action_name" type="std::string"/>
+            <input_port name="language" type="std::string"/>
+            <input_port name="utterance" type="std::string"/>
+            <input_port name="voice" type="std::string"/>
+        </Action>
+        <Action ID="WaitForXSeconds">
+            <input_port name="result" type="std::string"/>
+            <input_port name="seconds" type="std::string"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

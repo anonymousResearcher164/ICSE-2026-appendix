@@ -1,4 +1,3 @@
-entry_540.xml  
 
 1. Entry point : SayStuff 
 2. *SequenceStar contains of two actions. 

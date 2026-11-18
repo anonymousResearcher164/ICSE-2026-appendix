@@ -1,0 +1,544 @@
+{
+  "Atomicity": {
+    "n_items": 50,
+    "alpha_ordinal": 0.3957354709062456,
+    "ac2_quadratic": 0.9448902027027025,
+    "pairs": {
+      "PE vs IE1": {
+        "n": 50,
+        "exact": 0.88,
+        "within1": 1.0,
+        "kappa_unweighted": 0.3951612903225804,
+        "kappa_linear": 0.4444444444444436,
+        "kappa_quadratic": 0.5222929936305701,
+        "diff_profile": {
+          "0": 44,
+          "1": 6
+        },
+        "gap_ge_2": []
+      },
+      "PE vs IE2": {
+        "n": 50,
+        "exact": 0.84,
+        "within1": 0.92,
+        "kappa_unweighted": 0.3690851735015777,
+        "kappa_linear": 0.31865828092243176,
+        "kappa_quadratic": 0.29378531073446434,
+        "diff_profile": {
+          "0": 42,
+          "1": 4,
+          "2": 3,
+          "3": 1
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_376",
+            "PE": 4,
+            "IE2": 1,
+            "gap": 3
+          },
+          {
+            "item": "entry_371",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_515",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_584",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          }
+        ]
+      },
+      "IE1 vs IE2": {
+        "n": 50,
+        "exact": 0.8,
+        "within1": 0.92,
+        "kappa_unweighted": 0.15966386554621864,
+        "kappa_linear": 0.2187500000000002,
+        "kappa_quadratic": 0.2780748663101613,
+        "diff_profile": {
+          "0": 40,
+          "1": 6,
+          "2": 3,
+          "3": 1
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_376",
+            "IE1": 4,
+            "IE2": 1,
+            "gap": 3
+          },
+          {
+            "item": "entry_467",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_515",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_584",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          }
+        ]
+      }
+    }
+  },
+  "Ambiguity": {
+    "n_items": 50,
+    "alpha_ordinal": 0.7140281252431602,
+    "ac2_quadratic": 0.9050713019998305,
+    "pairs": {
+      "PE vs IE1": {
+        "n": 50,
+        "exact": 0.72,
+        "within1": 1.0,
+        "kappa_unweighted": 0.4905385735080057,
+        "kappa_linear": 0.6040723981900455,
+        "kappa_quadratic": 0.7261345852895151,
+        "diff_profile": {
+          "0": 36,
+          "1": 14
+        },
+        "gap_ge_2": []
+      },
+      "PE vs IE2": {
+        "n": 50,
+        "exact": 0.66,
+        "within1": 0.96,
+        "kappa_unweighted": 0.3902439024390244,
+        "kappa_linear": 0.5292368681863232,
+        "kappa_quadratic": 0.6775098149186765,
+        "diff_profile": {
+          "0": 33,
+          "1": 15,
+          "2": 2
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_371",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_515",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          }
+        ]
+      },
+      "IE1 vs IE2": {
+        "n": 50,
+        "exact": 0.6,
+        "within1": 0.98,
+        "kappa_unweighted": 0.28724162508909473,
+        "kappa_linear": 0.5152354570637118,
+        "kappa_quadratic": 0.7126436781609194,
+        "diff_profile": {
+          "0": 30,
+          "1": 19,
+          "2": 1
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_432",
+            "IE1": 3,
+            "IE2": 1,
+            "gap": 2
+          }
+        ]
+      }
+    }
+  },
+  "Completeness": {
+    "n_items": 50,
+    "alpha_ordinal": 0.4879196165356027,
+    "ac2_quadratic": 0.7967324064433146,
+    "pairs": {
+      "PE vs IE1": {
+        "n": 50,
+        "exact": 0.64,
+        "within1": 0.9,
+        "kappa_unweighted": 0.38440492476060195,
+        "kappa_linear": 0.3589743589743594,
+        "kappa_quadratic": 0.3115942028985501,
+        "diff_profile": {
+          "0": 32,
+          "1": 13,
+          "2": 4,
+          "3": 1
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_371",
+            "PE": 1,
+            "IE1": 4,
+            "gap": 3
+          },
+          {
+            "item": "entry_220",
+            "PE": 2,
+            "IE1": 4,
+            "gap": 2
+          },
+          {
+            "item": "entry_376",
+            "PE": 2,
+            "IE1": 4,
+            "gap": 2
+          },
+          {
+            "item": "entry_566",
+            "PE": 2,
+            "IE1": 4,
+            "gap": 2
+          },
+          {
+            "item": "entry_432",
+            "PE": 2,
+            "IE1": 4,
+            "gap": 2
+          }
+        ]
+      },
+      "PE vs IE2": {
+        "n": 50,
+        "exact": 0.62,
+        "within1": 0.96,
+        "kappa_unweighted": 0.41931540342298285,
+        "kappa_linear": 0.5675453047775946,
+        "kappa_quadratic": 0.7091670544439272,
+        "diff_profile": {
+          "0": 31,
+          "1": 17,
+          "2": 2
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_432",
+            "PE": 2,
+            "IE2": 4,
+            "gap": 2
+          },
+          {
+            "item": "entry_493",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          }
+        ]
+      },
+      "IE1 vs IE2": {
+        "n": 50,
+        "exact": 0.58,
+        "within1": 0.84,
+        "kappa_unweighted": 0.2584745762711865,
+        "kappa_linear": 0.30617726051924826,
+        "kappa_quadratic": 0.34679334916864607,
+        "diff_profile": {
+          "0": 29,
+          "1": 13,
+          "2": 6,
+          "3": 2
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_376",
+            "IE1": 4,
+            "IE2": 1,
+            "gap": 3
+          },
+          {
+            "item": "entry_371",
+            "IE1": 4,
+            "IE2": 1,
+            "gap": 3
+          },
+          {
+            "item": "entry_457",
+            "IE1": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_220",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_321",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_566",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_493",
+            "IE1": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_584",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          }
+        ]
+      }
+    }
+  },
+  "Understandability": {
+    "n_items": 50,
+    "alpha_ordinal": 0.7273196273251982,
+    "ac2_quadratic": 0.8973426612100427,
+    "pairs": {
+      "PE vs IE1": {
+        "n": 50,
+        "exact": 0.72,
+        "within1": 0.96,
+        "kappa_unweighted": 0.5098039215686274,
+        "kappa_linear": 0.6237064910630292,
+        "kappa_quadratic": 0.7260273972602737,
+        "diff_profile": {
+          "0": 36,
+          "1": 12,
+          "2": 2
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_376",
+            "PE": 4,
+            "IE1": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_435",
+            "PE": 4,
+            "IE1": 2,
+            "gap": 2
+          }
+        ]
+      },
+      "PE vs IE2": {
+        "n": 50,
+        "exact": 0.76,
+        "within1": 0.94,
+        "kappa_unweighted": 0.5337995337995338,
+        "kappa_linear": 0.6352140077821008,
+        "kappa_quadratic": 0.7272727272727274,
+        "diff_profile": {
+          "0": 38,
+          "1": 9,
+          "2": 3
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_457",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_50",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_584",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          }
+        ]
+      },
+      "IE1 vs IE2": {
+        "n": 50,
+        "exact": 0.68,
+        "within1": 0.94,
+        "kappa_unweighted": 0.4281629735525376,
+        "kappa_linear": 0.6021775544388609,
+        "kappa_quadratic": 0.7357293868921779,
+        "diff_profile": {
+          "0": 34,
+          "1": 13,
+          "2": 3
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_457",
+            "IE1": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_376",
+            "IE1": 2,
+            "IE2": 4,
+            "gap": 2
+          },
+          {
+            "item": "entry_435",
+            "IE1": 2,
+            "IE2": 4,
+            "gap": 2
+          }
+        ]
+      }
+    }
+  },
+  "Consistency": {
+    "n_items": 50,
+    "alpha_ordinal": 0.3758828793000597,
+    "ac2_quadratic": 0.9195551541153887,
+    "pairs": {
+      "PE vs IE1": {
+        "n": 50,
+        "exact": 0.9,
+        "within1": 0.98,
+        "kappa_unweighted": 0.5019920318725101,
+        "kappa_linear": 0.5283018867924524,
+        "kappa_quadratic": 0.557522123893805,
+        "diff_profile": {
+          "0": 45,
+          "1": 4,
+          "2": 1
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_220",
+            "PE": 4,
+            "IE1": 2,
+            "gap": 2
+          }
+        ]
+      },
+      "PE vs IE2": {
+        "n": 50,
+        "exact": 0.68,
+        "within1": 0.9,
+        "kappa_unweighted": 0.1649269311064719,
+        "kappa_linear": 0.2657342657342658,
+        "kappa_quadratic": 0.3921568627450978,
+        "diff_profile": {
+          "0": 34,
+          "1": 11,
+          "2": 5
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_380",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_440",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_371",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_432",
+            "PE": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_493",
+            "PE": 4,
+            "IE2": 2,
+            "gap": 2
+          }
+        ]
+      },
+      "IE1 vs IE2": {
+        "n": 50,
+        "exact": 0.68,
+        "within1": 0.86,
+        "kappa_unweighted": 0.1388589881593113,
+        "kappa_linear": 0.1642441860465117,
+        "kappa_quadratic": 0.24489795918367394,
+        "diff_profile": {
+          "0": 34,
+          "1": 9,
+          "2": 7
+        },
+        "gap_ge_2": [
+          {
+            "item": "entry_380",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_321",
+            "IE1": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_440",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_371",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_432",
+            "IE1": 3,
+            "IE2": 1,
+            "gap": 2
+          },
+          {
+            "item": "entry_493",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          },
+          {
+            "item": "entry_515",
+            "IE1": 4,
+            "IE2": 2,
+            "gap": 2
+          }
+        ]
+      }
+    }
+  }
+}

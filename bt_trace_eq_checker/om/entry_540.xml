@@ -1,0 +1,13 @@
+<root main_tree_to_execute="SayStuff">
+  <BehaviorTree ID="SayStuff">
+    <SequenceStar>
+      <SaySomething/>
+      <SayHello/>
+    </SequenceStar>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="SaySomething"/>
+    <Action ID="SayHello"/>
+  </TreeNodesModel>
+</root>

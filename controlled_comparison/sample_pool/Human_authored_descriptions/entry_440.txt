@@ -1,4 +1,3 @@
-Description:
 This behavior tree is designed for a continuous interaction loop. The root node is a Repeat decorator with num_cycles=9999, meaning the entire control flow will execute repeatedly until it reaches 9999 cycles.
 
 The main child of the Repeat node is a top-level Sequence. This Sequence contains two parallel sub-sequences (a left branch and a right branch) that execute simultaneously.

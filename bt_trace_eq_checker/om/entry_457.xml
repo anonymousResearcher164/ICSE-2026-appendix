@@ -1,0 +1,262 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="Root">
+
+      <Sequence name="MissionWait">
+        <checkMissionWait/>
+        <stop/>
+      </Sequence>
+
+      <Sequence name="Main">
+
+        <!-- Initialization -->
+        <Sequence name="Init">
+          <Fallback>
+            <checkExistPathGlobal/>
+            <Sequence>
+              <checkStateLaneKeeping/>
+              <checkLaneChangeFail/>
+              <callGlobalPath/>
+            </Sequence>
+          </Fallback>
+          <initialize/>
+        </Sequence>
+
+        <!-- Path generation / state selection -->
+        <Fallback name="PathGeneration">
+
+          <Sequence name="LaneKeeping">
+            <checkStateLaneKeeping/>
+            <generateLaneKeepingPath/>
+            <Fallback>
+
+              <!-- Global lane change -->
+              <Sequence name="GlobalLaneChange">
+                <checkGlobalLaneChange/>
+                <Fallback>
+                  <Sequence name="GlobalLeft">
+                    <checkLeftLaneChangeRequested/>
+                    <Fallback>
+                      <Sequence>
+                        <checkLeftLaneChangeable/>
+                        <generateLaneChangeLeftPath/>
+                        <Fallback>
+                          <Sequence>
+                            <Fallback>
+                              <checkLeftLaneStaticObject/>
+                              <checkCollisionBehind/>
+                            </Fallback>
+                            <setStateLaneKeeping/>
+                          </Sequence>
+                          <setStateLaneChangeLeft/>
+                        </Fallback>
+                      </Sequence>
+                      <setStateLaneKeeping/>
+                    </Fallback>
+                  </Sequence>
+                  <Sequence name="GlobalRight">
+                    <checkRightLaneChangeable/>
+                    <generateLaneChangeRightPath/>
+                    <Fallback>
+                      <Sequence>
+                        <Fallback>
+                          <checkRightLaneStaticObject/>
+                          <checkCollisionBehind/>
+                        </Fallback>
+                        <setStateLaneKeeping/>
+                      </Sequence>
+                      <setStateLaneChangeRight/>
+                    </Fallback>
+                  </Sequence>
+                </Fallback>
+              </Sequence>
+
+              <!-- Collision check -->
+              <Sequence name="CollisionCheck">
+                <checkFrontObject/>
+                <Fallback>
+                  <Sequence>
+                    <checkFrontObjectIrregular/>
+                    <Fallback>
+                      <checkNearCorner/>
+                      <checkObjectNearGoal/>
+                      <checkNearGoal/>
+                    </Fallback>
+                  </Sequence>
+
+                  <Sequence name="LeftLaneChange">
+                    <checkLaneChangeLeftProfitable/>
+                    <Fallback>
+                      <Sequence>
+                        <Fallback>
+                          <checkLeftLaneStaticObject/>
+                          <checkLeftLaneIrregularObject/>
+                        </Fallback>
+                        <setStateLaneKeeping/>
+                      </Sequence>
+                      <Sequence>
+                        <checkLeftLaneChangeable/>
+                        <generateLaneChangeLeftPath/>
+                        <Fallback>
+                          <Sequence>
+                            <Fallback>
+                              <checkLeftLaneStaticObject/>
+                              <checkCollisionBehind/>
+                            </Fallback>
+                            <setStateLaneKeeping/>
+                          </Sequence>
+                          <setStateLaneChangeLeft/>
+                        </Fallback>
+                      </Sequence>
+                      <setStateLaneKeeping/>
+                    </Fallback>
+                  </Sequence>
+
+                  <Sequence name="RightLaneChange">
+                    <checkLaneChangeRightProfitable/>
+                    <Fallback>
+                      <Sequence>
+                        <Fallback>
+                          <checkRightLaneStaticObject/>
+                          <checkRightLaneIrregularObject/>
+                        </Fallback>
+                        <setStateLaneKeeping/>
+                      </Sequence>
+                      <Sequence>
+                        <checkRightLaneChangeable/>
+                        <generateLaneChangeRightPath/>
+                        <Fallback>
+                          <Sequence>
+                            <Fallback>
+                              <checkRightLaneStaticObject/>
+                              <checkCollisionBehind/>
+                            </Fallback>
+                            <setStateLaneKeeping/>
+                          </Sequence>
+                          <setStateLaneChangeRight/>
+                        </Fallback>
+                      </Sequence>
+                      <setStateLaneKeeping/>
+                    </Fallback>
+                  </Sequence>
+                </Fallback>
+              </Sequence>
+
+              <setStateLaneKeeping/>
+            </Fallback>
+            <Fallback>
+              <checkLaneChangeMandatory/>
+              <AlwaysSuccess/>
+            </Fallback>
+          </Sequence>
+
+          <Sequence name="LaneChangeLeft">
+            <checkStateLaneChangeLeft/>
+            <Fallback>
+              <Sequence>
+                <checkLaneChangeEnd/>
+                <setStateLaneKeeping/>
+                <callGlobalPath/>
+              </Sequence>
+              <laneChangeSpeedProfile/>
+            </Fallback>
+          </Sequence>
+
+          <Sequence name="LaneChangeRight">
+            <checkStateLaneChangeRight/>
+            <Fallback>
+              <Sequence>
+                <checkLaneChangeEnd/>
+                <setStateLaneKeeping/>
+                <callGlobalPath/>
+              </Sequence>
+              <laneChangeSpeedProfile/>
+            </Fallback>
+          </Sequence>
+
+          <Sequence name="Recovery">
+            <setStateLaneKeeping/>
+          </Sequence>
+
+        </Fallback>
+
+        <!-- Traffic light -->
+        <Fallback name="TrafficCheck">
+          <checkTrafficLightPassable/>
+          <stopAtTrafficLight/>
+        </Fallback>
+
+        <!-- Unprotected turn -->
+        <Fallback name="UnprotectedTurn">
+          <Sequence>
+            <checkUnprotectedTurn/>
+            <checkUnprotectedTurnImpassable/>
+            <stop/>
+          </Sequence>
+          <AlwaysSuccess/>
+        </Fallback>
+
+        <setPath/>
+        <publishData/>
+
+        <!-- Mission state -->
+        <Fallback name="MissionState">
+          <Sequence>
+            <checkGoalReached/>
+            <setMissionStateArrived/>
+            <publishMissionState/>
+          </Sequence>
+          <setMissionStateGoing/>
+        </Fallback>
+
+      </Sequence>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="checkMissionWait"/>
+    <Condition ID="checkExistPathGlobal"/>
+    <Condition ID="checkStateLaneKeeping"/>
+    <Condition ID="checkStateLaneChangeLeft"/>
+    <Condition ID="checkStateLaneChangeRight"/>
+    <Condition ID="checkLaneChangeFail"/>
+    <Condition ID="checkGlobalLaneChange"/>
+    <Condition ID="checkLeftLaneChangeRequested"/>
+    <Condition ID="checkLeftLaneChangeable"/>
+    <Condition ID="checkRightLaneChangeable"/>
+    <Condition ID="checkLeftLaneStaticObject"/>
+    <Condition ID="checkRightLaneStaticObject"/>
+    <Condition ID="checkLeftLaneIrregularObject"/>
+    <Condition ID="checkRightLaneIrregularObject"/>
+    <Condition ID="checkCollisionBehind"/>
+    <Condition ID="checkFrontObject"/>
+    <Condition ID="checkFrontObjectIrregular"/>
+    <Condition ID="checkNearCorner"/>
+    <Condition ID="checkObjectNearGoal"/>
+    <Condition ID="checkNearGoal"/>
+    <Condition ID="checkLaneChangeLeftProfitable"/>
+    <Condition ID="checkLaneChangeRightProfitable"/>
+    <Condition ID="checkLaneChangeMandatory"/>
+    <Condition ID="checkLaneChangeEnd"/>
+    <Condition ID="checkTrafficLightPassable"/>
+    <Condition ID="checkUnprotectedTurn"/>
+    <Condition ID="checkUnprotectedTurnImpassable"/>
+    <Condition ID="checkGoalReached"/>
+    <Action ID="stop"/>
+    <Action ID="callGlobalPath"/>
+    <Action ID="initialize"/>
+    <Action ID="generateLaneKeepingPath"/>
+    <Action ID="generateLaneChangeLeftPath"/>
+    <Action ID="generateLaneChangeRightPath"/>
+    <Action ID="setStateLaneKeeping"/>
+    <Action ID="setStateLaneChangeLeft"/>
+    <Action ID="setStateLaneChangeRight"/>
+    <Action ID="laneChangeSpeedProfile"/>
+    <Action ID="stopAtTrafficLight"/>
+    <Action ID="setPath"/>
+    <Action ID="publishData"/>
+    <Action ID="setMissionStateArrived"/>
+    <Action ID="setMissionStateGoing"/>
+    <Action ID="publishMissionState"/>
+  </TreeNodesModel>
+</root>

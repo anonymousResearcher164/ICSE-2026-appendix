@@ -1,0 +1,23 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <ReactiveFallback name="goal_selection">
+      <Sequence name="goal_3_branch">
+        <CheckYThreshold name="ee_y_threshold"/>
+        <MoveToGoal name="goal_3" goal="3"/>
+      </Sequence>
+      <Sequence name="goal_2_branch">
+        <CheckZThreshold name="ee_z_threshold"/>
+        <MoveToGoal name="goal_2" goal="2"/>
+      </Sequence>
+      <MoveToGoal name="goal_1_direct" goal="1"/>
+    </ReactiveFallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="CheckYThreshold"/>
+    <Condition ID="CheckZThreshold"/>
+    <Action ID="MoveToGoal">
+      <input_port name="goal">Goal index to move the end-effector toward</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

@@ -1,5 +1,3 @@
-09:27 - 09:37
-
 The tree is rooted in a "RecoveryNode" called "NavigateRecovery" with `number_of_retries=6`. It executes its first child, "NavigateWithReplanning", and if it returns "success", the RecoveryNode also returns "success". If it returns "failure", the RecoveryNode executes its second child, "RecoveryFallback", and if that succeeds, it executes "NavigateWithReplanning" again. This can happen up to 6 times. If "RecoveryFallback" fails, or the retries run out, the RecoveryNode returns "failure".
 
 "NavigateWithReplanning" is a "PipelineSequence" node with two children. It works like a sequence, but while the second child is "running", it keeps executing the first child again on every tick. If any child fails, it returns "failure".

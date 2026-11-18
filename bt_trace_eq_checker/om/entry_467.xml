@@ -1,0 +1,43 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback>
+      <Sequence>
+        <MoveObject action="{action}"
+                    move_base_finished="{move_base_finished}"
+                    move_base_idle="{move_base_idle}"
+                    pose_queue_size="{pose_queue_size}"/>
+        <WaitObject action="{action}" wait_duration="3"/>
+      </Sequence>
+      <Sequence>
+        <ReturnObject action="{action}"
+                      home_pose_far="{home_pose_far}"
+                      move_base_finished="{move_base_finished}"
+                      move_base_idle="{move_base_idle}"/>
+        <WaitObject action="{action}" wait_duration="3"/>
+      </Sequence>
+      <StandbyObject action="{action}"/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="MoveObject">
+      <input_port name="action"/>
+      <input_port name="move_base_finished"/>
+      <input_port name="move_base_idle"/>
+      <input_port name="pose_queue_size"/>
+    </Action>
+    <Action ID="WaitObject">
+      <input_port name="action"/>
+      <input_port name="wait_duration"/>
+    </Action>
+    <Action ID="ReturnObject">
+      <input_port name="action"/>
+      <input_port name="home_pose_far"/>
+      <input_port name="move_base_finished"/>
+      <input_port name="move_base_idle"/>
+    </Action>
+    <Action ID="StandbyObject">
+      <input_port name="action"/>
+    </Action>
+  </TreeNodesModel>
+</root>

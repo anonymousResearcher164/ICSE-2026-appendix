@@ -1,0 +1,25 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <Sequence>
+        <Sequence>
+          <Action ID="go1"/>
+        </Sequence>
+      </Sequence>
+      <Action ID="go2"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="alwaysTrue"/>
+    <Action ID="dumpRun"/>
+    <Action ID="go1"/>
+    <Action ID="go2"/>
+    <Action ID="go3"/>
+    <Action ID="goClosestR"/>
+    <Action ID="guardAiMovement"/>
+    <Condition ID="isFull"/>
+    <Action ID="mineResource"/>
+    <Action ID="waitFrames"/>
+  </TreeNodesModel>
+</root>

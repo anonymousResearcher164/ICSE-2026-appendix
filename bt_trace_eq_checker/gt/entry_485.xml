@@ -1,0 +1,28 @@
+<root main_tree_to_execute="BehaviorTree">
+
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+            <GetArmJointsForPose pose="EXTENDED" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+            <GetArmJointsForPose pose="GRIPPING" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+            <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+
+</root>

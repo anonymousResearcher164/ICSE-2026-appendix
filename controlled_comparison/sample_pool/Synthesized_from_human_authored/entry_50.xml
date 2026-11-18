@@ -1,0 +1,18 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <FixRudder name="fix_rudder" depth="1" rudder="2" speed_knots="3"/>
+      <Delay name="delay_for" delay_msec="1000">
+        <AlwaysSuccess/>
+      </Delay>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="FixRudder">
+      <input_port name="depth">Target depth</input_port>
+      <input_port name="rudder">Rudder value</input_port>
+      <input_port name="speed_knots">Speed in knots</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

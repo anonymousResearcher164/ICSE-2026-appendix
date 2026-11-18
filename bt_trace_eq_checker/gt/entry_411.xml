@@ -1,0 +1,291 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="root">
+
+    <BehaviorTree ID="root">
+        <Sequence>
+            <SubTree ID="FullCompetitionMode" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="FullCompetitionMode">
+        <Repeat num_cycles="-1">
+            <Sequence>
+                <SubTree ID="GetInRestPose" />
+                <SubTree ID="DoYourTrick" />
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GetInRestPose">
+        <Sequence>
+            <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="3" failure_threshold="3">
+                <Sequence>
+                    <HeadControl pitch="0" yaw="90" />
+                    <TorsoControl relative_height="0.05" />
+                </Sequence>
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GetInUpTrayPose">
+        <Sequence>
+            <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
+            <Parallel success_threshold="2" failure_threshold="2">
+                <SetArmJointsLeft joints_pose="{joints_pose}" />
+                <SetArmJointsRight joints_pose="{joints_pose}" />
+            </Parallel>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="ClearAllOctomaps">
+        <ForceSuccess>
+            <Sequence>
+                <ClearOctomap side="left" />
+                <ClearOctomap side="right" />
+            </Sequence>
+        </ForceSuccess>
+    </BehaviorTree>
+
+    <BehaviorTree ID="UpdateOctomap">
+        <ForceSuccess>
+            <Sequence>
+                <SubTree ID="ClearAllOctomaps" />
+                <HeadControl pitch="60.0" yaw="90" />
+                <HeadControl pitch="60.0" yaw="135" />
+            </Sequence>
+        </ForceSuccess>
+    </BehaviorTree>
+
+    <BehaviorTree ID="UpdateOctomapLowerHalf">
+        <ForceSuccess>
+            <Sequence>
+                <SubTree ID="ClearAllOctomaps" />
+                <HeadControl pitch="-60.0" yaw="90" />
+                <HeadControl pitch="60.0" yaw="90" />
+                <HeadControl pitch="-60.0" yaw="135" />
+                <HeadControl pitch="60.0" yaw="135" />
+            </Sequence>
+        </ForceSuccess>
+    </BehaviorTree>
+
+    <BehaviorTree ID="DoYourTrick">
+        <Repeat num_cycles="-1">
+            <Sequence>
+                <ForceSuccess>
+                    <SubTree ID="FillYourTray" />
+                </ForceSuccess>
+                <ForceSuccess>
+                    <SubTree ID="FillTheShelf" />
+                </ForceSuccess>
+            </Sequence>
+        </Repeat>
+    </BehaviorTree>
+
+    <BehaviorTree ID="ScanTable">
+        <RetryUntilSuccesful num_attempts="-1">
+            <Sequence>
+                <TorsoControl relative_height="0.95" />
+                <HeadControl pitch="0.0" yaw="140.0" />
+                <Pause time_limit_sec="3" />
+                <ScanTableStartScanning />
+                <Pause time_limit_sec="3" />
+                <SubTree ID="ClearAllOctomaps" />
+                <ScanTableGetResults detected_tomato_cans="{detected_tomato_cans}" />
+                <TraySetLoci tray_name="table" locus_poses="{detected_tomato_cans}" occupied="true" />
+                <TrayUpdatePlanningScene />
+            </Sequence>
+        </RetryUntilSuccesful>
+    </BehaviorTree>
+
+    <BehaviorTree ID="ScanShelves">
+        <Sequence>
+            <TorsoControl relative_height="0.1" />
+            <HeadControl pitch="90.0" yaw="90.0" />
+            <Pause time_limit_sec="1" />
+            <ScanShelves tomato_can_stocking_target_poses="{tomato_can_stocking_target_poses}" />
+            <TraySetLoci tray_name="shelf" locus_poses="{tomato_can_stocking_target_poses}" occupied="false" />
+            <TrayUpdatePlanningScene />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="FillYourTray">
+        <Sequence>
+            <SubTree ID="GoToTable" />
+            <SubTree ID="ScanTable" />
+            <TorsoControl relative_height="0.95" />
+            <HeadControl pitch="0.0" yaw="135.0" />
+            <Repeat num_cycles="-1">
+                <Sequence>
+                    <Sequence>
+                        <SetBlackboard output_key="tray" value="table" />
+                        <SetBlackboard output_key="side" value="RIGHT" />
+                        <SubTree ID="TrayIsEmpty" tray="tray" side="side" />
+                    </Sequence>
+                    <Inverter>
+                        <Sequence>
+                            <SetBlackboard output_key="tray" value="backtray" />
+                            <SubTree ID="TrayIsFull" tray="tray" />
+                        </Sequence>
+                    </Inverter>
+                    <ForceSuccess>
+                        <Sequence>
+                            <SetBlackboard output_key="src_tray" value="table" />
+                            <SetBlackboard output_key="dst_tray" value="backtray" />
+                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                        </Sequence>
+                    </ForceSuccess>
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+
+
+    <BehaviorTree ID="FillTheShelf">
+        <Sequence>
+            <SubTree ID="GetInRestPose" />
+            <SubTree ID="GoToShelves" />
+            <SubTree ID="ScanShelves" />
+            <SubTree ID="UpdateOctomap" />
+            <TorsoControl relative_height="0.95" />
+            <HeadControl pitch="60.0" yaw="110.0" />
+            <Repeat num_cycles="-1">
+                <Sequence>
+                    <Sequence>
+                        <SetBlackboard output_key="tray" value="backtray" />
+                        <SetBlackboard output_key="side" value="LEFT" />
+                        <SubTree ID="TrayIsEmpty" tray="tray" side="side" />
+                    </Sequence>
+                    <Inverter>
+                        <Sequence>
+                            <SetBlackboard output_key="tray" value="shelf" />
+                            <SubTree ID="TrayIsFull" tray="tray" />
+                        </Sequence>
+                    </Inverter>
+                    <ForceSuccess>
+                        <Sequence>
+                            <SetBlackboard output_key="src_tray" value="backtray" />
+                            <SetBlackboard output_key="dst_tray" value="shelf" />
+                            <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                        </Sequence>
+                    </ForceSuccess>
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GoToTable">
+        <Sequence>
+            <MoveBase goal="1.5;-0.1;0.0" />
+            <MoveBase goal="2.2;-0.1;0.0" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="GoToShelves">
+        <Sequence>
+            <MoveBase goal="1.0;-0.3.0;0.0" />
+            <MoveBase goal="2.0;-0.3;0.4" />
+        </Sequence>
+    </BehaviorTree>
+
+
+    <BehaviorTree ID="MoveTomatoCans">
+        <Repeat num_cycles="4">
+            <ForceSuccess>
+                <KeepRunningUntilFailure>
+                    <Fallback>
+                        <Sequence>
+                            <SubTree ID="LeftArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                            <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                        </Sequence>
+                        <SubTree ID="RightArmFillYourTray" src_tray="src_tray" dst_tray="dst_tray" />
+                    </Fallback>
+                </KeepRunningUntilFailure>
+            </ForceSuccess>
+        </Repeat>
+    </BehaviorTree>
+
+    <BehaviorTree ID="LeftArmFillYourTray">
+        <Sequence>
+            <TrayPickOccupiedLocus tray_name="{src_tray}" side="LEFT" locus_id="{src_locus_id}" />
+            <Fallback>
+                <Sequence>
+                    <TrayPickEmptyLocus tray_name="{dst_tray}" side="LEFT" locus_id="{dst_locus_id}" locus_pose="{dst_locus_pose}" />
+                    <Fallback>
+                        <Sequence>
+                            <TrayUpdatePlanningScene />
+                            <PickAndPlaceLeft object_id="{src_locus_id}" target_pose="{dst_locus_pose}" flat_hand_mode="true" />
+                            <TraySetLocusState tray_name="{src_tray}" locus_id="{src_locus_id}" occupied="false" />
+                            <TraySetLocusState tray_name="{dst_tray}" locus_id="{dst_locus_id}" occupied="true" />
+                        </Sequence>
+                        <ForceFailure>
+                            <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                        </ForceFailure>
+                    </Fallback>
+                    <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                </Sequence>
+                <ForceFailure>
+                    <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+                </ForceFailure>
+            </Fallback>
+            <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="RightArmFillYourTray">
+        <Sequence>
+            <TrayPickOccupiedLocus tray_name="{src_tray}" side="RIGHT" locus_id="{src_locus_id}" />
+            <Fallback>
+                <Sequence>
+                    <TrayPickEmptyLocus tray_name="{dst_tray}" side="RIGHT" locus_id="{dst_locus_id}" locus_pose="{dst_locus_pose}" />
+                    <Fallback>
+                        <Sequence>
+                            <TrayUpdatePlanningScene />
+                            <PickAndPlaceRight object_id="{src_locus_id}" target_pose="{dst_locus_pose}" flat_hand_mode="false" />
+                            <TraySetLocusState tray_name="{src_tray}" locus_id="{src_locus_id}" occupied="false" />
+                            <TraySetLocusState tray_name="{dst_tray}" locus_id="{dst_locus_id}" occupied="true" />
+                        </Sequence>
+                        <ForceFailure>
+                            <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                        </ForceFailure>
+                    </Fallback>
+                    <TrayReleaseLocus tray_name="{dst_tray}" locus_id="{dst_locus_id}" />
+                </Sequence>
+                <ForceFailure>
+                    <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+                </ForceFailure>
+            </Fallback>
+            <TrayReleaseLocus tray_name="{src_tray}" locus_id="{src_locus_id}" />
+        </Sequence>
+    </BehaviorTree>
+
+    <BehaviorTree ID="TrayIsFull">
+        <Inverter>
+            <Sequence>
+                <Fallback>
+                    <TrayPickEmptyLocus tray_name="{tray}" side="LEFT" locus_id="{locus_id}" locus_pose="{locus_pose}" />
+                    <TrayPickEmptyLocus tray_name="{tray}" side="RIGHT" locus_id="{locus_id}" locus_pose="{locus_pose}" />
+                </Fallback>
+                <ForceSuccess>
+                    <TrayReleaseLocus tray_name="{tray}" locus_id="{locus_id}" />
+                </ForceSuccess>
+            </Sequence>
+        </Inverter>
+    </BehaviorTree>
+
+    <BehaviorTree ID="TrayIsEmpty">
+        <Fallback>
+            <Sequence>
+                <TrayPickOccupiedLocus tray_name="{tray}" side="{side}" locus_id="{locus_id}" />
+                <ForceSuccess>
+                    <TrayReleaseLocus tray_name="{tray}" locus_id="{locus_id}" />
+                </ForceSuccess>
+                <AlwaysSuccess />
+            </Sequence>
+            <AlwaysFailure />
+        </Fallback>
+    </BehaviorTree>
+
+</root>

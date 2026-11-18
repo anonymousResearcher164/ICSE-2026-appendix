@@ -1,5 +1,3 @@
-08:40 - 08:47
-
 The tree has a sequence node as its root, where the first node in this sequence is a SaySomething action node with the parameter `message="Start thinking..."`. If this succeeds, the next action node, ThinkWhatToSay, is executed with the parameter `text={the_answer}`. If that also succeeds, the process moves on to the next action node, *SaySomething*, with the parameter `message={the_answer}`, ultimately causing the sequence node itself to return success.
 
 Because this is a sequence, if any node fails during execution, the sequence returns failure and halts further execution.

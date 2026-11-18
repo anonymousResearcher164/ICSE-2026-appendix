@@ -34,7 +34,10 @@ Control flow : Sequence, SequenceStar (a.k.a. SequenceWithMemory in BT.CPP v4),
                ReactiveFallback, Parallel (a.k.a. ParallelNode), RecoveryNode
                (Nav2), PipelineSequence (Nav2), RoundRobin (Nav2),
                ConditionalSequence (undocumented/generator-specific name,
-               treated as a 2-child Sequence)
+               treated as a 2-child Sequence), ResetterNode (non-standard;
+               assumed Fallback, verdict verified insensitive to the choice)
+               and ProgressCheckerPipeline (non-standard; assumed
+               PipelineSequence)
 Decorators   : Inverter, ForceSuccess, ForceFailure, Repeat, RetryUntilSuccessful
                (and the known misspelling RetryUntilSuccesful, plus the
                shorthands Retry and RepeatUntilSuccess), Delay, Timeout,
@@ -85,6 +88,7 @@ from __future__ import annotations
 
 import itertools
 import random
+import re
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -106,7 +110,37 @@ class Status(Enum):
 
 
 TraceEvent = Tuple[str, str, Status, bool]  # (node_type, node_name, status, has_explicit_name)
-Scenario = Dict[str, Status]          # leaf_name -> forced outcome
+# A scenario fixes everything the tree can branch on. Leaf outcomes were
+# enough until Switch nodes appeared: those branch on a blackboard value,
+# not on whether a child succeeded, so the value has to be fixed too or the
+# node cannot be ticked at all. `variables` maps a blackboard key to the
+# value it holds for this scenario.
+@dataclass(frozen=True)
+class Scenario:
+    leaves: Dict[str, Status]
+    variables: Dict[str, str] = field(default_factory=dict)
+
+    def status(self, leaf_name: str) -> Status:
+        return self.leaves.get(leaf_name, Status.FAILURE)
+
+    def value(self, variable: str) -> Optional[str]:
+        return self.variables.get(variable)
+
+    def key(self, leaf_order, variable_order):
+        """A hashable identity, for de-duplicating sampled scenarios."""
+        return (tuple(self.leaves[n] for n in leaf_order),
+                tuple(self.variables.get(v) for v in variable_order))
+
+    def describe(self) -> str:
+        parts = [f"{k}={v}" for k, v in sorted(self.leaves.items())]
+        parts += [f"{k}:={v!r}" for k, v in sorted(self.variables.items())]
+        return "{" + ", ".join(parts) + "}"
+
+
+# The value a Switch variable takes when it matches none of the declared
+# cases, which is what exercises the default branch. Chosen so it cannot
+# collide with a real case label.
+NO_CASE_MATCH = "\u0000<no-case>"
 
 
 # --------------------------------------------------------------------------- #
@@ -162,7 +196,34 @@ class BTNode:
                      # order, stop and return on first non-FAILURE result;
                      # FAILURE only if every child fails. Equivalent to a
                      # plain Fallback within one tick.
-                     "RoundRobin"}
+                     "RoundRobin",
+                     # Neither of the next two is a BehaviorTree.CPP node
+                     # type, so their semantics come from a custom C++
+                     # implementation that is not available here. Both
+                     # readings below are assumptions, and both are recorded
+                     # as such rather than presented as known behavior.
+                     #
+                     # ResetterNode: used as <ResetterNode><GoalUpdated/>
+                     # <pipeline/></ResetterNode>, which is the Nav2 idiom
+                     # normally written as a ReactiveFallback -- if the
+                     # trigger condition succeeds the pipeline is skipped.
+                     # Treated as a Fallback for a single tick. The choice
+                     # was checked against the alternatives (Sequence,
+                     # guard-then-body, body-only) on the one corpus pair
+                     # that uses it: the equivalence verdict is the same
+                     # under all four, so no result rests on this reading.
+                     "ResetterNode",
+                     # ProgressCheckerPipeline: appears where the matching
+                     # tree uses PipelineSequence, with the same shape.
+                     # Treated the same way PipelineSequence is, so that a
+                     # comparison is decided by structure rather than by
+                     # which name a generator chose.
+                     "ProgressCheckerPipeline",
+                     # SwitchN reads a blackboard value and runs the child
+                     # whose case matches it, falling back to a default
+                     # child when nothing matches. The value is supplied by
+                     # the scenario, the same way leaf outcomes are.
+                     "Switch2", "Switch3", "Switch4", "Switch5", "Switch6"}
     DECORATOR_TAGS = {"Inverter", "ForceSuccess", "ForceFailure",
                        "Repeat", "RetryUntilSuccessful",
                        # Shorthand names for the same retry/repeat family.
@@ -175,6 +236,11 @@ class BTNode:
                        # alias, not a separate node type.
                        "RetryUntilSuccesful",
                        "Delay", "Timeout",
+                       # Seen in this corpus carrying delay_msec over a single
+                       # child, i.e. a Delay by another name. Same single-tick
+                       # treatment: the wait is not observable in one tick, so
+                       # the child's status passes through.
+                       "DelayFor",
                        # BehaviorTree.CPP decorator: ticks the child; if it
                        # FAILS, returns FAILURE; if it SUCCEEDS or is
                        # RUNNING, returns RUNNING. NOT a pass-through --
@@ -217,7 +283,13 @@ class BTNode:
                        # Best-guess semantics, confirmed with the user:
                        # pass-through (tick the child, return its status
                        # unchanged).
-                       "ObjectExtractionCondition"}
+                       "ObjectExtractionCondition",
+                       # Same shape and the same reasoning: a domain node
+                       # with one child despite the Check/Condition suffix,
+                       # gating the child on a blackboard entry. The gate is
+                       # not resolvable statically, so the child's status
+                       # passes through.
+                       "DesiredObjectEntryCheck"}
 
     def is_control(self) -> bool:
         return self.tag in self.CONTROL_TAGS
@@ -299,6 +371,43 @@ def parse_bt_xml(xml_text: str) -> BTNode:
                          (own_id,) if own_id else ())
 
 
+def switch_variable(node: "BTNode") -> Optional[str]:
+    """The blackboard key a Switch reads, with the {braces} stripped."""
+    raw = (node.attrib.get("variable") or "").strip()
+    if raw.startswith("{") and raw.endswith("}"):
+        raw = raw[1:-1].strip()
+    return raw or None
+
+
+def switch_cases(node: "BTNode") -> List[str]:
+    """The declared case labels, in case_1..case_N order."""
+    cases, i = [], 1
+    while f"case_{i}" in node.attrib:
+        cases.append(node.attrib[f"case_{i}"])
+        i += 1
+    return cases
+
+
+def switch_domains(node: "BTNode", into: Dict[str, set] = None) -> Dict[str, set]:
+    """
+    Walk a tree and collect, per blackboard key, the values worth trying.
+
+    The values that matter are the declared case labels -- those are the
+    only ones the tree distinguishes -- plus one value matching no case, so
+    the default branch is exercised. Two Switches reading the same key
+    contribute to the same domain.
+    """
+    into = {} if into is None else into
+    if node.tag.startswith("Switch") and node.tag[6:].isdigit():
+        variable = switch_variable(node)
+        if variable:
+            into.setdefault(variable, set()).update(switch_cases(node))
+            into[variable].add(NO_CASE_MATCH)
+    for child in node.children:
+        switch_domains(child, into)
+    return into
+
+
 def _subtree_ref(elem: ET.Element, subtrees: Dict[str, ET.Element]) -> Optional[str]:
     """
     If `elem` is a childless reference to a <BehaviorTree> defined in the
@@ -337,11 +446,15 @@ def _elem_to_node(
     ref = _subtree_ref(elem, subtrees)
     if ref is not None:
         if ref in _stack:
-            raise ValueError(
-                f"Recursive subtree reference: {' -> '.join(_stack + (ref,))}. "
-                f"A tree that references itself has no finite single-tick "
-                f"expansion."
-            )
+            # A self-referencing subtree has no finite single-tick expansion,
+            # so it cannot be inlined. Rather than refuse the whole tree, it
+            # is left as an opaque leaf whose outcome is sampled -- the same
+            # treatment a SubTree whose definition is absent from the file
+            # already gets. The recursion is recorded on the node so a caller
+            # can tell a black box apart from an ordinary action.
+            return BTNode(tag=elem.tag, name=ref,
+                          attrib=dict(elem.attrib) | {"_recursive": "true"},
+                          has_explicit_name=True)
         definition_children = list(subtrees[ref])
         if not definition_children:
             raise ValueError(
@@ -361,6 +474,21 @@ def _elem_to_node(
             f"<{elem.tag}> has no children. A control or decorator node needs "
             f"at least one child; as written it would be indistinguishable "
             f"from a leaf action named {elem.tag!r}."
+        )
+
+    # <Root> is not a BehaviorTree.CPP node type -- it is a generator writing
+    # the tree's wrapper out literally, the way <Decorator> was the base class
+    # name used as a tag. It is unwrapped rather than ticked as a pass-through
+    # decorator: a pass-through still emits a trace event, and since one tree
+    # in a pair may carry the wrapper while the other does not, tracing it
+    # would report a difference where the behavior is identical.
+    if elem.tag == "Root":
+        kids = [c for c in elem]
+        if len(kids) == 1:
+            return _elem_to_node(kids[0], subtrees, _stack)
+        raise ValueError(
+            f"<Root> wraps {len(kids)} children; expected exactly 1. It is "
+            f"treated as the tree's wrapper, so it cannot carry siblings."
         )
 
     explicit_name = elem.attrib.get("name") or elem.attrib.get("ID")
@@ -493,12 +621,43 @@ class TraceCollectingTicker:
         self.trace.append((kind, trace_name, status, explicit))
         return status
 
+    # Tags that this model ticks identically collapse to one label, because
+    # the trace must not claim a distinction the semantics do not make. The
+    # tick dispatch already treats every tag in a row below the same way, so
+    # recording the raw tag made a SequenceStar differ from a
+    # SequenceWithMemory in the trace while behaving identically under it.
+    # Where two tags genuinely differ across ticks but not within one -- a
+    # Fallback and a FallbackStar, say -- the single-tick model cannot tell
+    # them apart either, and the report states that the comparison is
+    # per-tick.
+    SEMANTIC_CLASS = {
+        **{t: "Sequence-like" for t in (
+            "Sequence", "ReactiveSequence", "SequenceStar",
+            "SequenceWithMemory", "PipelineSequence",
+            "ProgressCheckerPipeline", "ConditionalSequence")},
+        **{t: "Fallback-like" for t in (
+            "Fallback", "Selector", "ReactiveFallback", "FallbackStar",
+            "RoundRobin", "ResetterNode")},
+        **{t: "Parallel" for t in ("Parallel", "ParallelNode")},
+        **{t: "Retry-like" for t in (
+            "Repeat", "RetryUntilSuccessful", "RetryUntilSuccesful",
+            "Retry", "RepeatUntilSuccess")},
+        **{t: "Pass-through" for t in (
+            "Delay", "DelayFor", "Timeout", "RateController", "Decorator",
+            "ObjectExtractionCondition", "DesiredObjectEntryCheck",
+            "DistanceController", "SpeedController", "GoalUpdater")},
+        **{f"Switch{n}": "Switch" for n in range(2, 7)},
+    }
+
     @staticmethod
     def _trace_kind(node: BTNode) -> str:
-        """Stable category label for trace comparison purposes."""
+        """
+        Category label for trace comparison: the class of behavior the node
+        was ticked as, not the tag it was spelled with.
+        """
         if node.is_leaf():
             return "Leaf"
-        return node.tag
+        return TraceCollectingTicker.SEMANTIC_CLASS.get(node.tag, node.tag)
 
     @staticmethod
     def _trace_name(node: BTNode) -> str:
@@ -522,14 +681,15 @@ class TraceCollectingTicker:
 
         if tag in ("Sequence", "ReactiveSequence", "SequenceStar",
                     "SequenceWithMemory", "PipelineSequence",
-                    "ConditionalSequence"):
+                    "ProgressCheckerPipeline", "ConditionalSequence"):
             for child in node.children:
                 s = self.tick(child)
                 if s != Status.SUCCESS:
                     return s
             return Status.SUCCESS
 
-        if tag in ("Fallback", "Selector", "ReactiveFallback", "FallbackStar", "RoundRobin"):
+        if tag in ("Fallback", "Selector", "ReactiveFallback", "FallbackStar",
+                    "RoundRobin", "ResetterNode"):
             for child in node.children:
                 s = self.tick(child)
                 if s != Status.FAILURE:
@@ -556,6 +716,9 @@ class TraceCollectingTicker:
             self.tick(recovery_child)
             return self.tick(main_child)
 
+        if tag.startswith("Switch") and tag[6:].isdigit():
+            return self._tick_switch(node)
+
         if tag in ("Parallel", "ParallelNode"):
             results = [self.tick(c) for c in node.children]
             n = len(results)
@@ -577,6 +740,33 @@ class TraceCollectingTicker:
             return Status.RUNNING
 
         raise ValueError(f"Unhandled control node tag: {tag}")
+
+    def _tick_switch(self, node: BTNode) -> Status:
+        """
+        SwitchN: children[0..N-1] correspond to case_1..case_N, and an
+        optional extra child is the default. The declared variable is read
+        from the scenario; if its value matches no case the default runs,
+        and if there is no default the node fails without ticking anything.
+        """
+        cases = switch_cases(node)
+        n = len(cases)
+        children = node.children
+        if not n:
+            raise ValueError(f"<{node.tag}> declares no case_N attributes")
+        if len(children) < n:
+            raise ValueError(
+                f"<{node.tag}> declares {n} cases but has {len(children)} "
+                f"children; it needs one child per case, plus an optional "
+                f"default."
+            )
+        variable = switch_variable(node)
+        value = self.scenario.value(variable) if variable else None
+        for i, case in enumerate(cases):
+            if value is not None and value == case:
+                return self.tick(children[i])
+        if len(children) > n:
+            return self.tick(children[n])          # the default branch
+        return Status.FAILURE
 
     # -- decorators ---------------------------------------------------------
 
@@ -612,9 +802,9 @@ class TraceCollectingTicker:
             # child until it eventually fails).
             return Status.FAILURE if child_status == Status.FAILURE else Status.RUNNING
 
-        if tag in ("Delay", "Timeout", "RateController", "Decorator",
-                    "ObjectExtractionCondition", "DistanceController",
-                    "SpeedController", "GoalUpdater"):
+        if tag in ("Delay", "DelayFor", "Timeout", "RateController", "Decorator",
+                    "ObjectExtractionCondition", "DesiredObjectEntryCheck",
+                    "DistanceController", "SpeedController", "GoalUpdater"):
             # Delay: waits a fixed duration before ticking the child, then
             # passes its status through. Timeout: lets the child run up to
             # a duration limit, returning FAILURE if it times out (not
@@ -636,15 +826,28 @@ class TraceCollectingTicker:
     # -- leaves -------------------------------------------------------------
 
     def _tick_leaf(self, node: BTNode) -> Status:
-        return self.scenario.get(node.name, Status.FAILURE)
+        return self.scenario.status(node.name)
 
 
 # --------------------------------------------------------------------------- #
 # Equivalence checking
 # --------------------------------------------------------------------------- #
 
+def style_fold(name: str) -> str:
+    """
+    Reduce an identifier to its style-independent form: lower case, with
+    underscores, hyphens and spaces removed. Equates check_battery with
+    CheckBattery and ee_y_threshold with EEYThreshold -- naming conventions
+    rather than different nodes. It deliberately does NOT equate names that
+    differ by a word, such as LookAtTheTray and LookAtTray, which name
+    different things however similar they look.
+    """
+    return re.sub(r"[_\s\-]+", "", name).casefold()
+
+
 def _normalize_traces_for_comparison(
-    trace_a: List[TraceEvent], trace_b: List[TraceEvent]
+    trace_a: List[TraceEvent], trace_b: List[TraceEvent],
+    fold_names: bool = False
 ) -> Tuple[List[Tuple[str, str, Status]], List[Tuple[str, str, Status]]]:
     """
     Produce comparison-only views of two traces, applying the rule:
@@ -666,6 +869,8 @@ def _normalize_traces_for_comparison(
     for i in range(min(len(trace_a), len(trace_b))):
         kind_a, name_a, status_a, explicit_a = trace_a[i]
         kind_b, name_b, status_b, explicit_b = trace_b[i]
+        if fold_names:
+            name_a, name_b = style_fold(name_a), style_fold(name_b)
         if not explicit_a:
             # Ground truth left this node unnamed -> ignore name on both
             # sides at this position, regardless of tree B's naming.
@@ -685,7 +890,8 @@ def _normalize_traces_for_comparison(
     return norm_a, norm_b
 
 
-def _step_accuracy(trace_a: List[TraceEvent], trace_b: List[TraceEvent]) -> float:
+def _step_accuracy(trace_a: List[TraceEvent], trace_b: List[TraceEvent],
+                fold_names: bool = False) -> float:
     """
     Fraction of positions where the two traces agree, using the same
     GT-aware name normalization as equivalence checking (so a name-only
@@ -703,7 +909,7 @@ def _step_accuracy(trace_a: List[TraceEvent], trace_b: List[TraceEvent]) -> floa
     relative order. See `_order_tolerant_similarity` for a metric that
     isn't sensitive to that.
     """
-    cmp_a, cmp_b = _normalize_traces_for_comparison(trace_a, trace_b)
+    cmp_a, cmp_b = _normalize_traces_for_comparison(trace_a, trace_b, fold_names)
     total = max(len(cmp_a), len(cmp_b))
     if total == 0:
         return 1.0
@@ -711,7 +917,8 @@ def _step_accuracy(trace_a: List[TraceEvent], trace_b: List[TraceEvent]) -> floa
     return matches / total
 
 
-def _order_tolerant_similarity(trace_a: List[TraceEvent], trace_b: List[TraceEvent]) -> float:
+def _order_tolerant_similarity(trace_a: List[TraceEvent], trace_b: List[TraceEvent],
+                            fold_names: bool = False) -> float:
     """
     Longest Common Subsequence (LCS) based similarity, tolerant of
     insertions, deletions, and reordering -- unlike `_step_accuracy`, a
@@ -732,7 +939,7 @@ def _order_tolerant_similarity(trace_a: List[TraceEvent], trace_b: List[TraceEve
     a separate, optional metric rather than folded into the main loop
     unconditionally for very large trees.
     """
-    cmp_a, cmp_b = _normalize_traces_for_comparison(trace_a, trace_b)
+    cmp_a, cmp_b = _normalize_traces_for_comparison(trace_a, trace_b, fold_names)
     n, m = len(cmp_a), len(cmp_b)
     if n == 0 and m == 0:
         return 1.0
@@ -859,7 +1066,7 @@ class Mismatch:
     similarity: float = 1.0
 
     def explain(self) -> str:
-        lines = [f"Scenario: { {k: str(v) for k, v in self.scenario.items()} }"]
+        lines = [f"Scenario: {self.scenario.describe()}"]
         lines.append(f"  Tree A final status: {self.final_status_a}")
         lines.append(f"  Tree B final status: {self.final_status_b}")
         lines.append(
@@ -899,6 +1106,7 @@ class EquivalenceReport:
     scenarios_checked: int
     mode: str
     leaf_names: List[str]
+    switch_variables: Dict[str, int] = field(default_factory=dict)
     mismatches: List[Mismatch] = field(default_factory=list)
     average_step_accuracy: float = 1.0
     min_step_accuracy: float = 1.0
@@ -923,6 +1131,10 @@ class EquivalenceReport:
         lines.append(f"Result: {verdict}")
         lines.append(f"Mode: {self.mode}  |  Scenarios checked: {self.scenarios_checked}")
         lines.append(f"Leaf names considered: {', '.join(self.leaf_names) or '(none)'}")
+        if self.switch_variables:
+            lines.append("Blackboard variables considered: "
+                         + ", ".join(f"{k} ({v} values)"
+                                     for k, v in sorted(self.switch_variables.items())))
         lines.append(
             f"Average step accuracy: {self.average_step_accuracy:.1%}  "
             f"(worst scenario: {self.min_step_accuracy:.1%})"
@@ -964,6 +1176,7 @@ class BTEquivalenceChecker:
         max_exhaustive_leaves: int = 14,
         sample_budget: int = 20_000,
         stop_on_first_mismatch: bool = False,
+        ignore_name_style: bool = False,
     ) -> EquivalenceReport:
         """
         mode: "exhaustive" | "sample" | "auto"
@@ -974,26 +1187,38 @@ class BTEquivalenceChecker:
         tree_b = parse_bt_xml(xml_b)
 
         leaves = sorted(set(tree_a.leaf_names()) | set(tree_b.leaf_names()))
+        # A Switch in either tree adds an axis to the scenario space, so the
+        # domains are unioned across the pair: a value one tree distinguishes
+        # has to be tried against the other even if the other ignores it.
+        domains = switch_domains(tree_a)
+        switch_domains(tree_b, domains)
+        total = self.space_size(leaves, domains)
+        cap = 2 ** max_exhaustive_leaves
 
         if mode == "auto":
-            mode = "exhaustive" if len(leaves) <= max_exhaustive_leaves else "sample"
+            mode = "exhaustive" if total <= cap else "sample"
 
         if mode == "exhaustive":
             # The cap applies to an explicit mode="exhaustive" too, not just
             # to "auto". 2**N scenarios each pay an O(len(A)*len(B)) LCS, so
             # an unguarded exhaustive run on a wide tree does not fail -- it
             # just appears to hang. Raising names the knob to turn.
-            if len(leaves) > max_exhaustive_leaves:
+            if total > cap:
+                detail = f"2**{len(leaves)} leaf outcomes"
+                if domains:
+                    detail += " x " + " x ".join(
+                        f"{len(v)} values of {k}" for k, v in sorted(domains.items()))
                 raise ValueError(
-                    f"Exhaustive mode would enumerate 2**{len(leaves)} = "
-                    f"{2 ** len(leaves):,} scenarios, over the "
-                    f"max_exhaustive_leaves={max_exhaustive_leaves} cap. "
-                    f"Raise max_exhaustive_leaves to accept the cost, or use "
-                    f"mode='sample' (or 'auto') to sample the space instead."
+                    f"Exhaustive mode would enumerate {detail} = "
+                    f"{total:,} scenarios, over the "
+                    f"max_exhaustive_leaves={max_exhaustive_leaves} cap "
+                    f"({cap:,}). Raise max_exhaustive_leaves to accept the "
+                    f"cost, or use mode='sample' (or 'auto') to sample the "
+                    f"space instead."
                 )
-            scenarios = list(self._enumerate_scenarios(leaves))
+            scenarios = list(self._enumerate_scenarios(leaves, domains))
         elif mode == "sample":
-            space = 2 ** len(leaves) if len(leaves) <= 24 else None
+            space = total if total <= 2 ** 24 else None
             if space is not None and space <= sample_budget:
                 # The whole space fits in the budget, so enumerate it. The
                 # previous behavior drew `space` scenarios *with replacement*,
@@ -1001,10 +1226,10 @@ class BTEquivalenceChecker:
                 # assignments at 4 leaves) while `scenarios_checked` still
                 # reported the full count -- a mismatch confined to an
                 # undrawn scenario was reported as equivalence.
-                scenarios = list(self._enumerate_scenarios(leaves))
+                scenarios = list(self._enumerate_scenarios(leaves, domains))
                 mode = "exhaustive (full space within sample budget)"
             else:
-                scenarios = self._sample_distinct(leaves, sample_budget)
+                scenarios = self._sample_distinct(leaves, sample_budget, domains)
         else:
             raise ValueError(f"Unknown mode: {mode!r}")
 
@@ -1020,9 +1245,12 @@ class BTEquivalenceChecker:
             ticker_b = TraceCollectingTicker(scenario)
             status_b = ticker_b.tick(tree_b)
 
-            cmp_a, cmp_b = _normalize_traces_for_comparison(ticker_a.trace, ticker_b.trace)
-            accuracy = _step_accuracy(ticker_a.trace, ticker_b.trace)
-            similarity = _order_tolerant_similarity(ticker_a.trace, ticker_b.trace)
+            cmp_a, cmp_b = _normalize_traces_for_comparison(
+                ticker_a.trace, ticker_b.trace, ignore_name_style)
+            accuracy = _step_accuracy(ticker_a.trace, ticker_b.trace,
+                                      ignore_name_style)
+            similarity = _order_tolerant_similarity(
+                ticker_a.trace, ticker_b.trace, ignore_name_style)
             accuracy_sum += accuracy
             min_accuracy = min(min_accuracy, accuracy)
             similarity_sum += similarity
@@ -1047,6 +1275,7 @@ class BTEquivalenceChecker:
             scenarios_checked=len(scenarios),
             mode=mode,
             leaf_names=leaves,
+            switch_variables={k: len(v) for k, v in domains.items()},
             mismatches=mismatches,
             average_step_accuracy=(accuracy_sum / scenarios_run) if scenarios_run else 1.0,
             min_step_accuracy=min_accuracy,
@@ -1057,15 +1286,34 @@ class BTEquivalenceChecker:
     # -- scenario generation ---------------------------------------------
 
     @staticmethod
-    def _enumerate_scenarios(leaves: List[str]):
+    def _enumerate_scenarios(leaves: List[str], domains: Dict[str, set] = None):
+        domains = domains or {}
+        names = sorted(domains)
+        values = list(itertools.product(*(sorted(domains[v]) for v in names)))
         outcomes = [Status.SUCCESS, Status.FAILURE]
         for combo in itertools.product(outcomes, repeat=len(leaves)):
-            yield dict(zip(leaves, combo))
+            leaf_map = dict(zip(leaves, combo))
+            for assignment in values:
+                yield Scenario(leaf_map, dict(zip(names, assignment)))
 
-    def _random_scenario(self, leaves: List[str]) -> Scenario:
-        return {name: self._rng.choice([Status.SUCCESS, Status.FAILURE]) for name in leaves}
+    @staticmethod
+    def space_size(leaves: List[str], domains: Dict[str, set] = None) -> int:
+        """How many distinct scenarios the two axes produce together."""
+        total = 2 ** len(leaves)
+        for values in (domains or {}).values():
+            total *= max(1, len(values))
+        return total
 
-    def _sample_distinct(self, leaves: List[str], budget: int) -> List[Scenario]:
+    def _random_scenario(self, leaves: List[str],
+                         domains: Dict[str, set] = None) -> Scenario:
+        return Scenario(
+            {name: self._rng.choice([Status.SUCCESS, Status.FAILURE])
+             for name in leaves},
+            {v: self._rng.choice(sorted(values))
+             for v, values in (domains or {}).items()})
+
+    def _sample_distinct(self, leaves: List[str], budget: int,
+                         domains: Dict[str, set] = None) -> List[Scenario]:
         """
         Draw up to `budget` DISTINCT scenarios.
 
@@ -1082,8 +1330,8 @@ class BTEquivalenceChecker:
         stalls = 0
         max_stalls = max(1_000, budget)
         while len(scenarios) < budget and stalls < max_stalls:
-            scenario = self._random_scenario(leaves)
-            key = tuple(scenario[name] for name in leaves)
+            scenario = self._random_scenario(leaves, domains)
+            key = scenario.key(leaves, sorted(domains or {}))
             if key in seen:
                 stalls += 1
                 continue

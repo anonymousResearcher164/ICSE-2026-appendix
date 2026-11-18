@@ -1,0 +1,107 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <Fallback name="behavior_fallback">
+      <ReactiveSequence name="pull_over">
+        <Condition ID="PullOver_Request" ready="{pull_over_ready}"/>
+        <Action ID="PullOver" output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="pull_out">
+        <Condition ID="PullOut_Request" ready="{pull_out_ready}"/>
+        <Action ID="PullOut" output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="side_shift">
+        <Condition ID="SideShift_Request" ready="{side_shift_ready}"/>
+        <Action ID="SideShift" output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="lane_change">
+        <Condition ID="LaneChange_Request" ready="{lane_change_ready}"/>
+        <SubTree ID="a" output="{output}"/>
+      </ReactiveSequence>
+
+      <ReactiveSequence name="avoidance">
+        <Condition ID="Avoidance_Request" ready="{avoidance_ready}"/>
+        <SubTree ID="b" output="{output}"/>
+      </ReactiveSequence>
+
+      <Action ID="LaneFollowing" output="{output}"/>
+    </Fallback>
+  </BehaviorTree>
+
+  <!-- Lane change with approval -->
+  <BehaviorTree ID="a">
+    <ReactiveFallback name="lane_change_fallback">
+      <ReactiveSequence name="lane_change_approved">
+        <Condition ID="LaneChange_Approval"/>
+        <Action ID="LaneChange" output="{output}"/>
+      </ReactiveSequence>
+      <Action ID="LaneChange_RequestApproval" output="{output}"/>
+    </ReactiveFallback>
+  </BehaviorTree>
+
+  <!-- Avoidance with approval -->
+  <BehaviorTree ID="b">
+    <ReactiveFallback name="avoidance_fallback">
+      <ReactiveSequence name="avoidance_approved">
+        <Condition ID="Avoidance_Approval"/>
+        <Action ID="Avoidance" output="{output}"/>
+      </ReactiveSequence>
+      <Action ID="Avoidance_RequestApproval" output="{output}"/>
+    </ReactiveFallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="PullOver_Request">
+      <output_port name="ready">Whether pull over is ready</output_port>
+    </Condition>
+    <Condition ID="PullOut_Request">
+      <output_port name="ready">Whether pull out is ready</output_port>
+    </Condition>
+    <Condition ID="SideShift_Request">
+      <output_port name="ready">Whether side shift is ready</output_port>
+    </Condition>
+    <Condition ID="LaneChange_Request">
+      <output_port name="ready">Whether lane change is ready</output_port>
+    </Condition>
+    <Condition ID="Avoidance_Request">
+      <output_port name="ready">Whether avoidance is ready</output_port>
+    </Condition>
+    <Condition ID="LaneChange_Approval"/>
+    <Condition ID="Avoidance_Approval"/>
+
+    <Action ID="PullOver">
+      <output_port name="output">Planned path output</output_port>
+    </Action>
+    <Action ID="PullOut">
+      <output_port name="output">Planned path output</output_port>
+    </Action>
+    <Action ID="SideShift">
+      <output_port name="output">Planned path output</output_port>
+    </Action>
+    <Action ID="LaneChange">
+      <output_port name="output">Planned path output</output_port>
+    </Action>
+    <Action ID="LaneChange_RequestApproval">
+      <output_port name="output">Candidate path while awaiting approval</output_port>
+    </Action>
+    <Action ID="Avoidance">
+      <output_port name="output">Planned path output</output_port>
+    </Action>
+    <Action ID="Avoidance_RequestApproval">
+      <output_port name="output">Candidate path while awaiting approval</output_port>
+    </Action>
+    <Action ID="LaneFollowing">
+      <output_port name="output">Planned path output</output_port>
+    </Action>
+
+    <SubTree ID="a">
+      <output_port name="output"/>
+    </SubTree>
+    <SubTree ID="b">
+      <output_port name="output"/>
+    </SubTree>
+  </TreeNodesModel>
+</root>

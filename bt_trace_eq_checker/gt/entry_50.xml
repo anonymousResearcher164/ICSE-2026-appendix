@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="main">
+    <BehaviorTree ID="main">
+        <Sequence>
+          <FixRudder depth="1.0" rudder="2.0" speed_knots="3.0"/>
+          <DelayFor delay_msec="1000">
+            <AlwaysSuccess/>
+          </DelayFor>
+        </Sequence>
+    </BehaviorTree>
+  </root>

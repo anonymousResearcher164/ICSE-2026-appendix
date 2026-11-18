@@ -1,0 +1,45 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <SubTree ID="ChargeST"/>
+  </BehaviorTree>
+
+  <BehaviorTree ID="ChargeST">
+    <Sequence name="charge_sequence">
+      <Action ID="Speak" text="Vou carregar a minha bateria."/>
+      <RetryUntilSuccessful num_attempts="3">
+        <Action ID="MoveBase" goal="charging_station"/>
+      </RetryUntilSuccessful>
+      <Parallel success_count="1" failure_count="2">
+        <Action ID="Charge"/>
+        <Repeat num_cycles="5">
+          <Action ID="Speak" text="Estou a carregar."/>
+        </Repeat>
+      </Parallel>
+      <Action ID="Wait" duration="2"/>
+      <Action ID="Speak" text="Carregamento concluído."/>
+      <Action ID="StopCharging"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="MoveBase">
+      <input_port name="goal">Named location or pose</input_port>
+    </Action>
+    <Action ID="Speak">
+      <input_port name="text" type="std::string">Message to speak</input_port>
+    </Action>
+    <Action ID="Wait">
+      <input_port name="duration" type="double">Wait time in seconds</input_port>
+    </Action>
+    <Action ID="Charge"/>
+    <Action ID="StopCharging"/>
+    <Condition ID="CheckBattery">
+      <input_port name="threshold" type="double">Minimum battery level</input_port>
+    </Condition>
+    <Condition ID="DetectFace">
+      <output_port name="face">Detected face</output_port>
+    </Condition>
+    <SubTree ID="ChargeST"/>
+  </TreeNodesModel>
+</root>

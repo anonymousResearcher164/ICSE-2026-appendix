@@ -1,0 +1,185 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="root">
+
+      <!-- Stop condition: stop and do nothing -->
+      <Sequence name="stop_branch">
+        <checkStop/>
+        <stop/>
+      </Sequence>
+
+      <!-- Main driving steps: any failure fails the whole behavior -->
+      <Sequence name="main_driving">
+
+        <!-- Global path -->
+        <checkExistPathGlobal/>
+        <Fallback name="global_path_refresh">
+          <Inverter>
+            <Sequence>
+              <checkStateLaneKeeping/>
+              <checkLaneChangeFailed/>
+            </Sequence>
+          </Inverter>
+          <requestGlobalPath/>
+        </Fallback>
+
+        <init/>
+
+        <!-- Path generation by state -->
+        <Fallback name="StateSelect">
+
+          <!-- Lane keeping -->
+          <Sequence name="LaneKeeping">
+            <checkStateLaneKeeping/>
+            <genPathLaneKeeping/>
+            <Fallback name="lane_decision">
+
+              <!-- Lane change required by the global route -->
+              <Sequence name="global_lane_change">
+                <checkGlobalLaneChange/>
+                <Fallback>
+                  <Sequence>
+                    <checkLeftChange/>
+                    <checkLaneChangeableLeft/>
+                    <setStateLaneChangeLeft/>
+                  </Sequence>
+                  <Sequence>
+                    <Inverter>
+                      <checkLeftChange/>
+                    </Inverter>
+                    <checkLaneChangeableRight/>
+                    <setStateLaneChangeRight/>
+                  </Sequence>
+                  <setStateLaneKeeping/>
+                </Fallback>
+              </Sequence>
+
+              <!-- Object in front -->
+              <Sequence name="front_object">
+                <checkFrontObject/>
+                <Fallback>
+                  <Sequence name="stay_near_corner">
+                    <Inverter>
+                      <checkIrregularObject/>
+                    </Inverter>
+                    <checkNearCorner/>
+                    <setStateLaneKeeping/>
+                  </Sequence>
+                  <Sequence name="overtake_left">
+                    <checkLaneChangeableLeft/>
+                    <checkProfitLaneChangeLeft/>
+                    <checkSafeLaneChangeLeft/>
+                    <setStateLaneChangeLeft/>
+                  </Sequence>
+                  <Sequence name="overtake_right">
+                    <checkLaneChangeableRight/>
+                    <checkProfitLaneChangeRight/>
+                    <checkSafeLaneChangeRight/>
+                    <setStateLaneChangeRight/>
+                  </Sequence>
+                  <setStateLaneKeeping/>
+                </Fallback>
+              </Sequence>
+
+              <!-- Nothing special: keep the lane -->
+              <setStateLaneKeeping/>
+            </Fallback>
+          </Sequence>
+
+          <!-- Lane change (left or right) -->
+          <Sequence name="LaneChange">
+            <Fallback>
+              <checkStateLaneChangeLeft/>
+              <checkStateLaneChangeRight/>
+            </Fallback>
+            <speedProfileLaneChange/>
+            <Fallback name="lane_change_end">
+              <Sequence>
+                <checkEndLaneChange/>
+                <setStateLaneKeeping/>
+                <requestGlobalPath/>
+              </Sequence>
+              <AlwaysSuccess/>
+            </Fallback>
+          </Sequence>
+
+          <!-- Unknown state: reset -->
+          <setStateLaneKeeping/>
+        </Fallback>
+
+        <!-- Traffic light / unprotected turn -->
+        <Fallback name="intersection_check">
+          <Sequence name="traffic_light_stop">
+            <checkTrafficLight/>
+            <Inverter>
+              <checkPassableTrafficLight/>
+            </Inverter>
+            <stopTrafficLight/>
+          </Sequence>
+          <Sequence name="unprotected_turn_stop">
+            <checkUnprotectedTurn/>
+            <Inverter>
+              <checkPassableUnprotectedTurn/>
+            </Inverter>
+            <stop/>
+          </Sequence>
+          <AlwaysSuccess name="continue"/>
+        </Fallback>
+
+        <setPath/>
+        <publishData/>
+
+        <!-- Mission state -->
+        <Fallback name="mission_state">
+          <Sequence>
+            <checkArrivedGoal/>
+            <setMissionArrived/>
+            <publishMissionState/>
+          </Sequence>
+          <setMissionGoing/>
+        </Fallback>
+
+      </Sequence>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="checkStop"/>
+    <Condition ID="checkExistPathGlobal"/>
+    <Condition ID="checkStateLaneKeeping"/>
+    <Condition ID="checkLaneChangeFailed"/>
+    <Condition ID="checkGlobalLaneChange"/>
+    <Condition ID="checkLeftChange"/>
+    <Condition ID="checkLaneChangeableLeft"/>
+    <Condition ID="checkLaneChangeableRight"/>
+    <Condition ID="checkFrontObject"/>
+    <Condition ID="checkIrregularObject"/>
+    <Condition ID="checkNearCorner"/>
+    <Condition ID="checkProfitLaneChangeLeft"/>
+    <Condition ID="checkProfitLaneChangeRight"/>
+    <Condition ID="checkSafeLaneChangeLeft"/>
+    <Condition ID="checkSafeLaneChangeRight"/>
+    <Condition ID="checkStateLaneChangeLeft"/>
+    <Condition ID="checkStateLaneChangeRight"/>
+    <Condition ID="checkEndLaneChange"/>
+    <Condition ID="checkTrafficLight"/>
+    <Condition ID="checkPassableTrafficLight"/>
+    <Condition ID="checkUnprotectedTurn"/>
+    <Condition ID="checkPassableUnprotectedTurn"/>
+    <Condition ID="checkArrivedGoal"/>
+    <Action ID="stop"/>
+    <Action ID="stopTrafficLight"/>
+    <Action ID="requestGlobalPath"/>
+    <Action ID="init"/>
+    <Action ID="genPathLaneKeeping"/>
+    <Action ID="setStateLaneKeeping"/>
+    <Action ID="setStateLaneChangeLeft"/>
+    <Action ID="setStateLaneChangeRight"/>
+    <Action ID="speedProfileLaneChange"/>
+    <Action ID="setPath"/>
+    <Action ID="publishData"/>
+    <Action ID="setMissionArrived"/>
+    <Action ID="setMissionGoing"/>
+    <Action ID="publishMissionState"/>
+  </TreeNodesModel>
+</root>

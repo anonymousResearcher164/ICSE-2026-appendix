@@ -1,0 +1,15 @@
+<root BTCPP_format="3" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <SequenceStar name="root_sequence">
+      <Action ID="SaySomething" message="Hello World"/>
+      <Action ID="SayHello"/>
+    </SequenceStar>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="SaySomething">
+      <input_port name="message" type="std::string"/>
+    </Action>
+    <Action ID="SayHello"/>
+  </TreeNodesModel>
+</root>

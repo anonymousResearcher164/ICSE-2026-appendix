@@ -1,0 +1,16 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="10">
+      <Sequence name="patrol_sequence">
+        <Action ID="MoveBase" goal="0.5;0.5;0.0"/>
+        <Action ID="MoveBase" goal="-0.5;-0.5;0.0"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="MoveBase">
+      <input_port name="goal" type="Pose2D">Target pose as "x;y;theta"</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

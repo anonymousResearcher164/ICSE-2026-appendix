@@ -1,0 +1,73 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="{num_cycles}">
+      <Sequence name="ltl_cycle">
+
+        <!-- 1. LTL pre-check -->
+        <Fallback name="pre_check">
+          <LTLPreCheck ltl_state_current="{ltl_state_current}"
+                       ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+          <ForceFailure>
+            <ReplanningRequestLevel2/>
+          </ForceFailure>
+        </Fallback>
+
+        <!-- 2. Locomotion health + navigation -->
+        <ReactiveSequence name="monitor_and_move">
+
+          <Fallback name="locomotion_check">
+            <RetryUntilSuccessful num_attempts="3">
+              <Fallback>
+                <CheckLocomotionStatus locomotion_status="{locomotion_status}"/>
+                <Sequence name="recover_locomotion">
+                  <RecoveryStand locomotion_status="{locomotion_status}"/>
+                  <Delay delay_msec="5000">
+                    <StartLocomotion/>
+                  </Delay>
+                </Sequence>
+              </Fallback>
+            </RetryUntilSuccessful>
+            <ForceFailure>
+              <ReplanningRequestLevel3/>
+            </ForceFailure>
+          </Fallback>
+
+          <Fallback name="navigation">
+            <Move nav_goal="{nav_goal}"/>
+            <ForceFailure>
+              <ReplanningRequestLevel1/>
+            </ForceFailure>
+          </Fallback>
+
+        </ReactiveSequence>
+
+        <!-- 3. Update LTL state -->
+        <UpdateLTL nav_goal="{nav_goal}"/>
+
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="LTLPreCheck">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_desired_sequence"/>
+    </Condition>
+    <Action ID="CheckLocomotionStatus">
+      <output_port name="locomotion_status"/>
+    </Action>
+    <Action ID="RecoveryStand">
+      <input_port name="locomotion_status"/>
+    </Action>
+    <Action ID="StartLocomotion"/>
+    <Action ID="Move">
+      <input_port name="nav_goal"/>
+    </Action>
+    <Action ID="ReplanningRequestLevel1"/>
+    <Action ID="ReplanningRequestLevel2"/>
+    <Action ID="ReplanningRequestLevel3"/>
+    <Action ID="UpdateLTL">
+      <input_port name="nav_goal"/>
+    </Action>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute = "MainTree" >
+   <BehaviorTree ID="MainTree">
+      <Sequence name="place">
+        <GetPickObject  name="get_pose_from_object" object_id="{object_id}"/>
+        <GetPlacingPose  name="get_placing_pose" object="{object_id}" ob_pose="{pose}"/>
+        <ApproachObject name="approach_object" object_pose="{pose}"/> 
+        <PlaceSimple  name="place" goal="{pose}"/> 
+      </Sequence>
+   </BehaviorTree>
+</root>

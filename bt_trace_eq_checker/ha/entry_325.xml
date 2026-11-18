@@ -1,0 +1,57 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="FallbackStar">
+
+      <!-- Day: leave the shed and go to the pasture -->
+      <SequenceWithMemory name="day_go_out">
+        <IsDay/>
+        <IsOnPasture/>
+        <IsInShed/>
+        <LeaveShed/>
+        <SelectRandomPastureField field="{target_field}"/>
+        <MoveTo goal="{target_field}"/>
+      </SequenceWithMemory>
+
+      <!-- Night: find the shed and go inside -->
+      <SequenceWithMemory name="night_go_home">
+        <IsNight/>
+        <IsOnPasture/>
+        <Inverter>
+          <IsInShed/>
+        </Inverter>
+        <SearchShed shed_location="{shed_location}"/>
+        <MoveTo goal="{shed_location}"/>
+        <EnterShed/>
+      </SequenceWithMemory>
+
+      <!-- Default: wander during the day while outside -->
+      <SequenceWithMemory name="default_wander">
+        <IsDay/>
+        <Inverter>
+          <IsInShed/>
+        </Inverter>
+        <RandomMove/>
+      </SequenceWithMemory>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsDay"/>
+    <Condition ID="IsNight"/>
+    <Condition ID="IsOnPasture"/>
+    <Condition ID="IsInShed"/>
+    <Action ID="LeaveShed"/>
+    <Action ID="SelectRandomPastureField">
+      <output_port name="field"/>
+    </Action>
+    <Action ID="SearchShed">
+      <output_port name="shed_location"/>
+    </Action>
+    <Action ID="MoveTo">
+      <input_port name="goal"/>
+    </Action>
+    <Action ID="EnterShed"/>
+    <Action ID="RandomMove"/>
+  </TreeNodesModel>
+</root>

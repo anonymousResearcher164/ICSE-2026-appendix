@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <BehaviorTree ID="BehaviorTree">
+        <Repeat num_cycles="1">            
+                <Sequence>
+                    <Action ID="LookAtTheTray"/>
+                    <RetryUntilSuccessful num_attempts="3">
+                        <Timeout msec="300">
+                            <Action ID="DetectHandles"/>
+                        </Timeout>
+                    </RetryUntilSuccessful>
+                    <Action ID="PickTray"/>
+                    <Action ID="LookUp"/>
+                    <Action ID="MoveBack"/>
+                    <Action ID="GoToTable"/>
+                    <Action ID="PlaceTray"/>                     
+                </Sequence>            
+        </Repeat>
+    </BehaviorTree>
+    <TreeNodesModel>
+        <Action ID="LookAtTheTray"/>
+        <Action ID="DetectHandles"/>
+        <Action ID="PickTray"/>
+        <Action ID="LookUp"/>
+        <Action ID="MoveBack"/>
+        <Action ID="GoToTable"/> 
+        <Action ID="PlaceTray"/>                
+    </TreeNodesModel>
+</root>

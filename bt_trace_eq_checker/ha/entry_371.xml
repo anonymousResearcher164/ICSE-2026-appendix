@@ -1,0 +1,78 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="{num_cycles}">
+      <Sequence name="ltl_cycle">
+
+        <!-- Pre-check: replan if the LTL state isn't as desired -->
+        <Fallback name="pre_check">
+          <LTLPreCheck ltl_state_current="{ltl_state_current}"
+                       ltl_state_desired_sequence="{ltl_state_desired_sequence}"
+                       ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
+          <ReplanningRequestLevel2/>
+        </Fallback>
+
+        <!-- Monitoring + execution, re-evaluated every tick -->
+        <ReactiveSequence name="monitor_and_execute">
+          <Fallback name="level1_check">
+            <FakeDetectionLevel1/>
+            <ReplanningRequestLevel1/>
+          </Fallback>
+          <Fallback name="level2_check">
+            <ReactiveLTLStateCheck ltl_state_current="{ltl_state_current}"
+                                   ltl_state_desired_sequence="{ltl_state_desired_sequence}"
+                                   ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
+            <ReplanningRequestLevel2/>
+          </Fallback>
+          <Fallback name="level3_check">
+            <FakeDetectionLevel3/>
+            <ReplanningRequestLevel3/>
+          </Fallback>
+          <Sequence name="execute_decision">
+            <Switch4 variable="{action}"
+                     case_1="move"
+                     case_2="stay"
+                     case_3="start_training"
+                     case_4="terminate_training">
+              <MoveAction/>
+              <StayAction/>
+              <GuideAction/>
+              <BackNormalAction/>
+              <AlwaysFailure/>
+            </Switch4>
+            <ReplanningRequestLevel3/>
+          </Sequence>
+        </ReactiveSequence>
+
+        <UpdateLTL ltl_state_current="{ltl_state_current}"
+                   ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
+
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="LTLPreCheck">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_desired_sequence"/>
+      <input_port name="ltl_state_executed_sequence"/>
+    </Condition>
+    <Condition ID="ReactiveLTLStateCheck">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_desired_sequence"/>
+      <input_port name="ltl_state_executed_sequence"/>
+    </Condition>
+    <Condition ID="FakeDetectionLevel1"/>
+    <Condition ID="FakeDetectionLevel3"/>
+    <Action ID="ReplanningRequestLevel1"/>
+    <Action ID="ReplanningRequestLevel2"/>
+    <Action ID="ReplanningRequestLevel3"/>
+    <Action ID="MoveAction"/>
+    <Action ID="StayAction"/>
+    <Action ID="GuideAction"/>
+    <Action ID="BackNormalAction"/>
+    <Action ID="UpdateLTL">
+      <output_port name="ltl_state_current"/>
+      <output_port name="ltl_state_executed_sequence"/>
+    </Action>
+  </TreeNodesModel>
+</root>

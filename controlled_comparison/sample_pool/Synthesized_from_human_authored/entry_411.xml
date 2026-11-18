@@ -1,0 +1,91 @@
+<root BTCPP_format="4" main_tree_to_execute="FullCompetitionMode">
+
+  <BehaviorTree ID="FullCompetitionMode">
+    <Sequence name="mission">
+      <SubTree ID="GetInRestPose"/>
+      <SubTree ID="DoYourTrick"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="GetInRestPose">
+    <Sequence name="rest_pose">
+      <GetArmJointsForPose pose="REST" joint_pose="{rest_joints}"/>
+      <Parallel success_count="3" failure_count="1">
+        <SetHeadJoints/>
+        <SetArmJointsLeft  joint_pose="{rest_joints}"/>
+        <SetArmJointsRight joint_pose="{rest_joints}"/>
+      </Parallel>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="DoYourTrick">
+    <Sequence name="trick">
+      <SubTree ID="FillYourTray"/>
+      <SubTree ID="FillTheShelf"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="FillYourTray">
+    <Sequence name="fill_tray">
+      <MoveToTable/>
+      <ScanTable/>
+      <Fallback name="tray_check">
+        <Sequence>
+          <IsTrayEmpty/>
+          <FillTrayWithRightArm/>
+        </Sequence>
+        <SubTree ID="TryIsFull"/>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="FillTheShelf">
+    <Sequence name="fill_shelf">
+      <SubTree ID="GetInRestPose"/>
+      <MoveToShelf/>
+      <ScanShelf/>
+      <AdjustHead/>
+      <Fallback name="space_check">
+        <Sequence>
+          <HasSpace/>
+          <FillWithLeftArm/>
+        </Sequence>
+        <SubTree ID="TryIsFull"/>
+      </Fallback>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="TryIsFull">
+    <Fallback name="try_is_full">
+      <CheckSpaceLeft/>
+      <CheckSpaceRight/>
+      <ReleaseTray/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GetArmJointsForPose">
+      <input_port name="pose"/>
+      <output_port name="joint_pose"/>
+    </Action>
+    <Action ID="SetHeadJoints"/>
+    <Action ID="SetArmJointsLeft">
+      <input_port name="joint_pose"/>
+    </Action>
+    <Action ID="SetArmJointsRight">
+      <input_port name="joint_pose"/>
+    </Action>
+    <Action ID="MoveToTable"/>
+    <Action ID="ScanTable"/>
+    <Condition ID="IsTrayEmpty"/>
+    <Action ID="FillTrayWithRightArm"/>
+    <Action ID="MoveToShelf"/>
+    <Action ID="ScanShelf"/>
+    <Action ID="AdjustHead"/>
+    <Condition ID="HasSpace"/>
+    <Action ID="FillWithLeftArm"/>
+    <Condition ID="CheckSpaceLeft"/>
+    <Condition ID="CheckSpaceRight"/>
+    <Action ID="ReleaseTray"/>
+  </TreeNodesModel>
+</root>

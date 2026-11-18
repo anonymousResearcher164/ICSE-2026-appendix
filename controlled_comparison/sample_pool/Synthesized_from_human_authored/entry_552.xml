@@ -1,0 +1,43 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="-1">
+      <Sequence name="shelf_scan_loop">
+        <UpdatePlanningScene/>
+        <MoveBase goal="2.1;-2.0;0.0"/>
+        <MoveBase goal="2.1;0.0;1.57"/>
+        <MoveTorso height="0.1" relative="true"/>
+        <MoveHead pitch="0.0" yaw="90.0"/>
+        <SetTrayLocation locus_poses="{tomato_can_target_poses}"
+                         tray_name="shelf"
+                         occupied="false"/>
+        <UpdateTrayPlanningScene/>
+        <ScanShelves target_poses="{tomato_can_target_poses}"/>
+        <Sleep msec="5000"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="UpdatePlanningScene"/>
+    <Action ID="MoveBase">
+      <input_port name="goal">x;y;theta</input_port>
+    </Action>
+    <Action ID="MoveTorso">
+      <input_port name="height" type="double"/>
+      <input_port name="relative" type="bool"/>
+    </Action>
+    <Action ID="MoveHead">
+      <input_port name="pitch" type="double"/>
+      <input_port name="yaw" type="double"/>
+    </Action>
+    <Action ID="SetTrayLocation">
+      <input_port name="locus_poses"/>
+      <input_port name="tray_name"/>
+      <input_port name="occupied" type="bool"/>
+    </Action>
+    <Action ID="UpdateTrayPlanningScene"/>
+    <Action ID="ScanShelves">
+      <inout_port name="target_poses"/>
+    </Action>
+  </TreeNodesModel>
+</root>

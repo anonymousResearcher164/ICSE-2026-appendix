@@ -1,0 +1,31 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="root_fallback">
+      <SequenceWithMemory name="Main">
+        <GetTarget target="{target}"/>
+        <Move target="{target}"/>
+        <Sequence>
+          <TargetAdjacent target="{target}"/>
+          <AttackTarget target="{target}"/>
+        </Sequence>
+      </SequenceWithMemory>
+      <RandomMove/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GetTarget">
+      <output_port name="target"/>
+    </Action>
+    <Action ID="Move">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="TargetAdjacent">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="AttackTarget">
+      <input_port name="target"/>
+    </Action>
+    <Action ID="RandomMove"/>
+  </TreeNodesModel>
+</root>

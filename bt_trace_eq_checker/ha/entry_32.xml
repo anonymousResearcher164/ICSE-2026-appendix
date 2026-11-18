@@ -1,0 +1,13 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="search_experiment">
+      <Search name="search_for_target" entry="{entry}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="Search">
+      <input_port name="entry">Optional entry/target to search for</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

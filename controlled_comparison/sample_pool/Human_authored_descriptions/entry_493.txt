@@ -1,4 +1,3 @@
-Description:
 The execution starts at the entry point MainTree with the root node root_AutoLocalization, which is a FallbackStar node. This means the robot will first try to execute its primary condition. The first child is the condition node initialPoseReceived. If the robot already has an initial pose, this condition succeeds, the FallbackStar succeeds immediately and the tree finishes.
 
 If initialPoseReceived fails, the FallbackStar goes to its second child, which is a SequenceStar named doSelfLocalization. The robot must now actively try to find its position. This sequence has two sequential steps, both wrapped in RetryUntilSuccessful decorators.

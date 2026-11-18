@@ -1,0 +1,336 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="core_seq">
+
+      <!-- 1. Mission wait: stop the robot -->
+      <Sequence name="mission_wait">
+        <checkMissionWait/>
+        <stop/>
+      </Sequence>
+
+      <!-- 2. Init + state selection -->
+      <Sequence name="init">
+        <checkExistPathGlobal/>
+        <init/>
+        <Fallback name="StateSelect">
+
+          <!-- 2a. Lane keeping -->
+          <Sequence name="LaneKeeping">
+            <checkStateLaneKeeping/>
+            <genPathLaneKeeping/>
+            <setPath/>
+            <Fallback name="lane_keeping_sub">
+
+              <!-- Object in front -->
+              <Sequence name="front_object">
+                <checkFrontObject/>
+                <Fallback name="front_object_handling">
+                  <Sequence name="near_corner">
+                    <checkNearCorner/>
+                    <acc/>
+                  </Sequence>
+                  <Sequence name="near_stopline">
+                    <checkNearStopline/>
+                    <acc/>
+                  </Sequence>
+                  <Sequence name="profit_keeplane">
+                    <checkProfitKeeplane/>
+                    <acc/>
+                  </Sequence>
+                  <Sequence name="lane_change_left">
+                    <checkLaneChangeableLeft/>
+                    <genPathLaneChangeLeft/>
+                    <Fallback name="lane_change_left_sub">
+                      <Sequence>
+                        <checkCollision/>
+                        <setStateLaneKeeping/>
+                        <keepLane/>
+                      </Sequence>
+                      <Sequence>
+                        <setStateLaneChangeLeft/>
+                        <laneChangeLeft/>
+                      </Sequence>
+                    </Fallback>
+                  </Sequence>
+                  <Sequence name="lane_change_right">
+                    <checkLaneChangeableRight/>
+                    <genPathLaneChangeRight/>
+                    <Fallback name="lane_change_right_sub">
+                      <Sequence>
+                        <checkCollision/>
+                        <setStateLaneKeeping/>
+                        <keepLane/>
+                      </Sequence>
+                      <Sequence>
+                        <setStateLaneChangeRight/>
+                        <laneChangeRight/>
+                      </Sequence>
+                    </Fallback>
+                  </Sequence>
+                  <Sequence name="astar">
+                    <checkAbleAstar/>
+                    <checkEmptyLocal/>
+                    <Sequence name="Gen_Local">
+                      <stop/>
+                      <setStateAstar/>
+                    </Sequence>
+                  </Sequence>
+                </Fallback>
+              </Sequence>
+
+              <!-- Global lane change -->
+              <Fallback name="global_lane_change">
+                <Sequence name="no_global_lane_change">
+                  <Inverter>
+                    <checkGlobalLaneChange/>
+                  </Inverter>
+                  <setStateLaneKeeping/>
+                </Sequence>
+                <Sequence name="global_change_left">
+                  <checkLeftChange/>
+                  <Fallback>
+                    <checkGenPathLaneChange/>
+                    <genPathLaneChangeLeft/>
+                  </Fallback>
+                  <Fallback>
+                    <Sequence>
+                      <checkCollision/>
+                      <setStateLaneKeeping/>
+                      <keepLane/>
+                    </Sequence>
+                    <Sequence>
+                      <setStateLaneChangeLeft/>
+                      <laneChangeLeft/>
+                    </Sequence>
+                  </Fallback>
+                </Sequence>
+                <Sequence name="global_change_right">
+                  <Fallback>
+                    <checkGenPathLaneChange/>
+                    <genPathLaneChangeRight/>
+                  </Fallback>
+                  <Fallback>
+                    <Sequence>
+                      <checkCollision/>
+                      <setStateLaneKeeping/>
+                      <keepLane/>
+                    </Sequence>
+                    <Sequence>
+                      <setStateLaneChangeRight/>
+                      <laneChangeRight/>
+                    </Sequence>
+                  </Fallback>
+                </Sequence>
+                <setStateLaneKeeping/>
+              </Fallback>
+
+            </Fallback>
+            <publishData/>
+          </Sequence>
+
+          <!-- 2b. Lane change left -->
+          <Sequence name="LaneChangeLeft">
+            <checkStateLaneChangeLeft/>
+            <setPath/>
+            <Fallback name="check_collision_left">
+              <Sequence>
+                <checkCollision/>
+                <setStateLaneKeeping/>
+              </Sequence>
+              <Sequence>
+                <checkEndLaneChange/>
+                <setStateLaneKeeping/>
+              </Sequence>
+              <setStateLaneChangeLeft/>
+            </Fallback>
+            <publishData/>
+          </Sequence>
+
+          <!-- 2c. Lane change right -->
+          <Sequence name="LaneChangeRight">
+            <checkStateLaneChangeRight/>
+            <setPath/>
+            <Fallback name="check_collision_right">
+              <Sequence>
+                <checkCollision/>
+                <setStateLaneKeeping/>
+              </Sequence>
+              <Sequence>
+                <checkEndLaneChange/>
+                <setStateLaneKeeping/>
+              </Sequence>
+              <setStateLaneChangeRight/>
+            </Fallback>
+            <publishData/>
+          </Sequence>
+
+          <!-- 2d. A* local planning -->
+          <Sequence name="Astar">
+            <checkStateAstar/>
+            <setPath/>
+            <Fallback name="local_check">
+              <Sequence>
+                <checkCollision/>
+                <stop/>
+                <genPathAstar/>
+              </Sequence>
+              <Sequence>
+                <checkFinishAstar/>
+                <setFinishLocal/>
+                <setStateLaneKeeping/>
+              </Sequence>
+              <localPathFollow/>
+            </Fallback>
+            <publishData/>
+          </Sequence>
+
+          <!-- 2e. Recovery: forces StateSelect (and init) to fail -->
+          <Sequence name="Recovery">
+            <AlwaysFailure/>
+          </Sequence>
+
+        </Fallback>
+      </Sequence>
+
+      <!-- 3. Core: blocked by AlwaysFailure, everything after it is obsolete -->
+      <Sequence name="Core">
+        <AlwaysFailure/>
+        <Sequence name="obsolete">
+          <checkExistPathGlobal/>
+          <init/>
+          <Fallback>
+            <checkGlobalLaneChange/>
+            <genGlobalFollowPath/>
+          </Fallback>
+          <setPath/>
+          <Fallback name="obsolete_main">
+
+            <Sequence name="obsolete_front_object">
+              <checkFrontObject/>
+              <checkIsGlobalFollow/>
+              <Fallback>
+                <Sequence>
+                  <Fallback name="lock_check">
+                    <Sequence>
+                      <checkNearCorner/>
+                      <acc/>
+                    </Sequence>
+                    <Sequence>
+                      <checkNearStopline/>
+                      <acc/>
+                    </Sequence>
+                    <Sequence>
+                      <checkProfitKeeplane/>
+                      <acc/>
+                    </Sequence>
+                  </Fallback>
+                  <setPath/>
+                </Sequence>
+                <Sequence name="lane_check">
+                  <checkLaneChange/>
+                  <Fallback name="lane_check_inner">
+                    <Sequence>
+                      <checkLaneChangeableLeft/>
+                      <Fallback>
+                        <checkGenPathLaneChange/>
+                        <genPathLaneChangeLeft/>
+                      </Fallback>
+                      <Fallback>
+                        <Sequence>
+                          <checkCollision/>
+                          <keepLane/>
+                        </Sequence>
+                        <laneChangeLeft/>
+                      </Fallback>
+                    </Sequence>
+                    <Sequence>
+                      <Fallback>
+                        <checkGenPathLaneChange/>
+                        <genPathLaneChangeRight/>
+                      </Fallback>
+                      <Fallback>
+                        <Sequence>
+                          <checkCollision/>
+                          <keepLane/>
+                        </Sequence>
+                        <laneChangeRight/>
+                      </Fallback>
+                    </Sequence>
+                  </Fallback>
+                  <drive/>
+                </Sequence>
+              </Fallback>
+            </Sequence>
+
+            <Sequence name="traffic_light">
+              <checkTrafficLight/>
+              <Fallback>
+                <Sequence>
+                  <checkPassAbleTrafficLight/>
+                  <Fallback>
+                    <Sequence>
+                      <checkCollision/>
+                      <stop/>
+                    </Sequence>
+                    <drive/>
+                  </Fallback>
+                </Sequence>
+                <stopTrafficLight/>
+              </Fallback>
+            </Sequence>
+
+          </Fallback>
+        </Sequence>
+      </Sequence>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="checkMissionWait"/>
+    <Condition ID="checkExistPathGlobal"/>
+    <Condition ID="checkStateLaneKeeping"/>
+    <Condition ID="checkStateLaneChangeLeft"/>
+    <Condition ID="checkStateLaneChangeRight"/>
+    <Condition ID="checkStateAstar"/>
+    <Condition ID="checkFrontObject"/>
+    <Condition ID="checkNearCorner"/>
+    <Condition ID="checkNearStopline"/>
+    <Condition ID="checkProfitKeeplane"/>
+    <Condition ID="checkLaneChangeableLeft"/>
+    <Condition ID="checkLaneChangeableRight"/>
+    <Condition ID="checkCollision"/>
+    <Condition ID="checkAbleAstar"/>
+    <Condition ID="checkEmptyLocal"/>
+    <Condition ID="checkGlobalLaneChange"/>
+    <Condition ID="checkLeftChange"/>
+    <Condition ID="checkGenPathLaneChange"/>
+    <Condition ID="checkEndLaneChange"/>
+    <Condition ID="checkFinishAstar"/>
+    <Condition ID="checkIsGlobalFollow"/>
+    <Condition ID="checkLaneChange"/>
+    <Condition ID="checkTrafficLight"/>
+    <Condition ID="checkPassAbleTrafficLight"/>
+    <Action ID="stop"/>
+    <Action ID="init"/>
+    <Action ID="acc"/>
+    <Action ID="drive"/>
+    <Action ID="setPath"/>
+    <Action ID="publishData"/>
+    <Action ID="keepLane"/>
+    <Action ID="laneChangeLeft"/>
+    <Action ID="laneChangeRight"/>
+    <Action ID="genPathLaneKeeping"/>
+    <Action ID="genPathLaneChangeLeft"/>
+    <Action ID="genPathLaneChangeRight"/>
+    <Action ID="genPathAstar"/>
+    <Action ID="genGlobalFollowPath"/>
+    <Action ID="setStateLaneKeeping"/>
+    <Action ID="setStateLaneChangeLeft"/>
+    <Action ID="setStateLaneChangeRight"/>
+    <Action ID="setStateAstar"/>
+    <Action ID="setFinishLocal"/>
+    <Action ID="localPathFollow"/>
+    <Action ID="stopTrafficLight"/>
+  </TreeNodesModel>
+</root>

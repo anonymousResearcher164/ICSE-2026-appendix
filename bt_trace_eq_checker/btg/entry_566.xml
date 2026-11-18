@@ -1,0 +1,77 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="10">
+      <Sequence name="ltl_cycle">
+
+        <!-- State check: replan (level 1) if the current state is off the desired sequence -->
+        <Fallback name="state_check">
+          <Condition ID="LTLPreCheck"
+                     ltl_state_current="{ltl_state_current}"
+                     ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+          <Action ID="ReplanningRequestLevel1"
+                  ltl_state_current="{ltl_state_current}"
+                  ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+        </Fallback>
+
+        <!-- Locomotion: start it if needed, replan (level 2) if it won't start -->
+        <Fallback name="locomotion_check">
+          <Condition ID="LocomotionStatusCheck"/>
+          <RetryUntilSuccessful num_attempts="3">
+            <Action ID="LocomotionStart"/>
+          </RetryUntilSuccessful>
+          <Action ID="ReplanningRequestLevel2"
+                  ltl_state_current="{ltl_state_current}"/>
+        </Fallback>
+
+        <!-- Motion: move to the goal, replan (level 3) if it keeps failing -->
+        <Fallback name="move_with_recovery">
+          <RetryUntilSuccessful num_attempts="3">
+            <Action ID="MoveAction" goal="{move_goal}"/>
+          </RetryUntilSuccessful>
+          <Action ID="ReplanningRequestLevel3"
+                  ltl_state_current="{ltl_state_current}"
+                  ltl_state_executed_sequence="{ltl_state_executed_sequence}"/>
+        </Fallback>
+
+        <!-- Advance the plan and produce the next goal -->
+        <Action ID="UpdateLTL"
+                action_sequence="{action_sequence}"
+                ltl_state_current="{ltl_state_current}"
+                ltl_state_desired_sequence="{ltl_state_desired_sequence}"
+                ltl_state_executed_sequence="{ltl_state_executed_sequence}"
+                move_goal="{move_goal}"/>
+
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="LTLPreCheck">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_desired_sequence"/>
+    </Condition>
+    <Action ID="ReplanningRequestLevel1">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_desired_sequence"/>
+    </Action>
+    <Condition ID="LocomotionStatusCheck"/>
+    <Action ID="LocomotionStart"/>
+    <Action ID="ReplanningRequestLevel2">
+      <input_port name="ltl_state_current"/>
+    </Action>
+    <Action ID="MoveAction">
+      <input_port name="goal">Navigation goal</input_port>
+    </Action>
+    <Action ID="ReplanningRequestLevel3">
+      <input_port name="ltl_state_current"/>
+      <input_port name="ltl_state_executed_sequence"/>
+    </Action>
+    <Action ID="UpdateLTL">
+      <inout_port name="action_sequence"/>
+      <input_port name="ltl_state_current"/>
+      <inout_port name="ltl_state_desired_sequence"/>
+      <inout_port name="ltl_state_executed_sequence"/>
+      <output_port name="move_goal">Next navigation goal</output_port>
+    </Action>
+  </TreeNodesModel>
+</root>

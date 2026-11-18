@@ -1,0 +1,29 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="1">
+      <Sequence name="handle_tray_sequence">
+        <Action ID="LookAtTheTray"/>
+        <RetryUntilSuccessful num_attempts="3">
+          <Timeout msec="300">
+            <Action ID="DetectHandles"/>
+          </Timeout>
+        </RetryUntilSuccessful>
+        <Action ID="PickUpTheTray"/>
+        <Action ID="LookUp"/>
+        <Action ID="MoveBack"/>
+        <Action ID="GoToTheTable"/>
+        <Action ID="PlaceTheTray"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="LookAtTheTray"/>
+    <Action ID="DetectHandles"/>
+    <Action ID="PickUpTheTray"/>
+    <Action ID="LookUp"/>
+    <Action ID="MoveBack"/>
+    <Action ID="GoToTheTable"/>
+    <Action ID="PlaceTheTray"/>
+  </TreeNodesModel>
+</root>

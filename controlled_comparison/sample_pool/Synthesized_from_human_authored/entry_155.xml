@@ -1,0 +1,18 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="root_sequence">
+      <ClearEntireCostmap name="ClearGlobalCostmap"
+                          service_name="global_costmap/clear_entirely_global_costmap"/>
+      <StartSeekGame name="start_seek_game" file="robot_seek_1.json"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="ClearEntireCostmap">
+      <input_port name="service_name">Costmap clearing service</input_port>
+    </Action>
+    <Action ID="StartSeekGame">
+      <input_port name="file">Game configuration file</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

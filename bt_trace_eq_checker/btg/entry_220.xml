@@ -1,0 +1,100 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+
+  <BehaviorTree ID="MainTree">
+    <ReactiveFallback name="root_fallback">
+
+      <!-- Mission is waiting: hold the vehicle -->
+      <Sequence name="mission_wait">
+        <Condition ID="IsMissionWait"/>
+        <Action ID="Stop"/>
+      </Sequence>
+
+      <!-- No global path yet: initialize -->
+      <Sequence name="initialize">
+        <Inverter>
+          <Condition ID="HasGlobalPath"/>
+        </Inverter>
+        <Action ID="Initialize"/>
+      </Sequence>
+
+      <!-- Normal driving -->
+      <Sequence name="driving">
+        <SubTree ID="SelectState" path="{path}"/>
+        <Action ID="PublishData" path="{path}"/>
+      </Sequence>
+
+    </ReactiveFallback>
+  </BehaviorTree>
+
+  <BehaviorTree ID="SelectState">
+    <Fallback name="state_selector">
+
+      <!-- Traffic rules -->
+      <Sequence name="traffic_light">
+        <Condition ID="IsRedLight"/>
+        <Action ID="StopAtTrafficLight"/>
+      </Sequence>
+
+      <!-- Obstacle avoidance -->
+      <Sequence name="avoid_obstacle">
+        <Condition ID="IsObstacleAhead"/>
+        <Action ID="GenerateAvoidancePath" path="{path}"/>
+        <Action ID="SetPath" path="{path}"/>
+      </Sequence>
+
+      <!-- Lane change -->
+      <Sequence name="lane_change">
+        <Condition ID="IsLaneChangeRequired"/>
+        <Condition ID="IsLaneChangeSafe"/>
+        <Action ID="ChangeLane" path="{path}"/>
+        <Action ID="SetPath" path="{path}"/>
+      </Sequence>
+
+      <!-- Lane keeping (default state) -->
+      <Sequence name="lane_keep">
+        <Action ID="GeneratePath" path="{path}"/>
+        <Action ID="SetPath" path="{path}"/>
+      </Sequence>
+
+      <!-- Contingency -->
+      <Sequence name="recovery">
+        <Action ID="Stop"/>
+        <Action ID="Recover"/>
+      </Sequence>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsMissionWait"/>
+    <Condition ID="HasGlobalPath"/>
+    <Condition ID="IsRedLight"/>
+    <Condition ID="IsObstacleAhead"/>
+    <Condition ID="IsLaneChangeRequired"/>
+    <Condition ID="IsLaneChangeSafe"/>
+
+    <Action ID="Stop"/>
+    <Action ID="Initialize"/>
+    <Action ID="StopAtTrafficLight"/>
+    <Action ID="GeneratePath">
+      <output_port name="path"/>
+    </Action>
+    <Action ID="GenerateAvoidancePath">
+      <output_port name="path"/>
+    </Action>
+    <Action ID="ChangeLane">
+      <output_port name="path"/>
+    </Action>
+    <Action ID="SetPath">
+      <input_port name="path"/>
+    </Action>
+    <Action ID="PublishData">
+      <input_port name="path"/>
+    </Action>
+    <Action ID="Recover"/>
+
+    <SubTree ID="SelectState">
+      <output_port name="path"/>
+    </SubTree>
+  </TreeNodesModel>
+</root>

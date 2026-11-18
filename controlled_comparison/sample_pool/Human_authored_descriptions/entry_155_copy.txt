@@ -1,6 +1,4 @@
-08:23 - 08:38
-
-The main tree is structured as a sequence. The robot first executes the `Nav2ClearGlobalCostMap` node; if successful, it proceeds to execute the `RobotSeekInitAction` (using the `robot_seek_1.json` game file). If this second step also succeeds, the entire sequence is considered successful. Because it is a sequence, if any node fails, the sequence returns "failure" and halts execution. For instance, if `Nav2ClearGlobalCostMap` fails, the subsequent node will not be executed and the sequence will stop; the same applies if `RobotSeekInitAction` fails.
+The main tree is structured as a sequence. The robot first executes the `Nav2ClearGlobalCostMap` node. If successful, it proceeds to execute the `RobotSeekInitAction` (using the `robot_seek_1.json` game file). If this second step also succeeds, the entire sequence is considered successful. Because it is a sequence, if any node fails, the sequence returns "failure" and halts execution. For instance, if `Nav2ClearGlobalCostMap` fails, the subsequent node will not be executed and the sequence will stop; the same applies if `RobotSeekInitAction` fails.
 
 
 Since it is a sequence, if any node fails during execution, the sequence returns "failure" and halts execution.

@@ -1,0 +1,37 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="-1">
+      <Sequence name="shelf_scan_cycle">
+        <Action ID="UpdatePlanningScene"/>
+        <Action ID="MoveTo" location="shelf"/>
+        <Action ID="MoveTorso" height="0.3"/>
+        <Action ID="MoveHead" pan="0.0" tilt="0.4"/>
+        <Action ID="ScanShelf" objects="{shelf_objects}"/>
+        <Action ID="SetTrayLoci" objects="{shelf_objects}" tray_loci="{tray_loci}"/>
+        <Action ID="UpdatePlanningScene"/>
+        <Sleep msec="5000"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="UpdatePlanningScene"/>
+    <Action ID="MoveTo">
+      <input_port name="location" type="std::string">Named location</input_port>
+    </Action>
+    <Action ID="MoveTorso">
+      <input_port name="height" type="double">Torso height in meters</input_port>
+    </Action>
+    <Action ID="MoveHead">
+      <input_port name="pan" type="double"/>
+      <input_port name="tilt" type="double"/>
+    </Action>
+    <Action ID="ScanShelf">
+      <output_port name="objects">Detected shelf objects</output_port>
+    </Action>
+    <Action ID="SetTrayLoci">
+      <input_port name="objects"/>
+      <output_port name="tray_loci">Target positions on the tray</output_port>
+    </Action>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,31 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="{num_cycles}">
+      <Sequence name="checked_move">
+        <CheckLTLSpec name="pre_check"
+                      current_state="{current_state}"
+                      desired_state="{desired_state}"
+                      ltl_spec="{ltl_spec}"/>
+        <Move name="move"
+              goal="{goal}"
+              action_log="{action_log}"/>
+        <CheckLTLSpec name="post_check"
+                      current_state="{current_state}"
+                      desired_state="{desired_state}"
+                      ltl_spec="{ltl_spec}"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="CheckLTLSpec">
+      <input_port name="current_state">State to verify</input_port>
+      <input_port name="desired_state">Target state</input_port>
+      <input_port name="ltl_spec">LTL formula to check against</input_port>
+    </Condition>
+    <Action ID="Move">
+      <input_port name="goal">Goal to move to</input_port>
+      <output_port name="action_log">Record of the action taken</output_port>
+    </Action>
+  </TreeNodesModel>
+</root>

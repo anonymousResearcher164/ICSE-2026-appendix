@@ -1,0 +1,90 @@
+<root BTCPP_format="4" main_tree_to_execute="FetchBottle">
+  <BehaviorTree ID="FetchBottle">
+    <Fallback name="AskForHelpFallback">
+      <Sequence name="MainTask">
+
+        <!-- Reach the room -->
+        <Fallback name="ReachRoom">
+          <Sequence name="NavigateToRoom">
+            <Condition ID="IsRoomKnown"/>
+            <Fallback name="GoToRoomIfNeeded">
+              <Condition ID="IsRobotInRoom"/>
+              <Action ID="GoToRoom"/>
+            </Fallback>
+          </Sequence>
+          <Action ID="FollowHuman"/>
+        </Fallback>
+
+        <!-- Find the bottle -->
+        <Fallback name="FindBottleIfNeeded">
+          <Condition ID="IsBottleFound"/>
+          <Action ID="FindBottle"/>
+        </Fallback>
+
+        <!-- Grasp the bottle -->
+        <Fallback name="GraspBottleIfNeeded">
+          <Condition ID="IsBottleGrasped"/>
+          <Fallback name="GraspingRecovery">
+            <Sequence name="GraspingProcedure">
+
+              <!-- Get a valid inverse pose -->
+              <Fallback name="EnsureValidInversePose">
+                <Sequence name="CheckInversePose">
+                  <Condition ID="IsInversePoseComputed"/>
+                  <Condition ID="IsInversePoseValid"/>
+                </Sequence>
+                <Action ID="ComputeInversePose"/>
+              </Fallback>
+
+              <!-- Move to the inverse pose -->
+              <Fallback name="GoToInversePoseIfNeeded">
+                <Condition ID="IsRobotInInversePose"/>
+                <Sequence name="MoveToInversePose">
+                  <Action ID="KeepArmsForGrasp"/>
+                  <Action ID="GoToInversePose"/>
+                </Sequence>
+              </Fallback>
+
+              <!-- Locate the bottle -->
+              <Fallback name="LocateBottleIfNeeded">
+                <Condition ID="IsBottleLocated"/>
+                <Action ID="LocateBottle"/>
+              </Fallback>
+
+              <Action ID="GraspBottle"/>
+            </Sequence>
+
+            <!-- If grasping fails -->
+            <Action ID="SetInversePoseNotValid"/>
+            <KeepRunningUntilFailure>
+              <AlwaysSuccess/>
+            </KeepRunningUntilFailure>
+          </Fallback>
+        </Fallback>
+
+      </Sequence>
+      <Action ID="AskForHelp"/>
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsRoomKnown"/>
+    <Condition ID="IsRobotInRoom"/>
+    <Condition ID="IsBottleFound"/>
+    <Condition ID="IsBottleGrasped"/>
+    <Condition ID="IsInversePoseComputed"/>
+    <Condition ID="IsInversePoseValid"/>
+    <Condition ID="IsRobotInInversePose"/>
+    <Condition ID="IsBottleLocated"/>
+    <Action ID="GoToRoom"/>
+    <Action ID="FollowHuman"/>
+    <Action ID="FindBottle"/>
+    <Action ID="ComputeInversePose"/>
+    <Action ID="KeepArmsForGrasp"/>
+    <Action ID="GoToInversePose"/>
+    <Action ID="LocateBottle"/>
+    <Action ID="GraspBottle"/>
+    <Action ID="SetInversePoseNotValid"/>
+    <Action ID="AskForHelp"/>
+  </TreeNodesModel>
+</root>

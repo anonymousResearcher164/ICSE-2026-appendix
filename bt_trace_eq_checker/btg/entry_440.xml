@@ -1,0 +1,26 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="10000">
+      <Fallback name="pose_response">
+        <Sequence name="left_pose">
+          <Condition ID="DetectHumanPose" pose="left"/>
+          <Action ID="Speak" text="You raised your left arm"/>
+        </Sequence>
+        <Sequence name="right_pose">
+          <Condition ID="DetectHumanPose" pose="right"/>
+          <Action ID="Speak" text="You raised your right arm"/>
+        </Sequence>
+        <Action ID="Speak" text="I could not detect a pose"/>
+      </Fallback>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="DetectHumanPose">
+      <input_port name="pose" type="std::string">Expected pose: left or right</input_port>
+    </Condition>
+    <Action ID="Speak">
+      <input_port name="text" type="std::string">Message to speak</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

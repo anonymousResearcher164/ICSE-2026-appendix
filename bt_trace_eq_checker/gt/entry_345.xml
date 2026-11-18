@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <GetArmJointsForPose pose="UPTRAY" joints_pose="{joints_pose}" />
+            <SetArmJointsLeft joints_pose="{joints_pose}" />
+            <SetArmJointsRight joints_pose="{joints_pose}" />
+            <GetArmJointsForPose pose="EXTENDED" joints_pose="{joints_pose}" />
+            <SetArmJointsLeft joints_pose="{joints_pose}" />
+            <SetArmJointsRight joints_pose="{joints_pose}" />
+            <GetArmJointsForPose pose="GRIPPING" joints_pose="{joints_pose}" />
+            <SetArmJointsLeft joints_pose="{joints_pose}" />
+            <SetArmJointsRight joints_pose="{joints_pose}" />
+            <GetArmJointsForPose pose="REST" joints_pose="{joints_pose}" />
+            <SetArmJointsLeft joints_pose="{joints_pose}" />
+            <SetArmJointsRight joints_pose="{joints_pose}" />
+        </Sequence>
+    </BehaviorTree>
+</root>

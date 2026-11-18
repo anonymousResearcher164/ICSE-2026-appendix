@@ -1,0 +1,18 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="primary_sequence">
+      <Sequence name="second_sequence">
+        <Sequence name="third_sequence">
+          <GoTo name="go_to_1" goal="1"/>
+        </Sequence>
+      </Sequence>
+      <GoTo name="go_to_2" goal="2"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="GoTo">
+      <input_port name="goal">Name of the target location</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

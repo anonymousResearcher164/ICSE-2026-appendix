@@ -1,0 +1,67 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Fallback name="root_fallback">
+
+      <!-- Branch 1: room is known -->
+      <Sequence name="room_known_sequence">
+        <Condition ID="IsRoomKnown"/>
+        <Fallback name="go_or_follow">
+          <Sequence name="go_to_room_sequence">
+            <Condition ID="IsRobotInRoom"/>
+            <Action ID="GoToRoom"/>
+          </Sequence>
+          <Action ID="FollowHuman"/>
+        </Fallback>
+      </Sequence>
+
+      <!-- Branch 2: bottle handling -->
+      <Sequence name="bottle_sequence">
+        <Condition ID="IsBottleFound"/>
+        <Fallback name="ensure_grasped">
+          <Condition ID="IsBottleGrasped"/>
+          <Action ID="GraspBottle"/>
+        </Fallback>
+        <Fallback name="inverse_pose_fallback">
+          <Sequence name="inverse_pose_sequence">
+            <Action ID="ComputeInversePose"/>
+            <Fallback name="validation_fallback">
+              <Sequence name="valid_pose_sequence">
+                <Condition ID="IsInversePoseValid"/>
+                <Action ID="KeepArmsForGrasp"/>
+              </Sequence>
+              <Sequence name="relocate_sequence">
+                <Action ID="LocateBottle"/>
+                <Action ID="GraspBottle"/>
+              </Sequence>
+            </Fallback>
+          </Sequence>
+          <Sequence name="invalid_pose_sequence">
+            <Action ID="SetInvalidInversePose"/>
+            <Action ID="KeepRunning"/>
+          </Sequence>
+        </Fallback>
+      </Sequence>
+
+      <!-- Branch 3: nothing worked -->
+      <Action ID="AskForHelp"/>
+
+    </Fallback>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Condition ID="IsRoomKnown"/>
+    <Condition ID="IsRobotInRoom"/>
+    <Condition ID="IsBottleFound"/>
+    <Condition ID="IsBottleGrasped"/>
+    <Condition ID="IsInversePoseValid"/>
+    <Action ID="GoToRoom"/>
+    <Action ID="FollowHuman"/>
+    <Action ID="GraspBottle"/>
+    <Action ID="ComputeInversePose"/>
+    <Action ID="KeepArmsForGrasp"/>
+    <Action ID="LocateBottle"/>
+    <Action ID="SetInvalidInversePose"/>
+    <Action ID="KeepRunning"/>
+    <Action ID="AskForHelp"/>
+  </TreeNodesModel>
+</root>

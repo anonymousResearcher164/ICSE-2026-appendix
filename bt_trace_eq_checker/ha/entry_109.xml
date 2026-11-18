@@ -1,0 +1,18 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="10">
+      <Sequence name="back_and_forth">
+        <MoveTo name="move_to_A" x="0.5"  y="0.5"  z="0"/>
+        <MoveTo name="move_to_B" x="-0.5" y="-0.5" z="0"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="MoveTo">
+      <input_port name="x" type="double"/>
+      <input_port name="y" type="double"/>
+      <input_port name="z" type="double"/>
+    </Action>
+  </TreeNodesModel>
+</root>

@@ -1,0 +1,19 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <ExecuteGroupPose goal="0;0;0;0;0;0;1"
+                      group_name="arm"
+                      is_absolute="false"
+                      service_name="execute_group_pose"
+                      tolerance="0.01"/>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="ExecuteGroupPose">
+      <input_port name="goal">Pose as x;y;z;qx;qy;qz;qw</input_port>
+      <input_port name="group_name">Planning group</input_port>
+      <input_port name="is_absolute" type="bool">Absolute or relative goal</input_port>
+      <input_port name="service_name">Service to call</input_port>
+      <input_port name="tolerance" type="double">Goal tolerance</input_port>
+    </Action>
+  </TreeNodesModel>
+</root>

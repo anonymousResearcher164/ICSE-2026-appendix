@@ -1,0 +1,34 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Repeat num_cycles="10">
+      <Sequence name="ltl_cycle">
+        <Action ID="LTLPreCheck"
+                ltl_state_current="{ltl_state_current}"
+                ltl_state_desired_sequence="{ltl_state_desired_sequence}"/>
+        <Action ID="MoveAction"
+                goal="{move_goal}"
+                action_sequence="{action_sequence}"/>
+        <Action ID="UpdateLTL"
+                action_sequence="{action_sequence}"
+                ltl_state_desired_sequence="{ltl_state_desired_sequence}"
+                move_goal="{move_goal}"/>
+      </Sequence>
+    </Repeat>
+  </BehaviorTree>
+
+  <TreeNodesModel>
+    <Action ID="LTLPreCheck">
+      <input_port name="ltl_state_current">Current LTL state</input_port>
+      <input_port name="ltl_state_desired_sequence">Desired LTL state sequence</input_port>
+    </Action>
+    <Action ID="MoveAction">
+      <input_port name="goal">Navigation goal</input_port>
+      <input_port name="action_sequence">Remaining action sequence</input_port>
+    </Action>
+    <Action ID="UpdateLTL">
+      <inout_port name="action_sequence">Action sequence, advanced by one step</inout_port>
+      <inout_port name="ltl_state_desired_sequence">Desired state sequence, advanced by one step</inout_port>
+      <output_port name="move_goal">Next navigation goal</output_port>
+    </Action>
+  </TreeNodesModel>
+</root>
