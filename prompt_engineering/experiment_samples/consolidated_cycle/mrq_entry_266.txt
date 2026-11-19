@@ -1,0 +1,16 @@
+The mission describes obtaining an object pose and placing the object at the resulting pose.
+
+First, the robot will execute GetPickObject, GetPlacingPose, ApproachObject, and PlaceSimple in order and stop the
+sequence if any action fails.
+
+Next, it will execute custom action GetPickObject.
+
+Then, it will execute custom action GetPlacingPose.
+
+Afterward, it will execute custom action ApproachObject.
+
+Finally, it will execute custom action PlaceSimple.
+
+Parameters: GetPickObject will receive object_id from the blackboard key {object_id}. GetPlacingPose will receive
+object from the blackboard key {object_id} and store ob_pose under the blackboard key {pose}. ApproachObject will
+receive object_pose from the blackboard key {pose}. PlaceSimple will receive goal from the blackboard key {pose}.

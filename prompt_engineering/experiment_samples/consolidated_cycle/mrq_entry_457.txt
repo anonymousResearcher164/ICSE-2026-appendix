@@ -1,0 +1,71 @@
+The mission describes a vehicle mission that manages waiting, path initialization, lane keeping, lane changes,
+traffic lights, unprotected turns, path execution, mission-state reporting, and recovery.
+
+First, the root fallback will stop the vehicle when checkMissionWait is true. Otherwise, it will execute the main
+driving sequence.
+
+Next, the main sequence will initialize driving, generate and update a path, check traffic conditions, handle
+unprotected turns, set the path, publish driving data, and update the mission state. If any action in this sequence
+fails, the sequence will stop.
+
+Then, the initialization sequence will check whether a global path exists. If it does not exist, the vehicle will
+check whether it is keeping its lane and whether a lane change has failed before calling the global-path action.
+The initialization sequence will then execute the initialization action.
+
+Next, the path-generation sequence will select a driving state. If checkStateLaneKeeping is true, the robot will
+generate a lane-keeping path and evaluate whether a lane change or collision-related response is required.
+
+Then, the lane-keeping sequence will evaluate global lane-change conditions. If a global lane change is required,
+it will check whether a left lane change is requested. If the left lane change is requested and the left lane is
+changeable, it will generate a left lane-change path. If the left lane contains a static object or a collision is
+detected behind the vehicle, it will set the state to lane keeping. Otherwise, it will set the state to left lane
+changing. If the left lane is not changeable, it will set the state to lane keeping.
+
+Next, the lane-keeping sequence will check whether the right lane is changeable. If the right lane is changeable,
+it will generate a right lane-change path. If the right lane contains a static object or a collision is detected
+behind the vehicle, it will set the state to lane keeping. Otherwise, it will set the state to right lane changing.
+If the vehicle is not performing a global lane change, it will continue with the collision check.
+
+Then, the collision-check sequence will respond when a front object is detected. If the front object is irregular,
+the vehicle will evaluate whether it is near a corner, whether the object is near the goal, or whether the vehicle
+is near the goal. If none of these conditions succeeds, it will evaluate a lane change to the left or right.
+
+Next, the left lane-change sequence will check whether a left lane change is profitable. If it is profitable and
+the left lane contains a static object or an irregular object, it will set the state to lane keeping. Otherwise, if
+the left lane is changeable, it will generate a left lane-change path. If the vehicle is blocked by a static object
+or a collision behind it, it will set the state to lane keeping. Otherwise, it will set the state to left lane
+changing. If the left lane change cannot be performed, it will set the state to lane keeping.
+
+Then, the right lane-change sequence will check whether a right lane change is profitable. If it is profitable and
+the right lane contains a static object or an irregular object, it will set the state to lane keeping. Otherwise,
+if the right lane is changeable, it will generate a right lane-change path. If the vehicle is blocked by a static
+object or a collision behind it, it will set the state to lane keeping. Otherwise, it will set the state to right
+lane changing. If the right lane change cannot be performed, it will set the state to lane keeping.
+
+Next, the path-generation fallback will set the state to lane keeping when no preceding lane-keeping or lane-change
+state succeeds.
+
+Then, the path-generation sequence will check whether a lane change is mandatory. If it is not mandatory, the
+sequence will continue without changing the state.
+
+Next, if checkStateLaneChangeLeft is true, the left-lane-change sequence will check whether the lane change has
+ended. If it has ended, it will set the state to lane keeping and call the global-path action. Otherwise, it will
+execute the lane-change speed-profile action.
+
+Then, if checkStateLaneChangeRight is true, the right-lane-change sequence will check whether the lane change has
+ended. If it has ended, it will set the state to lane keeping and call the global-path action. Otherwise, it will
+execute the lane-change speed-profile action.
+
+Next, the recovery sequence will set the state to lane keeping when no other driving state succeeds.
+
+Then, the traffic-check fallback will check whether the traffic light can be passed. If it cannot be passed, it
+will execute the traffic-light stop action.
+
+Next, the unprotected-turn fallback will check whether an unprotected turn is present. If it is present and
+impassable, it will execute the stop action. Otherwise, it will continue without stopping for the turn.
+
+Then, the main driving sequence will set the generated path and publish driving data.
+
+Finally, the mission-state fallback will check whether the vehicle has reached the goal. If it has reached the
+goal, it will set the mission state to arrived and publish the mission state. Otherwise, it will set the mission
+state to going.

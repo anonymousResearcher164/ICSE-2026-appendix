@@ -1,0 +1,35 @@
+The mission describes a navigation behavior that plans a path to a goal, follows the path, and performs recovery
+actions when navigation fails.
+
+First, the robot will execute NavigateWithReplanning. If navigation fails, it will execute RecoveryFallback and
+then retry navigation. It will stop after six recovery attempts if navigation remains unsuccessful.
+
+Next, NavigateWithReplanning will execute RateController and FollowPath in order. It will advance to the next
+action while the current action is running or has succeeded, and it will stop if an action fails.
+
+Then, RateController will regulate execution of ComputePathToPose at one cycle per second.
+
+Next, ComputePathToPose will calculate a path to the goal. If it fails, ComputePathToPoseRecoveryFallback will
+first check whether the goal has been updated. If the goal has not been updated, it will clear the global costmap.
+After recovery, it will retry ComputePathToPose once.
+
+Then, FollowPath will follow the calculated path. If it fails, FollowPathRecoveryFallback will first check whether
+the goal has been updated. If the goal has not been updated, it will clear the local costmap. After recovery, it
+will retry FollowPath once.
+
+Next, RecoveryFallback will first check whether the goal has been updated. If the goal has not been updated, it
+will execute RecoveryActions.
+
+Then, RecoveryActions will execute its recovery actions in rotation. It will execute ClearingActions, Spin, Wait,
+and BackUp as separate recovery actions.
+
+Finally, ClearingActions will clear the local costmap and then clear the global costmap. It will stop if either
+clearing action fails.
+
+Parameters: ComputePathToPose will use goal read from {goal}, path stored under {path}, and planner_id set to
+GridBased. ClearGlobalCostmap-Context will use service_name set to local_costmap/clear_entirely_global_costmap.
+FollowPath will use path read from {path} and controller_id set to FollowPath. ClearLocalCostmap-Context will use
+service_name set to local_costmap/clear_entirely_local_costmap. ClearLocalCostmap-Subtree will use service_name set
+to local_costmap/clear_entirely_local_costmap. ClearGlobalCostmap-Subtree will use service_name set to
+global_costmap/clear_entirely_global_costmap. Spin will use spin_dist set to 1.57. Wait will use wait_duration set
+to 5. BackUp will use backup_dist set to 0.15 and backup_speed set to 0.025.

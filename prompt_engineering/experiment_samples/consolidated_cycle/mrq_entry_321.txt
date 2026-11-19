@@ -1,0 +1,26 @@
+The mission describes the generation of grasping candidates from a segmented tabletop scene, including optional
+desired-object extraction and tabletop clustering.
+
+First, the root Sequence will execute the RetryUntilSuccesful subtree, the ConditionalSequence subtree, and the
+GenerateGraspingCandidates action in order and stop if any action fails.
+
+Next, the RetryUntilSuccesful subtree will retry the TableTopSegmentation action until it succeeds or three
+attempts are completed.
+
+Next, the ConditionalSequence subtree will execute its actions in order while checking whether the condition False
+is true for each action. If the condition False is false, the sequence will end. The DesiredObjectEntryCheck
+decorator will check the desired_object entry before allowing the ObjectCloudExtraction action to execute. The
+TableTopClustering action will execute after the decorated action succeeds.
+
+Finally, the GenerateGraspingCandidates action will execute.
+
+Parameters: The TableTopSegmentation action will receive original_cloud="{original_cloud}",
+image_scene="{image_scene}", table_height="{table_height}",
+original_cloud_transformed="{original_cloud_transformed}", tabletop_cloud="{tabletop_cloud}", and
+plane_cloud="{plane_cloud}", and it will store nonplane_cloud under {nonplane_cloud}. The DesiredObjectEntryCheck
+decorator will receive entry="{desired_object}". The ObjectCloudExtraction action will receive
+original_cloud="{original_cloud}", image_scene="{image_scene}", object_cloud="{object_cloud}",
+tabletop_cloud="{tabletop_cloud}", and desired_object="{desired_object}". The TableTopClustering action will
+receive object_cloud="{object_cloud}" and tabletop_cloud="{tabletop_cloud}". The GenerateGraspingCandidates action
+will receive object_cloud="{object_cloud}", table_height="{table_height}", grasp_candidates="{grasp_candidates}",
+and original_cloud_transformed="{original_cloud_transformed}".

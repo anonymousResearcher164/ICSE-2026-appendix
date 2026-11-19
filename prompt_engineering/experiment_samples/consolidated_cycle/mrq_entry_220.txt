@@ -1,0 +1,81 @@
+The mission describes mission waiting, path initialization, lane keeping, lane changes, A* navigation, global path
+following, obstacle handling, traffic-light handling, and driving.
+
+First, the robot will try the Core_seq fallback. If checkMissionWait is true, it will stop. If that sequence fails,
+it will try the Init sequence. If Init fails, it will try a sequence that always fails and will then report
+failure.
+
+Next, it will execute the Init sequence only if checkExistPathGlobal is true. It will initialize the navigation
+system, select a driving state, and publish data after the selected state behavior completes.
+
+First, it will try the LaneKeeping sequence if checkStateLaneKeeping is true. It will generate a lane-keeping path
+and set the path.
+
+Next, it will check for a front object. If a front object is detected, it will try the near-corner sequence, the
+near-stopline sequence, and the profitable-lane-keeping sequence in order until one succeeds. Each successful
+sequence will accelerate the robot.
+
+Then, it will try the state_change fallback. If lane changing to the left is possible, it will generate a left
+lane-change path. If a collision is detected, it will set the state to lane keeping and keep the lane. Otherwise,
+it will set the state to left lane changing and change to the left lane.
+
+Next, if lane changing to the right is possible, it will generate a right lane-change path. If a collision is
+detected, it will set the state to lane keeping and keep the lane. Otherwise, it will set the state to right lane
+changing and change to the right lane.
+
+Then, if A* navigation is possible and the local area is empty, it will stop, set the state to A* navigation, and
+generate an A* path.
+
+If the front-object handling fails, it will check for a global lane change. If a left global lane change is
+required, it will check whether a left lane-change path can be generated. If the check fails, it will generate a
+left lane-change path. If a collision is detected, it will set the state to lane keeping and keep the lane.
+Otherwise, it will set the state to left lane changing and change to the left lane.
+
+Next, if a right global lane change is required, it will check whether a right lane-change path can be generated.
+If the check fails, it will generate a right lane-change path. If a collision is detected, it will set the state to
+lane keeping and keep the lane. Otherwise, it will set the state to right lane changing and change to the right
+lane.
+
+If no global lane change is completed, it will set the state to lane keeping.
+
+Next, it will execute the LaneChangeLeft sequence if checkStateLaneChangeLeft is true. It will set the path. If a
+collision is detected, it will set the state to lane keeping. Otherwise, if the lane change has ended, it will set
+the state to lane keeping. If neither condition succeeds, it will keep the state as left lane changing.
+
+Then, it will execute the LaneChangeRigth sequence if checkStateLaneChangeRight is true. It will set the path. If a
+collision is detected, it will set the state to lane keeping. Otherwise, if the lane change has ended, it will set
+the state to lane keeping. If neither condition succeeds, it will keep the state as right lane changing.
+
+Next, it will execute the Astar sequence if checkStateAstar is true. It will set the path. If a collision is
+detected, it will stop and generate an A* path. Otherwise, if A* navigation has finished, it will mark the local
+navigation as finished and set the state to lane keeping. If neither condition succeeds, it will follow the local
+path.
+
+Then, it will try the Recovery sequence, which will always fail.
+
+Finally, if the Init sequence fails, it will try the third root sequence. This sequence will always fail
+immediately because its first child always fails.
+
+Next, it will execute the second root branch only if its initial failure condition does not prevent evaluation. It
+will check whether a global path exists and initialize the navigation system. If a global lane change is detected,
+it will use that result. Otherwise, it will generate a global following path.
+
+Then, it will set the path and check for a front object. If a front object is detected and global following is
+active, it will try the near-corner sequence, the near-stopline sequence, and the profitable-lane-keeping sequence
+until one succeeds. Each successful sequence will accelerate the robot.
+
+If global following is not active, it will check whether a lane change is required. If a left lane change is
+possible, it will check whether a lane-change path already exists. If it does not exist, it will generate a left
+lane-change path. If a collision is detected, it will keep the lane. Otherwise, it will change to the left lane.
+
+If a left lane change is not selected, it will check whether a right lane-change path already exists. If it does
+not exist, it will generate a right lane-change path. If a collision is detected, it will keep the lane. Otherwise,
+it will change to the right lane.
+
+Next, it will check for a traffic light. If the traffic light can be passed, it will check for a collision and stop
+if a collision is detected. It will then drive. If the traffic light cannot be passed, it will stop at the traffic
+light.
+
+Finally, it will drive and set the path again.
+
+Parameters: No action in the behavior tree has XML ports.

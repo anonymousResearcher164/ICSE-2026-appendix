@@ -1,0 +1,33 @@
+The mission describes a robot behavior for obtaining an initial pose or performing self-localization.
+
+First, the robot will execute initialPoseReceived and doSelfLocalization consecutively until one succeeds. If
+initialPoseReceived succeeds, it will stop. If initialPoseReceived fails, it will execute doSelfLocalization. If
+both actions fail, it will start again from initialPoseReceived.
+
+Next, it will execute retry_client_request and retry_localization in sequence. If either action succeeds, it will
+remember that success and move to the next action. If either action fails, it will restart the sequence from the
+failed action.
+
+Next, it will keep trying globalLocalizationServiceRequest until it succeeds or five attempts have been made.
+
+Next, it will execute globalLocalizationServiceRequest.
+
+Next, it will keep trying the localization sequence until it succeeds or ten attempts have been made.
+
+Next, it will execute the first fallback and the second IsLocalized check in sequence and stop if either action
+fails.
+
+Next, it will check whether IsLocalized is true. If IsLocalized is false, it will execute the first sequence.
+
+Next, it will execute Spin, BackUp, and Spin in sequence. If an action succeeds, it will remember that success and
+move to the next action. If an action fails, it will restart the sequence from the failed action.
+
+Next, it will execute Spin.
+
+Next, it will execute BackUp.
+
+Next, it will execute Spin.
+
+Next, it will check whether IsLocalized is true.
+
+Parameters: No actions have ports.

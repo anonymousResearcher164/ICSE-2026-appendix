@@ -65,6 +65,7 @@ The iterative development of the node dictionary and the synthesis prompt.
 | --- | --- |
 | `dictionary_v1.json` … `dictionary_v6.json` | Six successive revisions of the node dictionary mapping BehaviorTree.CPP node types to natural-language phrasings. `v6` is current. |
 | `experiment_samples/cycle_1/` … `cycle_5/` | Five prompt-refinement cycles, 30 files each (10 BTs, 10 prompts for each BT, 10 descriptions(the output)). |
+| `experiment_samples/consolidated_cycle` | Prompts and results(descriptions) derived from the final version of prompt refinements paired with dictionary v6. |
 | `synthesis/prompts/`, `synthesis/synthesized_xml/`, `synthesis/synth_template.txt` | The 10-entry forward-synthesis run: the prompt sent per entry, the tree that came back, and the template they were built from. |
 | `sample_random_10_entries.py` | Draws the random sub-sample. |
 | `synthesis/Synthesized_from_our_descriptions/` | Trees synthesized back from our descriptions, `entry_N.xml`. Same files the checker reads as `om/`. |
@@ -80,7 +81,7 @@ The study comparing description sources.
 
 `mission_descriptions(3 sources)/` holds mission descriptions from 3 sources: BTGenBot, human-authored and descriptions generated with our dictionary, prompts, catalog
 
-`mission_descriptions(3 sources)/our_descriptions` descriptions generated with our methods. Contains the prompts used to derive them.
+`mission_descriptions(3 sources)/our_descriptions` descriptions generated with our methods. Contains the prompts used to derive them. This is a direct copy of `prompt_engineering/experiment_samples/consolidated_cycle`
 
 `mission_descriptions(3 sources)/Human_authored_descriptions` descriptions authored by humans (19 experiment participants)
 

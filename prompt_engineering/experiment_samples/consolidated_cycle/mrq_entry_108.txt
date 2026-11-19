@@ -1,0 +1,24 @@
+The mission describes selecting motion goals based on end-effector position thresholds.
+
+First, the ReactiveFallback named root_sequence will execute its child actions in order. If an action succeeds, it
+will stop execution. If a later action is running, it will re-evaluate the preceding actions. If the preceding
+action succeeds, it will halt the running action and stop the fallback.
+
+Next, the ReactiveSequence named 3-goal will execute the custom action EEYThreshold and then the custom action
+SetMGGoal in sequence. If EEYThreshold fails, it will stop the sequence. While SetMGGoal is running, it will
+re-evaluate EEYThreshold. If EEYThreshold fails during this re-evaluation, it will halt SetMGGoal and stop the
+sequence.
+
+Then, the ReactiveSequence named 2-traverse will execute the custom action EEZThreshold and then the custom action
+SetMGGoal in sequence. If EEZThreshold fails, it will stop the sequence. While SetMGGoal is running, it will
+re-evaluate EEZThreshold. If EEZThreshold fails during this re-evaluation, it will halt SetMGGoal and stop the
+sequence.
+
+Finally, the custom action SetMGGoal named mg_goal1 will execute if the preceding actions do not succeed.
+
+Parameters: The custom action EEYThreshold will receive threshold from {y_threshold} and ee_y from {ee_y}. The
+custom action SetMGGoal named mg_goal3 will receive mp_param_x from {mp_3_x} and store mg_trans_x under
+{mg_trans_x}. The custom action EEZThreshold will receive threshold from {z_threshold} and ee_z from {ee_z}. The
+custom action SetMGGoal named mg_goal2 will receive mp_param_x from {mp_2_x} and store mg_trans_x under
+{mg_trans_x}. The custom action SetMGGoal named mg_goal1 will receive mp_param_x from {mp_1_x} and store mg_trans_x
+under {mg_trans_x}.

@@ -1,0 +1,23 @@
+The mission describes navigation that follows a dynamically updated pose.
+
+First, the robot will execute the PipelineSequence NavigateWithReplanning, which will run the rate-controlled path
+computation and the failure-monitored path following in order. While an action is running or has succeeded, it will
+proceed to the next action. It will stop the sequence if any action fails.
+
+Next, the RateController will execute its child at a rate of 2.0 Hz.
+
+Next, the Sequence will execute the GoalUpdater in order and stop if it fails.
+
+Next, the GoalUpdater will update the input goal and execute its child with the updated goal.
+
+Next, the ComputePathToPose ROS action will compute a path using the GridBased planner.
+
+Next, the KeepRunningUntilFailure will execute the FollowPath ROS action. If it succeeds, it will restart the
+action. If it fails, it will stop looping and continue execution.
+
+Next, the FollowPath ROS action will follow the computed path.
+
+Parameters: The RateController will use a rate of 2.0 Hz. The GoalUpdater will read the input goal from {goal} and
+store the updated goal under {updated_goal}. The ComputePathToPose ROS action will read the goal from
+{updated_goal}, store the computed path under {path}, and use the literal planner identifier GridBased. The
+FollowPath ROS action will read the path from {path} and use the literal controller identifier FollowPath.

@@ -1,0 +1,20 @@
+The mission describes continuous variant processing, people recognition, and positioning near Thomas.
+
+First, the robot will execute the Repeat and Sequence branches simultaneously. The parallel execution will succeed
+only when both branches succeed and will fail if either branch fails.
+
+Next, it will repeatedly execute VariantAction without a cycle limit.
+
+Then, it will execute peoplerecognition followed by the Fallback branch in order and will stop the sequence if
+either action fails.
+
+Finally, it will try getPersonPose first. If getPersonPose fails, it will execute moveRoboterPosition instead. If
+no action succeeds, the fallback execution will fail.
+
+Parameters: VariantAction will store its value under {variant}.
+
+getPersonPose will use the literal personname value THOMAS and will store its x, y, and z outputs under {x_}, {y_},
+and {z_}.
+
+moveRoboterPosition will use the literal approachRadius value 200, the literal x value 3000, and the literal y
+value -12000.

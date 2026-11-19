@@ -1,0 +1,10 @@
+The mission describes a sequential navigation behavior that computes a path to a goal and follows that path.
+
+First, the root sequence will direct the robot to execute its actions in order and stop if any action fails.
+
+Next, it will execute ROS action ComputePathToPose.
+
+Finally, it will execute ROS action FollowPath.
+
+Parameters: ComputePathToPose will read goal from {goal}, store the resulting path under {path}, and use GridBased
+as planner_id. FollowPath will read path from {path} and use FollowPath as controller_id.

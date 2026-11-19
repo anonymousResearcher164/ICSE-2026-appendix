@@ -1,0 +1,10 @@
+The mission describes repeated speech transcription and speech synthesis.
+
+First, the robot will execute the enclosed sequence three times.
+
+Next, it will execute SpeechToTextActionClient, TextToSpeechActionClient, SpeechToTextActionClient, and
+TextToSpeechActionClient in order and stop the sequence if any action fails.
+
+Parameters: The first SpeechToTextActionClient will store its text under {said}. The first TextToSpeechActionClient
+will use the value read from {said} as its msg. The second SpeechToTextActionClient will store its text under
+{said}. The second TextToSpeechActionClient will use the value read from {said} as its msg.

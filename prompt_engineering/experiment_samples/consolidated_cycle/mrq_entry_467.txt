@@ -1,0 +1,16 @@
+The mission describes alternative object movement, object return, and standby behaviors.
+
+First, the robot will execute the fallback. It will try the first sequence and move to the next sequence if any
+action fails. If no sequence succeeds, it will execute StandbyObject.
+
+Next, the first sequence will execute MoveObject followed by WaitObject. It will stop if either action fails.
+
+Then, the second sequence will execute ReturnObject followed by WaitObject. It will stop if either action fails.
+
+Finally, the fallback will execute StandbyObject if the preceding sequences do not succeed.
+
+Parameters: MoveObject will use action from {action}, move_base_finished from {move_base_finished}, move_base_idle
+from {move_base_idle}, and pose_queue_size from {pose_queue_size}. WaitObject will use action from {action} and
+wait_duration set to 3. ReturnObject will use action from {action}, home_pose_far from {home_pose_far},
+move_base_finished from {move_base_finished}, and move_base_idle from {move_base_idle}. StandbyObject will use
+action from {action}.

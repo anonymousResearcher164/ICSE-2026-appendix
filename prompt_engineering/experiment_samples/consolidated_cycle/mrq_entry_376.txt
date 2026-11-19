@@ -1,0 +1,13 @@
+The mission describes a repeated social navigation task in which the robot will interact through dialogue and
+navigate toward a human-robot interaction target.
+
+First, the robot will execute the root sequence and stop if the repeated task fails.
+
+Next, it will repeat the parallel task 100 times.
+
+Then, it will execute the custom action Dialog and the ROS action SocialNav2Action simultaneously. The parallel
+task will succeed when one action succeeds and will fail if any action fails.
+
+Finally, it will perform the custom action Dialog and the ROS action SocialNav2Action concurrently.
+
+Parameters: The ROS action SocialNav2Action will use goal hri and agent_id agent_3.

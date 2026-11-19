@@ -1,0 +1,28 @@
+The mission describes a robot repeatedly updating its planning scene, navigating to two locations, scanning shelf
+positions, configuring a shelf tray, and pausing between cycles.
+
+First, the Repeat node will execute its child continuously because its cycle limit is -1.
+
+Next, the Sequence will execute its actions in order and stop if any action fails. The robot will update the
+planning scene, move to the first location, move to the second location, execute the inner sequence, and pause.
+
+Then, the inner Sequence will execute its actions in order and stop if any action fails. It will control the torso,
+control the head, scan the shelves, set the tray loci, and update the planning scene.
+
+Finally, the pause action will delay the next repetition after the inner sequence completes.
+
+Parameters: The first MoveBase action will use goal 2.1;-2.0;0.0.
+
+The second MoveBase action will use goal 2.1;-0.0;1.57.
+
+The TorsoControl action will use relative_height 0.1.
+
+The HeadControl action will use pitch 0.0 and yaw 90.0.
+
+The ScanShelves action will store its tomato_can_stocking_target_poses output under the
+tomato_can_stocking_target_poses key.
+
+The TraySetLoci action will use tray_name shelf, read locus_poses from the tomato_can_stocking_target_poses key,
+and use occupied false.
+
+The Pause action will use time_limit_sec 5.

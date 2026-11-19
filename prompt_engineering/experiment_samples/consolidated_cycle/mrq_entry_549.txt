@@ -1,0 +1,7 @@
+The mission describes a sequential behavior for moving the arm to a specified pose.
+
+First, the robot will execute the root sequence. It will execute the ExecuteGroupPose action in order and stop the
+sequence if the action fails.
+
+Parameters: The ExecuteGroupPose action will use goal 0 0 0 0 0 0 1, group_name arm, is_absolute 0, service_name
+execute_group_pose, and tolerance 0.01.

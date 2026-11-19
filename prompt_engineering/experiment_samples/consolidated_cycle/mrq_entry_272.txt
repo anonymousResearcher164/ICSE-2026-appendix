@@ -1,0 +1,13 @@
+The mission describes navigating to a goal while computing and following a path with replanning.
+
+The robot will execute RateController and FollowPath in order and stop the pipeline if any action fails. While an
+action is running or has succeeded, it will proceed to the next action.
+
+First, the ROS action RateController will regulate the execution of the ROS action ComputePathToPose. It will
+compute a path to the goal and store the result for later use.
+
+Next, it will execute the ROS action FollowPath to follow the computed path.
+
+Parameters: The ROS action RateController will use a frequency of 1.0 hertz. The ROS action ComputePathToPose will
+read the goal from {goal}, store the computed path under {path}, and use the planner identifier GridBased. The ROS
+action FollowPath will read the path from {path} and use the controller identifier FollowPath.

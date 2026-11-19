@@ -1,0 +1,12 @@
+The mission describes obtaining a target, moving toward it, attacking it when it is adjacent, and performing a
+random move if the primary sequence does not succeed.
+
+First, the fallback will execute the Main sequence and, if that sequence fails, execute the custom action
+RandomMove.
+
+Next, the Main sequence will execute the custom action GetTarget and then the custom action Move. If an action
+succeeds, the sequence will remember it and move to the next action. If an action fails, the sequence will restart
+from the failed action. It will then execute the nested sequence, which will check whether TargetAdjacent is true
+before executing the custom action AttackTarget.
+
+Parameters: No actions have ports.

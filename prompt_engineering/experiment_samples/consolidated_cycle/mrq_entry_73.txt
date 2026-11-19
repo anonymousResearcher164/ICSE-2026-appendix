@@ -1,0 +1,10 @@
+The mission describes transporting a tray to a table.
+
+First, the robot will execute the tray-transport sequence one time.
+
+Next, it will execute the following actions in order and stop the sequence if any action fails: look at the tray,
+detect the handles, pick the tray, look up, move back, go to the table, and place the tray.
+
+Then, it will keep trying to detect the handles until detection succeeds or three attempts are completed.
+
+Finally, it will interrupt each handle-detection attempt if it does not execute within 300 milliseconds.

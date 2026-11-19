@@ -1,0 +1,37 @@
+The mission describes sequentially positioning both arms through the UPTRAY, EXTENDED, GRIPPING, and REST poses.
+
+First, The robot will execute the following actions in order and stop the sequence if any action fails: obtain the
+joint configuration for the UPTRAY pose, set both arms to that configuration simultaneously, obtain the joint
+configuration for the EXTENDED pose, set both arms to that configuration simultaneously, obtain the joint
+configuration for the GRIPPING pose, set both arms to that configuration simultaneously, obtain the joint
+configuration for the REST pose, and set both arms to that configuration simultaneously.
+
+Next, it will execute GetArmJointsForPose to obtain the UPTRAY joint configuration.
+
+Next, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
+
+Next, it will execute GetArmJointsForPose to obtain the EXTENDED joint configuration.
+
+Next, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
+
+Next, it will execute GetArmJointsForPose to obtain the GRIPPING joint configuration.
+
+Next, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
+
+Finally, it will execute GetArmJointsForPose to obtain the REST joint configuration.
+
+Finally, it will execute SetArmJointsLeft and SetArmJointsRight simultaneously. The parallel execution will succeed
+when two actions succeed and will fail when two actions fail.
+
+Parameters: GetArmJointsForPose will use pose UPTRAY and store the result under {joints_pose}. GetArmJointsForPose
+will use pose EXTENDED and store the result under {joints_pose}. GetArmJointsForPose will use pose GRIPPING and
+store the result under {joints_pose}. GetArmJointsForPose will use pose REST and store the result under
+{joints_pose}. SetArmJointsLeft will read the joint configuration from {joints_pose}. SetArmJointsRight will read
+the joint configuration from {joints_pose}. SetArmJointsLeft will read the joint configuration from {joints_pose}.
+SetArmJointsRight will read the joint configuration from {joints_pose}. SetArmJointsLeft will read the joint
+configuration from {joints_pose}. SetArmJointsRight will read the joint configuration from {joints_pose}.
+SetArmJointsLeft will read the joint configuration from {joints_pose}. SetArmJointsRight will read the joint
+configuration from {joints_pose}.

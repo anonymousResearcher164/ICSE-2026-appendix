@@ -1,0 +1,22 @@
+The mission describes the animal's movement between the pasture and the shed during the day and night.
+
+First, the robot will try the following movement sequences in order. If a sequence fails, it will try the next
+sequence. If all sequences fail, it will start again with the first sequence.
+
+Next, the first sequence will check whether IsOnPasture is true. It will then check whether IsDay is true. It will
+then check whether IsInShed is true. If all checks succeed, it will execute custom action LeaveShed. It will then
+execute custom action FindRandomPastureField. It will then execute custom action Move. The sequence will remember
+each successful step and restart from the failed step if a later step fails.
+
+Next, the second sequence will check whether IsOnPasture is true. It will then check whether IsNight is true. It
+will execute an inverted check of IsInShed. If IsInShed is true, the inverted check will fail. If IsInShed is
+false, the inverted check will succeed. If all checks succeed, it will execute custom action FindShed. It will then
+execute custom action Move. It will then execute custom action EnterShed. The sequence will remember each
+successful step and restart from the failed step if a later step fails.
+
+Finally, the third sequence will check whether IsDay is true. It will execute an inverted check of IsInShed. If
+IsInShed is true, the inverted check will fail. If IsInShed is false, the inverted check will succeed. If both
+checks succeed, it will execute custom action RandomMove. The sequence will remember each successful step and
+restart from the failed step if the action fails.
+
+Parameters: No action ports are defined.

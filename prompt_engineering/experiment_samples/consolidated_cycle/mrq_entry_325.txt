@@ -1,0 +1,18 @@
+The mission describes movement between a pasture and a shed during the day and night.
+
+First, the robot will execute the three SequenceStar subtrees consecutively. If a subtree succeeds, it will stop
+the fallback. If all three subtrees fail, it will restart with the first subtree until one succeeds.
+
+Next, the first SequenceStar will check IsOnPasture, IsDay, and IsInShed in order. If a check succeeds, it will
+remember the check and continue to the next child. If a check fails, it will restart the sequence from the failed
+check. After all checks succeed, it will execute LeaveShed, FindRandomPastureField, and Move in order.
+
+Next, the second SequenceStar will check IsOnPasture and IsNight in order. If a check succeeds, it will remember
+the check and continue to the next child. If a check fails, it will restart the sequence from the failed check. It
+will execute an inverted IsInShed check. If IsInShed is true, the inverted check will fail. If IsInShed is false,
+the inverted check will succeed. After all checks succeed, it will execute FindShed, Move, and EnterShed in order.
+
+Finally, the third SequenceStar will check IsDay in order. If the check succeeds, it will remember the check and
+continue to the next child. If the check fails, it will restart the sequence from the failed check. It will execute
+an inverted IsInShed check. If IsInShed is true, the inverted check will fail. If IsInShed is false, the inverted
+check will succeed. After the checks succeed, it will execute RandomMove.
