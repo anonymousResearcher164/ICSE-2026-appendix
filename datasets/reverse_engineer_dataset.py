@@ -45,7 +45,7 @@ def call_openai(prompt: str, retries: int = 3) -> str:
 
 def build_prompt(entry: str)-> str:
     pdata = ""
-    chat_prompt_data = 'prompt.txt'
+    chat_prompt_data = 'helper.txt'
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     chat_prompt_file_path = os.path.join(script_dir, chat_prompt_data)
