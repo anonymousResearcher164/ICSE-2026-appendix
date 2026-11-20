@@ -62,14 +62,14 @@ The iterative development of the node dictionary and the synthesis prompt.
 | Path                                                                               | Contents                                                                                                                            |
 | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `dictionary_v1.json` … `dictionary_v6.json`                                        | Six successive revisions of the node dictionary mapping BehaviorTree.CPP node types to natural-language phrasings. `v6` is current. |
-| `experiment_samples/cycle_1/` … `cycle_5/`                                         | Five prompt-refinement cycles, 30 files each (10 BTs, 10 prompts for each BT, 10 descriptions(the output)). mrq_entry_* in `/cycle_1/` … `cycle_5/` was reverse engineered with `dictionary_v1.json`...`dictionary_v5.json` respectively.                        |
+| `experiment_samples/cycle_1/` … `cycle_5/`                                         | Five prompt-refinement cycles, 30 files each (10 BTs, 10 prompts for each BT, 10 descriptions(the output)). `mrq_entry_*` in `/cycle_1/` … `cycle_5/` was reverse engineered with `dictionary_v1.json`...`dictionary_v5.json` respectively.                        |
 | `experiment_samples/consolidated_cycle`                                            | Prompts and results(descriptions) derived from the final version of prompt refinements paired with `dictionary_v6.json`.                   |
 | `synthesis/` | Ground-truth BTs from the sample of 50 as well as synthesized BTs from 3 sources, and the synthesis prompt template.     |
 | `sample_random_10_entries.py`                                                      | Draws the random sub-sample.                                                                                                        |
 | `synthesis/Synthesized_from_our_descriptions/`                                     | Trees synthesized back from our descriptions, `entry_N.xml`. Same files the checker reads as `om/`.                                 |
-| `synthesis/Synthesized_from_human_authored/`                                       | Trees synthesized back from the human-authored descriptions. The checker's `ha/`.                                                   |
-| `synthesis/Synthesized_BTGenbot_descriptions/`                                     | Trees synthesized back from BTGenBot's descriptions. The checker's `btg/`.                                                          |
-| `synthesis/Ground_truth_BTs/`                                                      | The 50 reference trees, `entry_N.xml`.                                                                                              |
+| `synthesis/Synthesized_from_human_authored/`                                       | Trees synthesized back from the human-authored descriptions. Same as the checker's `ha/`.                                                   |
+| `synthesis/Synthesized_BTGenbot_descriptions/`                                     | Trees synthesized back from BTGenBot's descriptions. Same as the checker's `btg/`.                                                          |
+| `synthesis/Ground_truth_BTs/`                                                      | The 50 reference behavior trees, `entry_N.xml`.                                                                                              |
 
 ---
 
